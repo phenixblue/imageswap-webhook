@@ -72,6 +72,8 @@ In addition, the `MutatingAdmissionWebhook` and `ValidatingAdmissionWebhook` adm
     ./deploy/webhook-patch-ca-bundle.sh > \
     ./deploy/imageswap-webhook-mwc-patched.yaml
   ```
+  
+  NOTE: These scripts came from [here](https://github.com/morvencao/kube-mutating-webhook-tutorial)
 
 - Deploy script via Kubernetes configmap
 
