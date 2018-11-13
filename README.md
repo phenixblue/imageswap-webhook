@@ -61,7 +61,7 @@ In addition, the `MutatingAdmissionWebhook` and `ValidatingAdmissionWebhook` adm
   ```
   ./deploy/webhook-ssl-cert-gen.sh \
     --service imageswap-webhook-svc \
-    --secret imageswap-webhook-mwc-patched \
+    --secret imageswap-webhook-certs \
     --namespace default
   ```
 
