@@ -1,0 +1,4 @@
+**/ssl
+**/*.crt
+**/*.key
+**/*-patched.yaml

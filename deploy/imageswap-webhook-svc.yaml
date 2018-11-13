@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: imageswap-webhook
+  name: imageswap-webhook-svc
+  namespace: default
+spec:
+  ports:
+  - name: https
+    port: 443
+    targetPort: 5000
+  selector:
+    app: imageswap-webhook
+  sessionAffinity: None
+  type: ClusterIP

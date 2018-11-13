@@ -1,0 +1,26 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: imageswap-webhook
+webhooks:
+  - name: imageswap-webhook.k8s.twr.io
+    clientConfig:
+      service:
+        name: imageswap-webhook-svc
+        namespace: default
+        path: "/"
+      caBundle: $CA_BUNDLE
+    rules:
+      - operations:
+          - CREATE
+          - UPDATE
+        apiGroups:
+          - "apps"
+        apiVersions:
+          - "*"
+        resources:
+          - "deployments"
+    failurePolicy: Fail
+    namespaceSelector:
+      matchLabels:
+        k8s.twr.io/imageswap: "enabled"
