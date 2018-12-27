@@ -11,5 +11,5 @@ export CA_BUNDLE=$(kubectl get configmap -n kube-system extension-apiserver-auth
 if command -v envsubst >/dev/null 2>&1; then
     envsubst
 else
-    sed -e "s|\${CA_BUNDLE}|${CA_BUNDLE}|g"
+    sed -e "s|\$CA_BUNDLE|${CA_BUNDLE}|g"
 fi
