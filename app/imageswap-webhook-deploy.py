@@ -26,7 +26,7 @@ def webhook():
 
     for container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["containers"]:
         print("INFO - Processing container: {}/{}".format(namespace,workload))
-        fixup_image(container_spec)
+        swap_image(container_spec)
 
     print("INFO - Diffing original request to modified request and generating JSONPatch")
 
@@ -55,7 +55,7 @@ def webhook():
     return jsonify(admissionReview)
 
 
-def fixup_image(container_spec):
+def swap_image(container_spec):
 
     image_prefix = os.environ['IMAGE_PREFIX']
     name = container_spec["name"]
