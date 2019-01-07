@@ -20,6 +20,8 @@ webhooks:
           - "*"
         resources:
           - "deployments"
+          - "statefulsets"
+          - "daemonsets"
     failurePolicy: Fail
     namespaceSelector:
       matchLabels:
