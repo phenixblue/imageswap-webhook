@@ -3,4 +3,4 @@ version: '3'
 services:
   app:
     build: .
-    image: imageswap-webhook:1.0
+    image: imageswap-webhook:1.1
