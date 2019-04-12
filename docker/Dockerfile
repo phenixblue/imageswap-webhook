@@ -1,6 +1,6 @@
-from python:3
+FROM python:3
 
-MAINTAINER joe@twr.io
+LABEL maintainer=joe@twr.io
 
 COPY . /app
 WORKDIR /app
