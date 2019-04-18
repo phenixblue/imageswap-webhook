@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: imageswap-webhook
-        image: jmsearcy/imageswap-webhook
+        image: jmsearcy/python3-flask:latest
         ports:
         - containerPort: 5000
         command: [/app/imageswap-webhook.py]

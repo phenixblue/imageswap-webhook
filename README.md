@@ -1,5 +1,4 @@
 # Image Swap Mutating Admission Webhook for Kubernetes 
-[![](https://images.microbadger.com/badges/version/jmsearcy/imageswap-webhook.svg)](https://microbadger.com/images/jmsearcy/imageswap-webhook "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/jmsearcy/imageswap-webhook.svg)](https://microbadger.com/images/jmsearcy/imageswap-webhook "Get your own image badge on microbadger.com")
 
 This is an example Kubernetes Mutating [Admission Webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks).
 
@@ -37,22 +36,12 @@ admissionregistration.k8s.io/v1beta1
 
 In addition, the `MutatingAdmissionWebhook` and `ValidatingAdmissionWebhook` admission controllers should be added and listed in the correct order in the admission-control flag of kube-apiserver.
 
-## Build Image
+## Docker Image
 
-- Build the image locally
+The code in this repository has been tested against the `jmsearcy/python3-flask` image:
 
-    ```
-    $ cd ./docker/
-    $ docker-compose build
-    ```
-
-- Push the image to a repository
-
-    ```
-    $ docker login
-    $ docker tag imageswap-webhook:0.1 jmsearcy/imageswap-webhook:0.1
-    $ docker push jmsearcy/imageswap-webhook:0.1
-    ```
+- https://github.com/phenixblue/python3-flask
+- https://cloud.docker.com/repository/docker/jmsearcy/python3-flask
 
 ## Deploy Webhook
 
