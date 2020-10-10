@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - master
+      - big-overhaul
 
 # Jobs
 jobs:

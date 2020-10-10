@@ -2,10 +2,13 @@ name: "code-ql"
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+      - big-overhaul
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [master]
+    branches:
+      - master
   schedule:
     - cron: '0 23 * * 3'
 
