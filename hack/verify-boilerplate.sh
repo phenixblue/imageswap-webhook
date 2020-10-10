@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#!/usr/bin/env bash
-
 # Copyright 2020 The WebRoot, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,9 +21,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-MAGTAPE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+IMAGESWAP_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
-boilerDir="${MAGTAPE_ROOT}/hack/boilerplate"
+boilerDir="${IMAGESWAP_ROOT}/hack/boilerplate"
 boiler="${boilerDir}/boilerplate.py"
 
 files_need_boilerplate=()
