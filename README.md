@@ -6,6 +6,8 @@ This webhook will swap the existing image definition in a deployment with a user
 
 The webhook is written in `Python` using the `Flask` framework.
 
+**!!!! I'm currenty working on some major refactoring and the master branch may not be ina  working state. Pease reference specific tags for known good working states.!!!!**
+
 ## Example
 
 Existing Image Definition:
