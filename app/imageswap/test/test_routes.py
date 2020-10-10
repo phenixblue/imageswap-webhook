@@ -22,6 +22,7 @@ from unittest.mock import patch
 sys.path.append("./app/imageswap")
 import imageswap
 
+
 class TestRoutes(unittest.TestCase):
     def setUp(self):
 
@@ -50,18 +51,14 @@ class TestRoutes(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
             self.assertNotIn("patch", json.loads(result.data)["response"])
             self.assertNotIn("patchtype", json.loads(result.data)["response"])
             self.assertEqual(json.loads(result.data)["response"]["uid"], "96ab6176-dc7e-11e8-84d0-da6ee68491b2")
-        
+
     def test_root_deploy_swap_container(self):
 
         """Method to test root route with request that should swap the image definition"""
@@ -70,15 +67,14 @@ class TestRoutes(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
-            self.assertEqual(json.loads(result.data)["response"]["patch"], "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d")
+            self.assertEqual(
+                json.loads(result.data)["response"]["patch"],
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
+            )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "96ab6176-dc7e-11e8-84d0-da6ee68491b2")
 
@@ -90,15 +86,14 @@ class TestRoutes(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
-            self.assertEqual(json.loads(result.data)["response"]["patch"], "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d")
+            self.assertEqual(
+                json.loads(result.data)["response"]["patch"],
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
+            )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "96ab6176-dc7e-11e8-84d0-da6ee68491b2")
 
@@ -110,15 +105,14 @@ class TestRoutes(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
-            self.assertEqual(json.loads(result.data)["response"]["patch"], "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d")
+            self.assertEqual(
+                json.loads(result.data)["response"]["patch"],
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
+            )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "96ab6176-dc7e-11e8-84d0-da6ee68491b2")
 
@@ -130,17 +124,14 @@ class TestRoutes(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
             self.assertNotIn("patch", json.loads(result.data)["response"])
             self.assertNotIn("patchtype", json.loads(result.data)["response"])
             self.assertEqual(json.loads(result.data)["response"]["uid"], "96ab6176-dc7e-11e8-84d0-da6ee68491b2")
+
 
 if __name__ == "__main__":
     unittest.main()

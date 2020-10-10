@@ -97,41 +97,30 @@ def mutate():
 
             for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainer"]:
 
-                print(
-                    "[INFO] - Processing init-container: {}/{}".format(namespace, workload)
-                )
+                print("[INFO] - Processing init-container: {}/{}".format(namespace, workload))
                 needs_patch = swap_image(init_container_spec)
 
     else:
 
-        for container_spec in modified_spec["request"]["object"]["spec"]["template"][
-            "spec"
-        ]["containers"]:
+        for container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["containers"]:
 
             print("[INFO] - Processing container: {}/{}".format(namespace, workload))
             needs_patch = swap_image(container_spec)
 
-        
         if "initContainer" in modified_spec["request"]["object"]["spec"]["template"]["spec"]:
 
             for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["initContainer"]:
 
-                print(
-                    "[INFO] - Processing init-container: {}/{}".format(namespace, workload)
-                )
+                print("[INFO] - Processing init-container: {}/{}".format(namespace, workload))
                 needs_patch = swap_image(init_container_spec)
 
     if needs_patch:
 
         print("[DEBUG] -Doesn't need patch")
 
-        print(
-            "[INFO] - Diffing original request to modified request and generating JSONPatch"
-        )
+        print("[INFO] - Diffing original request to modified request and generating JSONPatch")
 
-        patch = jsonpatch.JsonPatch.from_diff(
-            request_info["request"]["object"], modified_spec["request"]["object"]
-        )
+        patch = jsonpatch.JsonPatch.from_diff(request_info["request"]["object"], modified_spec["request"]["object"])
 
         print("[INFO] - JSON Patch: {}".format(patch))
 
@@ -234,10 +223,7 @@ def main():
         port=5000,
         debug=False,
         threaded=True,
-        ssl_context=(
-            f"{BaseConfig.imageswap_tls_path}/cert.pem",
-            f"{BaseConfig.imageswap_tls_path}/key.pem",
-        ),
+        ssl_context=(f"{BaseConfig.imageswap_tls_path}/cert.pem", f"{BaseConfig.imageswap_tls_path}/key.pem",),
     )
 
 
