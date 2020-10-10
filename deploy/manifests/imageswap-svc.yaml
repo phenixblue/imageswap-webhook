@@ -4,7 +4,7 @@ metadata:
   name: imageswap
   namespace: imageswap-system
   labels:
-    app: imageswap-webhook
+    app: imageswap
     resource: service
 spec:
   ports:
