@@ -1,0 +1,16 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: imageswap
+    resource: horizontalpodautoscaler
+  name: imageswap
+  namespace: imageswap-system
+spec:
+  maxReplicas: 6
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: imageswap
+  targetCPUUtilizationPercentage: 80

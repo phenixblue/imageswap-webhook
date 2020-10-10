@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: imageswap-env
+  namespace: imageswap-system
+  labels:
+    app: imageswap
+    resource: configmap
+data:
+  FLASK_ENV: "production"
+  PYTHONUNBUFFERED: "TRUE"
+  IMAGESWAP_LOG_LEVEL: "INFO"
+  IMAGE_PREFIX: "jmsearcy"

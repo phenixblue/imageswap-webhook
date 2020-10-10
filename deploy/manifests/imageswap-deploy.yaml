@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageswap
+  labels:
+    app: imageswap
+    resource: deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: imageswap
+  template:
+    metadata:
+      labels:
+        app: imageswap
+    spec:
+      initContainers:
+        - name: imageswap-init
+          image: jmsearcy/imageswap-init:v0.0.1
+          command: [/app/imageswap-init.py]
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+          env:
+          - name: IMAGESWAP_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: IMAGESWAP_NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: imageswap-env
+          volumeMounts:
+          - name: imageswap-tls
+            mountPath: /tls
+          - name: imageswap-mwc
+            mountPath: /mwc
+      containers:
+      - name: imageswap
+        image: jmsearcy/imageswap:v1.2.0
+        ports:
+        - containerPort: 5000
+        command: ["gunicorn", "imageswap:app", "--config=config.py"]
+        imagePullPolicy: Always
+        securityContext:
+            allowPrivilegeEscalation: false
+        resources:
+          limits:
+            cpu: "500m"
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        env:
+          - name: IMAGESWAP_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: IMAGESWAP_NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+            - configMapRef:
+                name: imageswap-env
+        volumeMounts:
+          - name: certs
+            mountPath: /app/ssl
+            readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: imageswap-certs

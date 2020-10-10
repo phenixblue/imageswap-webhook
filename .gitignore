@@ -3,3 +3,5 @@
 **/*.key
 **/*.pem
 **/*-patched.yaml
+**/*tmp
+**/*=

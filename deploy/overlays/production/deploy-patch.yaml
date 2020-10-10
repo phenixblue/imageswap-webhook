@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageswap
+  namespace: imageswap-system
+  labels:
+    app: imageswap
+spec:
+  # Set Replicas to 1
+  replicas: 3

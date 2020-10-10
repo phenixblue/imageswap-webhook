@@ -1,0 +1,12 @@
+resources:
+  - kind: deployments
+    desired: pass
+    script:
+    manifests:
+      - test-deploy01.yaml
+      - test-deploy02.yaml
+#  - kind: deployments
+#    desired: fail
+#    script: 
+#    manifests:
+#      - test-deploy03.yaml
