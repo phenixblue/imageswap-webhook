@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# This is based on existing work from the MagTape project: 
+# This is based on existing work from the MagTape project:
 # https://github.com/tmobile/magtape
 
 from cryptography import x509
@@ -373,7 +373,10 @@ def build_tls_pair(namespace, secret_name, service_name, certificates_api):
     k8s_csr = build_k8s_csr(namespace, service_name, tls_key)
     k8s_csr = submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr)
     tls_cert_pem = get_tls_cert_from_request(
-        namespace, imageswap_tls_pair_secret_name, k8s_csr.metadata.name, certificates_api
+        namespace,
+        imageswap_tls_pair_secret_name,
+        k8s_csr.metadata.name,
+        certificates_api,
     )
 
     tls_pair = {
@@ -568,7 +571,10 @@ def write_tls_pair(
         secret_metadata = client.V1ObjectMeta(
             name=secret_name,
             namespace=namespace,
-            labels={"app": "imageswap", "imageswap/updated-by-pod": imageswap_pod_name,},
+            labels={
+                "app": "imageswap",
+                "imageswap/updated-by-pod": imageswap_pod_name,
+            },
         )
 
         secret_data = {

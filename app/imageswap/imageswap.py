@@ -51,7 +51,8 @@ app.logger.setLevel(imageswap_log_level)
 ################################################################################
 ################################################################################
 
-@app.route('/', methods=['POST'])
+
+@app.route("/", methods=["POST"])
 def mutate():
 
     request_info = request.json
@@ -66,11 +67,11 @@ def mutate():
     print("")
 
     # Detect if "name" in object metadata
-    # this was added because the request object for pods don't 
+    # this was added because the request object for pods don't
     # include a "name" field in the object metadata. This is because generateName
     # occurs Server Side post-admission
     if "name" in workload_metadata:
-        
+
         workload = modified_spec["request"]["object"]["metadata"]["name"]
 
     elif "generateName" in workload_metadata:
@@ -81,43 +82,57 @@ def mutate():
 
         workload = uid
 
-    #pprint(request_info)
+    # pprint(request_info)
 
     # Change workflow/json path based on K8s object type
     if workload_type == "Pod":
 
         for container_spec in modified_spec["request"]["object"]["spec"]["containers"]:
-        
-            print("[INFO] - Processing container: {}/{}".format(namespace,workload))
+
+            print("[INFO] - Processing container: {}/{}".format(namespace, workload))
             swap_image(container_spec)
 
-        for init_container_spec in modified_spec["request"]["object"]["spec"]["init-container"]:
-        
-            print("[INFO] - Processing init-container: {}/{}".format(namespace,workload))
+        for init_container_spec in modified_spec["request"]["object"]["spec"][
+            "init-container"
+        ]:
+
+            print(
+                "[INFO] - Processing init-container: {}/{}".format(namespace, workload)
+            )
             swap_image(init_container_spec)
 
     else:
 
-        for container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["containers"]:
+        for container_spec in modified_spec["request"]["object"]["spec"]["template"][
+            "spec"
+        ]["containers"]:
 
-            print("[INFO] - Processing container: {}/{}".format(namespace,workload))
+            print("[INFO] - Processing container: {}/{}".format(namespace, workload))
             needs_patch = swap_image(container_spec)
 
-        for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["init-container"]:
+        for init_container_spec in modified_spec["request"]["object"]["spec"][
+            "template"
+        ]["spec"]["init-container"]:
 
-            print("[INFO] - Processing init-container: {}/{}".format(namespace,workload))
+            print(
+                "[INFO] - Processing init-container: {}/{}".format(namespace, workload)
+            )
             needs_patch = swap_image(init_container_spec)
 
     if needs_patch:
 
-        print("[INFO] - Diffing original request to modified request and generating JSONPatch")
+        print(
+            "[INFO] - Diffing original request to modified request and generating JSONPatch"
+        )
 
-        #print("Original Spec:")
-        #pprint(request_info["request"]["object"]["spec"]["containers"])
-        #print("Modified Spec:")
-        #pprint(modified_spec["request"]["object"]["spec"]["containers"])
+        # print("Original Spec:")
+        # pprint(request_info["request"]["object"]["spec"]["containers"])
+        # print("Modified Spec:")
+        # pprint(modified_spec["request"]["object"]["spec"]["containers"])
 
-        patch = jsonpatch.JsonPatch.from_diff(request_info["request"]["object"], modified_spec["request"]["object"])
+        patch = jsonpatch.JsonPatch.from_diff(
+            request_info["request"]["object"], modified_spec["request"]["object"]
+        )
 
         print("[INFO] - JSON Patch: {}".format(patch))
 
@@ -125,12 +140,12 @@ def mutate():
             "allowed": True,
             "uid": request_info["request"]["uid"],
             "patch": base64.b64encode(str(patch).encode()).decode(),
-            "patchtype": "JSONPatch"
+            "patchtype": "JSONPatch",
         }
         admissionReview = {
             "apiVersion": "admission.k8s.io/v1",
             "kind": "AdmissionReview",
-            "response": admission_response
+            "response": admission_response,
         }
 
         print("[INFO] - Sending Response to K8s API Server:")
@@ -145,16 +160,18 @@ def mutate():
         }
 
         admissionReview = {
-        "apiVersion": "admission.k8s.io/v1",
-        "kind": "AdmissionReview",
-        "response": admission_response
+            "apiVersion": "admission.k8s.io/v1",
+            "kind": "AdmissionReview",
+            "response": admission_response,
         }
 
         return admission_response
 
+
 ################################################################################
 ################################################################################
 ################################################################################
+
 
 @app.route("/healthz", methods=["GET"])
 def healthz():
@@ -170,13 +187,15 @@ def healthz():
     # Return JSON formatted response object
     return jsonify(health_response)
 
+
 ################################################################################
 ################################################################################
 ################################################################################
+
 
 def swap_image(container_spec):
 
-    image_prefix = os.environ['IMAGE_PREFIX']
+    image_prefix = os.environ["IMAGE_PREFIX"]
     name = container_spec["name"]
     image = container_spec["image"]
 
@@ -184,27 +203,29 @@ def swap_image(container_spec):
 
     if image_prefix in image:
 
-        print ("[INFO] - Internal image definition detected, nothing to do")
+        print("[INFO] - Internal image definition detected, nothing to do")
 
         return False
 
     else:
 
-        if '/' not in image:
-            new_image = image_prefix + re.sub(r'(^.*)',r'/\1',image)
+        if "/" not in image:
+            new_image = image_prefix + re.sub(r"(^.*)", r"/\1", image)
         else:
-            new_image = image_prefix + re.sub(r'(^.*/)+(.*)',r'/\2',image)
+            new_image = image_prefix + re.sub(r"(^.*/)+(.*)", r"/\2", image)
 
-        print ("[INFO] - External image definition detected: {}".format(image))
-        print ("[INFO] - External image updated to Internal image: {}".format(new_image))
+        print("[INFO] - External image definition detected: {}".format(image))
+        print("[INFO] - External image updated to Internal image: {}".format(new_image))
 
         container_spec["image"] = new_image
 
         return True
 
+
 ################################################################################
 ################################################################################
 ################################################################################
+
 
 def main():
 

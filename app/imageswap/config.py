@@ -15,8 +15,9 @@
 from os import environ as env
 import multiprocessing
 
+
 class BaseConfig(object):
-    
+
     APP_PORT = int(env.get("APP_PORT", 5000))
     APP_DEBUG = int(env.get("APP_DEBUG", 1))
     imageswap_tls_path = "/tls"
