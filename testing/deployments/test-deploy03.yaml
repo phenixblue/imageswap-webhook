@@ -12,8 +12,13 @@ spec:
       labels:
         app: hello-kubernetes
     spec:
+      initContainers:
+      - name: hello-kubernetes
+        image: paulbouwer/hello-kubernetes:1.5
+        ports:
+        - containerPort: 8080
       containers:
       - name: hello-kubernetes
-        image: jmsearcy/hello-kubernetes:1.5
+        image: paulbouwer/hello-kubernetes:1.5
         ports:
         - containerPort: 8080

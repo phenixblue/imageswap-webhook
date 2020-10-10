@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: imageswap
+  namespace: imageswap-system
   labels:
     app: imageswap
     resource: deployment
@@ -15,6 +16,10 @@ spec:
       labels:
         app: imageswap
     spec:
+      serviceAccountName: imageswap-sa
+      securityContext:
+        runAsUser: 1898
+        runAsGroup: 1898
       initContainers:
         - name: imageswap-init
           image: jmsearcy/imageswap-init:v0.0.1
@@ -35,10 +40,10 @@ spec:
             - configMapRef:
                 name: imageswap-env
           volumeMounts:
-          - name: imageswap-tls
-            mountPath: /tls
-          - name: imageswap-mwc
-            mountPath: /mwc
+            - name: imageswap-tls
+              mountPath: /tls
+            - name: imageswap-mwc
+              mountPath: /mwc
       containers:
       - name: imageswap
         image: jmsearcy/imageswap:v1.2.0
@@ -68,10 +73,14 @@ spec:
             - configMapRef:
                 name: imageswap-env
         volumeMounts:
-          - name: certs
-            mountPath: /app/ssl
-            readOnly: true
+          - name: imageswap-tls
+            mountPath: /tls
       volumes:
-        - name: certs
-          secret:
-            secretName: imageswap-certs
+        - name: imageswap-mwc
+          configMap:
+              name: imageswap-mwc-template
+              items:
+              - key: imageswap-mwc
+                path: imageswap-mwc.yaml
+        - name: imageswap-tls
+          emptyDir: {}

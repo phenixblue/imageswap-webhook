@@ -6,7 +6,7 @@ metadata:
     app: imageswap
     resource: mutatingwebhookconfiguration
 webhooks:
-  - name: imageswap-webhook.k8s.twr.io
+  - name: imageswap.webhook.k8s.twr.io
     clientConfig:
       service:
         name: imageswap

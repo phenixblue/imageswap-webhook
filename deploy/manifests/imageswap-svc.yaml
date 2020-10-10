@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: imageswap
+  namespace: imageswap-system
   labels:
     app: imageswap-webhook
     resource: service
-  name: imageswap
-  namespace: default
 spec:
   ports:
   - name: https

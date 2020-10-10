@@ -71,9 +71,9 @@ install:
 .PHONY: uninstall
 uninstall:
 
-	kubectl delete -f $(DEPLOY_DIR)/install.yaml
-	kubectl delete mutatingwebhookconfiguration imageswap-webhook
-	kubectl delete csr imageswap.imageswap-system.cert-request
+	kubectl delete -f $(DEPLOY_DIR)/install.yaml --ignore-not-found
+	kubectl delete mutatingwebhookconfiguration imageswap-webhook --ignore-not-found
+	kubectl delete csr imageswap.imageswap-system.cert-request --ignore-not-found
 
 # Restart ImageSwap Pods (Demo Install)
 .PHONY: restart
@@ -103,15 +103,15 @@ test-python: unit-python
 .Phony: lint-python
 lint-python:
 
-	black app/imageswap-init/
-	black app/imageswap/
+	black app/imageswap-init/ --line-length 160
+	black app/imageswap/ --line-length 160
 
 # Verify linting of Python during CI
 .PHONY: ci-lint-python
 ci-lint-python:
 
-	black --check app/imageswap-init/
-	black --check app/imageswap/
+	black --check app/imageswap-init/ --line-length 160
+	black --check app/imageswap/ --line-length 160
 
 ###############################################################################
 # Functional Test Targets #####################################################
@@ -171,37 +171,58 @@ release: echo
 ###############################################################################
 
 # Build ImageSwap-Init container image
-.PHONY: build-imageswap-init
-build-imageswap-init:
+.PHONY: build-imageswap-init-latest
+build-imageswap-init-latest:
 
 	$(DOCKER) build -t jmsearcy/imageswap-init:latest app/imageswap-init/
 
 # Push ImageSwap-Init container image to DockerHub
-.PHONY: push-imageswap-init
-push-imageswap-init:
+.PHONY: push-imageswap-init-latest
+push-imageswap-init-latest:
 
 	$(DOCKER) push jmsearcy/imageswap-init:latest
 
 # Build ImageSwap container image
-.PHONY: build-imageswap
-build-imageswap:
+.PHONY: build-imageswap-latest
+build-imageswap-latest:
 
 	$(DOCKER) build -t jmsearcy/imageswap:latest app/imageswap/
 
 # Push ImageSwap container image to DockerHub
-.PHONY: push-imageswap
-push-imageswap:
+.PHONY: push-imageswap-latest
+push-imageswap-latest:
 
 	$(DOCKER) push jmsearcy/imageswap:latest
 
 # Build and push all ImageSwap container images to DockerHub
-.PHONY: build
-build: build-imageswap-init push-imageswap-init build-imageswap push-imageswap
+.PHONY: build-latest
+build-latest: build-imageswap-init-latest push-imageswap-init-latest build-imageswap-latest push-imageswap-latest
 
-# Build and push ImageSwap-Init container image to DockerHub
-.PHONY: new-imageswap-init
-new-imageswap-init: build-imageswap-init push-imageswap-init
+# Build ImageSwap-Init container image
+.PHONY: build-imageswap-init-versioned
+build-imageswap-init-versioned:
 
-# Build and push ImageSwap container image to DockerHub
-.PHONY: new-imageswap
-new-imageswap: build-imageswap push-imageswap
+	$(DOCKER) build -t jmsearcy/imageswap-init:${IMAGESWAP_INIT_VERSION} app/imageswap-init/
+
+# Push ImageSwap-Init container image to DockerHub
+.PHONY: push-imageswap-init-versioned
+push-imageswap-init-versioned:
+
+	$(DOCKER) push jmsearcy/imageswap-init:${IMAGESWAP_INIT_VERSION}
+
+# Build ImageSwap container image
+.PHONY: build-imageswap-versioned
+build-imageswap--versioned:
+
+	$(DOCKER) build -t jmsearcy/imageswap:${IMAGESWAP_VERSION} app/imageswap/
+
+# Push ImageSwap container image to DockerHub
+.PHONY: push-imageswap-versioned
+push-imageswap-versioned:
+
+	$(DOCKER) push jmsearcy/imageswap:${IMAGESWAP_VERSION}
+
+# Build and push all ImageSwap container images to DockerHub
+.PHONY: build-versioned
+build-versioned: build-imageswap-init-versioned push-imageswap-init-versioned build-imageswap-versioned push-imageswap-versioned
+

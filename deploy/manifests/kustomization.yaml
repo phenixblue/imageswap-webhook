@@ -1,5 +1,6 @@
 resources:
   - imageswap-cluster-rbac.yaml
+  - imageswap-ns-rbac.yaml
   - imageswap-deploy.yaml
   - imageswap-env-cm.yaml
   - imageswap-hpa.yaml

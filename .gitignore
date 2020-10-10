@@ -1,7 +1,10 @@
 **/ssl
+**/*tls
 **/*.crt
 **/*.key
 **/*.pem
 **/*-patched.yaml
 **/*tmp
 **/*=
+**/__pycache__
+.coverage

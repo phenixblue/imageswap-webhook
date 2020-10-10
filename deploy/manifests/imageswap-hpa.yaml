@@ -1,11 +1,11 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
+  name: imageswap
+  namespace: imageswap-system
   labels:
     app: imageswap
     resource: horizontalpodautoscaler
-  name: imageswap
-  namespace: imageswap-system
 spec:
   maxReplicas: 6
   minReplicas: 2

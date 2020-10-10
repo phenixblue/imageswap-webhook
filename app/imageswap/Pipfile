@@ -11,6 +11,7 @@ prometheus-client = "*"
 prometheus-flask-exporter = "*"
 gunicorn = "*"
 werkzeug = "*"
+jsonpatch = "*"
 
 [requires]
 python_version = "3.8"

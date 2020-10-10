@@ -44,7 +44,7 @@ metrics.info("app_info", "Application info", version="v1.2.0")
 # Set logging config
 log = logging.getLogger("werkzeug")
 log.disabled = True
-imageswap_log_level = os.environ["IMAGESSWAP_LOG_LEVEL"]
+imageswap_log_level = os.environ["IMAGESWAP_LOG_LEVEL"]
 app.logger.setLevel(imageswap_log_level)
 
 ################################################################################
@@ -61,6 +61,7 @@ def mutate():
     workload_metadata = modified_spec["request"]["object"]["metadata"]
     workload_type = modified_spec["request"]["kind"]["kind"]
     namespace = modified_spec["request"]["namespace"]
+    needs_patch = False
 
     print("")
     print("##################################################################")
@@ -82,7 +83,7 @@ def mutate():
 
         workload = uid
 
-    # pprint(request_info)
+    pprint(request_info)
 
     # Change workflow/json path based on K8s object type
     if workload_type == "Pod":
@@ -90,16 +91,16 @@ def mutate():
         for container_spec in modified_spec["request"]["object"]["spec"]["containers"]:
 
             print("[INFO] - Processing container: {}/{}".format(namespace, workload))
-            swap_image(container_spec)
+            needs_patch = swap_image(container_spec)
 
-        for init_container_spec in modified_spec["request"]["object"]["spec"][
-            "init-container"
-        ]:
+        if "initContainer" in modified_spec["request"]["object"]["spec"]:
 
-            print(
-                "[INFO] - Processing init-container: {}/{}".format(namespace, workload)
-            )
-            swap_image(init_container_spec)
+            for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainer"]:
+
+                print(
+                    "[INFO] - Processing init-container: {}/{}".format(namespace, workload)
+                )
+                needs_patch = swap_image(init_container_spec)
 
     else:
 
@@ -110,25 +111,23 @@ def mutate():
             print("[INFO] - Processing container: {}/{}".format(namespace, workload))
             needs_patch = swap_image(container_spec)
 
-        for init_container_spec in modified_spec["request"]["object"]["spec"][
-            "template"
-        ]["spec"]["init-container"]:
+        
+        if "initContainer" in modified_spec["request"]["object"]["spec"]["template"]["spec"]:
 
-            print(
-                "[INFO] - Processing init-container: {}/{}".format(namespace, workload)
-            )
-            needs_patch = swap_image(init_container_spec)
+            for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["initContainer"]:
+
+                print(
+                    "[INFO] - Processing init-container: {}/{}".format(namespace, workload)
+                )
+                needs_patch = swap_image(init_container_spec)
 
     if needs_patch:
+
+        print("[DEBUG] -Doesn't need patch")
 
         print(
             "[INFO] - Diffing original request to modified request and generating JSONPatch"
         )
-
-        # print("Original Spec:")
-        # pprint(request_info["request"]["object"]["spec"]["containers"])
-        # print("Modified Spec:")
-        # pprint(modified_spec["request"]["object"]["spec"]["containers"])
 
         patch = jsonpatch.JsonPatch.from_diff(
             request_info["request"]["object"], modified_spec["request"]["object"]
@@ -148,14 +147,11 @@ def mutate():
             "response": admission_response,
         }
 
-        print("[INFO] - Sending Response to K8s API Server:")
-        pprint(admissionReview)
-        return False, jsonify(admissionReview)
-
     else:
 
+        print("[DEBUG] -Doesn't need patch")
         admission_response = {
-            "allowed": "True",
+            "allowed": True,
             "uid": request_info["request"]["uid"],
         }
 
@@ -165,7 +161,9 @@ def mutate():
             "response": admission_response,
         }
 
-        return admission_response
+    print("[INFO] - Sending Response to K8s API Server:")
+    pprint(admissionReview)
+    return jsonify(admissionReview)
 
 
 ################################################################################

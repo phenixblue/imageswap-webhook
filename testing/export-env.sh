@@ -15,7 +15,8 @@
 # This is based on existing work from the MagTape project: 
 # https://github.com/tmobile/magtape
 
-export MAGTAPE_NAMESPACE_NAME="imageswap-system"
-export MAGTAPE_POD_NAME="imageswap-abc1234"
-export MAGTAPE_CLUSTER_NAME="test-cluster"
-export MAGTAPE_LOG_LEVEL="INFO"
+export IMAGESWAP_NAMESPACE_NAME="imageswap-system"
+export IMAGESWAP_POD_NAME="imageswap-abc1234"
+export IMAGESWAP_CLUSTER_NAME="test-cluster"
+export IMAGESWAP_LOG_LEVEL="INFO"
+export IMAGE_PREFIX="jmsearcy"

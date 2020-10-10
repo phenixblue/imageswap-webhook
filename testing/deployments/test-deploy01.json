@@ -14,7 +14,7 @@
                                               "type": "RollingUpdate"},
                                  "template": {"metadata": {"creationTimestamp": "None",
                                                            "labels": {"app": "hello-kubernetes"}},
-                                              "spec": {"containers": [{"image": "paulbouwer/hello-kubernetes:1.5",
+                                              "spec": {"containers": [{"image": "jmsearcy/hello-kubernetes:1.5",
                                                                        "imagePullPolicy": "IfNotPresent",
                                                                        "name": "hello-kubernetes",
                                                                        "ports": [{"containerPort": 8080,
