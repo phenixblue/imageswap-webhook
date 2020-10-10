@@ -40,7 +40,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build imageswap-init Container Image
-      if: github.repository == 'jmsearcy/imageswap'
+      if: github.repository == 'phenixblue/imageswap-webhook'
       timeout-minutes: 10
       uses: docker/build-push-action@v1
       with:
@@ -52,7 +52,7 @@ jobs:
         push: false
 
     - name: Build imageswap Container Image
-      if: github.repository == 'jmsearcy/imageswap'
+      if: github.repository == 'phenixblue/imageswap-webhook'
       timeout-minutes: 10
       uses: docker/build-push-action@v1
       with:
