@@ -35,7 +35,7 @@ class TestRoutes(unittest.TestCase):
 
     def test_healthz(self):
 
-        """Method to test webhook /healthz route"""
+        """Method to test healthz route"""
 
         result = self.app.get("/healthz")
 
@@ -45,7 +45,7 @@ class TestRoutes(unittest.TestCase):
 
     def test_root_deploy_noswap(self):
 
-        """Method to test root route with request that should swap the image definition"""
+        """Method to test root route with deployment request that should not swap the image definition"""
 
         with open("./testing/deployments/test-deploy01.json") as json_file:
 
@@ -61,7 +61,7 @@ class TestRoutes(unittest.TestCase):
 
     def test_root_deploy_swap_container(self):
 
-        """Method to test root route with request that should swap the image definition"""
+        """Method to test root route with deployment request that should swap the primary container image definition"""
 
         with open("./testing/deployments/test-deploy02.json") as json_file:
 
@@ -80,7 +80,7 @@ class TestRoutes(unittest.TestCase):
 
     def test_root_deploy_swap_init(self):
 
-        """Method to test root route with request that should swap the image definition"""
+        """Method to test root route with deployment request that should swap the init-container image definition"""
 
         with open("./testing/deployments/test-deploy03.json") as json_file:
 
@@ -99,7 +99,7 @@ class TestRoutes(unittest.TestCase):
 
     def test_root_deploy_swap_both(self):
 
-        """Method to test root route with request that should swap the image definition"""
+        """Method to test root route with deployment request that should swap both the primary container and init-container image definitions"""
 
         with open("./testing/deployments/test-deploy03.json") as json_file:
 
@@ -118,7 +118,7 @@ class TestRoutes(unittest.TestCase):
 
     def test_root_pod_noswap(self):
 
-        """Method to test root route with request that should swap the image definition"""
+        """Method to test root route with pod request that should not swap the image definition"""
 
         with open("./testing/pods/test-pod01.json") as json_file:
 

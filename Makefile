@@ -38,7 +38,7 @@ ns-create-imageswap:
 ns-create-test:
 
 	kubectl create ns $(TEST_NAMESPACE)
-	kubectl label ns $(TEST_NAMESPACE) k8s.twr.io/imageswap: "enabled" --overwrite
+	kubectl label ns $(TEST_NAMESPACE) k8s.twr.io/imageswap=enabled --overwrite
 
 # Delete Namespace for ImageSwap
 .PHONY: ns-delete-imageswap
