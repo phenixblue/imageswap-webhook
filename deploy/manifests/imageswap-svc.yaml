@@ -3,7 +3,8 @@ kind: Service
 metadata:
   labels:
     app: imageswap-webhook
-  name: imageswap-webhook-svc
+    resource: service
+  name: imageswap
   namespace: default
 spec:
   ports:
@@ -11,6 +12,6 @@ spec:
     port: 443
     targetPort: 5000
   selector:
-    app: imageswap-webhook
+    app: imageswap
   sessionAffinity: None
   type: ClusterIP

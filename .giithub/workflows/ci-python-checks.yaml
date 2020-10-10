@@ -1,0 +1,72 @@
+name: python-checks
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+# Jobs
+jobs:
+  # Job to lint code
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.8
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      timeout-minutes: 5
+      run: |
+        python -m pip install --upgrade pip
+
+    - name: Lint with Black
+      timeout-minutes: 5
+      # Pinning Black at 19.x for now. Have seen flakey results with 20.x
+      run: |
+        pip install black==19.10b0
+        make ci-lint-python
+  # Job to execute unit tests
+  unit-test:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.8
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      timeout-minutes: 5
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies
+      timeout-minutes: 5
+      run: |
+        python -m pip install --upgrade pip
+        pip install pipenv
+        export PIPENV_PIPFILE="app/imageswap/Pipfile"
+        pipenv install --system --deploy
+        export PIPENV_PIPFILE="app/imageswap-init/Pipfile"
+        pipenv install --system --deploy
+
+    - name: Execute Unit Tests
+      timeout-minutes: 5
+      run: |
+        pip install coverage
+        make test-python

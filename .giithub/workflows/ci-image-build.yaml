@@ -1,0 +1,71 @@
+name: image-build
+
+on:
+  release:
+    types: [published]
+
+# Jobs
+jobs:
+  # Build and push imageswap-init container image
+  build-imageswap-init-image:
+    name: Push imageswap-init image to DockerHub using release tag
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Push release tag to Docker Hub
+        if: github.repository == 'jmsearcy/imageswap'
+        timeout-minutes: 10
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          path: ./app/imageswap-init/
+          repository: jmsearcy/imageswap-init
+          tag_with_ref: true
+
+      - name: Push imageswap-init image to DockerHub using latest tag
+        if: github.repository == 'jmsearcy/imageswap'
+        timeout-minutes: 10
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          path: ./app/imageswap-init/
+          repository: jmsearcy/imageswap-init
+          tags: latest
+
+  # Build and push imageswap container image
+  build-imageswap-image:
+    name: Push imageswap image to DockerHub using release tag
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Push release tag to Docker Hub
+        if: github.repository == 'jmsearcy/imageswap'
+        timeout-minutes: 10
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          path: ./app/imageswap/
+          repository: jmsearcy/imageswap
+          tag_with_ref: true
+
+      - name: Push imageswap-init image to DockerHub using latest tag
+        if: github.repository == 'jmsearcy/imageswap'
+        timeout-minutes: 10
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          path: ./app/imageswap/
+          repository: jmsearcy/imageswap
+          tags: latest

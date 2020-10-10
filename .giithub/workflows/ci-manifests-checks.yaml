@@ -1,0 +1,32 @@
+name: manifest-checks
+
+on:
+  pull_request:
+    branches:
+      - master
+    # Commenting out paths for now until GH Actions
+    # Have good suport for required checks + path filters
+    # https://github.community/t5/GitHub-Actions/Feature-request-conditional-required-checks/m-p/36938#M2735
+    #paths:
+    #  - 'deploy/**'
+  push:
+    branches:
+      - master
+
+# Jobs
+jobs:
+  # Job to check for manifest changes
+  compare-manifests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup KinD Cluster
+      timeout-minutes: 5
+      uses: engineerd/setup-kind@v0.3.0
+
+    - name: Check for manifest changes
+      timeout-minutes: 5
+      run: |
+        make compare-single-manifest

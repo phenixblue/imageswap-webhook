@@ -1,0 +1,23 @@
+name: repo-checks
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+# Jobs
+jobs:
+  # Job to lint code
+  boilerplate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Check boilerplate
+      timeout-minutes: 5
+      run: |
+        make boilerplate

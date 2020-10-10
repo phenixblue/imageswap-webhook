@@ -1,0 +1,13 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: imageswap-pdb
+  namespace: imageswap-system
+  labels:
+    app: imageswap
+    resource: poddisruptionbudget
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: imageswap

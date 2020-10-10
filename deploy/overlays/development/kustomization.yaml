@@ -1,0 +1,7 @@
+resources:
+  - ../../manifests
+
+patches:
+- env-cm-patch.yaml
+- deploy-patch.yaml
+- hpa-patch.yaml

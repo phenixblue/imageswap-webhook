@@ -1,0 +1,109 @@
+name: e2e-checks
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+# Jobs
+jobs:
+  # Job to lint code
+  e2e-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.19
+          - v1.18
+          - v1.17
+          - v1.16
+        include:
+          - k8s-version: v1.19
+            kind-node-image: kindest/node:v1.19.1@sha256:98cf5288864662e37115e362b23e4369c8c4a408f99cbc06e58ac30ddc721600
+          - k8s-version: v1.18
+            kind-node-image: kindest/node:v1.18.8@sha256:f4bcc97a0ad6e7abaf3f643d890add7efe6ee4ab90baeb374b4f41a4c95567eb
+          - k8s-version: v1.17
+            kind-node-image: kindest/node:v1.17.11@sha256:5240a7a2c34bf241afb54ac05669f8a46661912eab05705d660971eeb12f6555
+          - k8s-version: v1.16
+            kind-node-image: kindest/node:v1.16.15@sha256:a89c771f7de234e6547d43695c7ab047809ffc71a0c3b65aa54eda051c45ed20
+
+    name: e2e-tests for K8s ${{ matrix.k8s-version }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Check out the repo
+      uses: actions/checkout@v2
+
+    - name: Build imageswap-init Container Image
+      if: github.repository == 'jmsearcy/imageswap'
+      timeout-minutes: 10
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        path: ./app/imageswap-init/
+        repository: jmsearcy/imageswap-init
+        tag_with_sha: true
+        push: false
+
+    - name: Build imageswap Container Image
+      if: github.repository == 'jmsearcy/imageswap'
+      timeout-minutes: 10
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        path: ./app/imageswap/
+        repository: jmsearcy/imageswap
+        tag_with_sha: true
+        push: false
+
+    - name: Setup KinD Cluster
+      timeout-minutes: 5
+      uses: engineerd/setup-kind@v0.4.0
+      with:
+          version: "v0.9.0"
+          image: ${{ matrix.kind-node-image }}
+
+    - name: Install ImageSwap
+      timeout-minutes: 10
+      run: |
+        echo "Loading ImageSwap images to KinD nodes"
+        GIT_SHA=${{github.sha}}
+        kind load docker-image jmsearcy/imageswap-init:sha-${GIT_SHA::7}
+        kind load docker-image jmsearcy/imageswap:sha-${GIT_SHA::7}
+        echo "Updating target image to use local ref"
+        sed -i='' -E "s/(IMAGESWAP_VERSION := )(.*$)/\1sha-${GIT_SHA::7}/" Makefile
+        sed -i='' -E 's/(imagePullPolicy:) Always/\1 IfNotPresent/' deploy/manifests/imageswap-deploy.yaml
+        make set-release-version
+        make build-single-manifest
+        echo "Install ImageSwap"
+        make install
+        EXPECTED_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.replicas}')
+        READY_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.readyReplicas}')
+        while [ "${READY_REPLICAS}" != "${EXPECTED_REPLICAS}" ]; do
+          READY_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.readyReplicas}')
+          echo "Replicas aren't all ready yet: ${READY_REPLICAS:=0}/${EXPECTED_REPLICAS}"
+          sleep 2
+        done
+
+    - name: Configure Test Namespace
+      timeout-minutes: 5
+      run: |
+        make ns-create-test
+
+    - name: Install Tools 
+      timeout-minutes: 5
+      run: |
+        sudo add-apt-repository ppa:rmescandon/yq
+        sudo apt update
+        sudo apt install yq -y
+
+    - name: Execute Functional Tests
+      timeout-minutes: 5
+      run: |
+        make test-functional
