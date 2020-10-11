@@ -21,5 +21,5 @@ resources:
       - test-pod03.yaml
       - test-pod04.yaml
       - test-pod05.yaml
-      - test-pod06.yaml
+      #- test-pod06.yaml #### Can't be used right now as generateName only works with "kubectl create"
 
