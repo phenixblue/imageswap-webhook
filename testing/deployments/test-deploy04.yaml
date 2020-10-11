@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test-deploy01
+  name: test-deploy04
 spec:
   replicas: 3
   selector:
@@ -12,8 +12,13 @@ spec:
       labels:
         app: hello-kubernetes
     spec:
+      initContainers:
+      - name: hello-kubernetes-init
+        image: paulbouwer/hello-kubernetes:1.5
+        ports:
+        - containerPort: 8080
       containers:
       - name: hello-kubernetes
-        image: jmsearcy/hello-kubernetes:1.5
+        image: paulbouwer/hello-kubernetes:1.5
         ports:
         - containerPort: 8080

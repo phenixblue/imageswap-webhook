@@ -18,13 +18,11 @@ webhooks:
           - CREATE
           - UPDATE
         apiGroups:
-          - "apps"
+          - "*"
         apiVersions:
           - "*"
         resources:
-          - "deployments"
-          - "statefulsets"
-          - "daemonsets"
+          - "pods"
     failurePolicy: Fail
     reinvocationPolicy: IfNeeded
     namespaceSelector:

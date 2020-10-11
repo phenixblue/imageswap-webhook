@@ -2,7 +2,7 @@
 	"kind": "AdmissionReview",
 	"apiVersion": "admission.k8s.io/v1beta1",
 	"request": {
-		"uid": "d6a539c0-8605-4923-8b57-ed54313e359a",
+		"uid": "2d213641-c136-49d5-b162-a0d2593639f7",
 		"kind": {
 			"group": "apps",
 			"version": "v1",
@@ -23,7 +23,7 @@
 			"version": "v1",
 			"resource": "deployments"
 		},
-		"name": "test-deploy01",
+		"name": "test-deploy04",
 		"namespace": "test1",
 		"operation": "CREATE",
 		"userInfo": {
@@ -34,17 +34,17 @@
 			"kind": "Deployment",
 			"apiVersion": "apps/v1",
 			"metadata": {
-				"name": "test-deploy01",
+				"name": "test-deploy04",
 				"namespace": "test1",
 				"creationTimestamp": null,
 				"annotations": {
-					"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"test-deploy01\",\"namespace\":\"test1\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"hello-kubernetes\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"hello-kubernetes\"}},\"spec\":{\"containers\":[{\"image\":\"jmsearcy/hello-kubernetes:1.5\",\"name\":\"hello-kubernetes\",\"ports\":[{\"containerPort\":8080}]}]}}}}\n"
+					"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"test-deploy04\",\"namespace\":\"test1\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"hello-kubernetes\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"hello-kubernetes\"}},\"spec\":{\"containers\":[{\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"name\":\"hello-kubernetes\",\"ports\":[{\"containerPort\":8080}]}],\"initContainers\":[{\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"name\":\"hello-kubernetes-init\",\"ports\":[{\"containerPort\":8080}]}]}}}}\n"
 				},
 				"managedFields": [{
 					"manager": "kubectl",
 					"operation": "Update",
 					"apiVersion": "apps/v1",
-					"time": "2020-10-11T07:23:53Z",
+					"time": "2020-10-11T07:30:11Z",
 					"fieldsType": "FieldsV1",
 					"fieldsV1": {
 						"f:metadata": {
@@ -99,6 +99,26 @@
 										}
 									},
 									"f:dnsPolicy": {},
+									"f:initContainers": {
+										".": {},
+										"k:{\"name\":\"hello-kubernetes-init\"}": {
+											".": {},
+											"f:image": {},
+											"f:imagePullPolicy": {},
+											"f:name": {},
+											"f:ports": {
+												".": {},
+												"k:{\"containerPort\":8080,\"protocol\":\"TCP\"}": {
+													".": {},
+													"f:containerPort": {},
+													"f:protocol": {}
+												}
+											},
+											"f:resources": {},
+											"f:terminationMessagePath": {},
+											"f:terminationMessagePolicy": {}
+										}
+									},
 									"f:restartPolicy": {},
 									"f:schedulerName": {},
 									"f:securityContext": {},
@@ -124,9 +144,21 @@
 						}
 					},
 					"spec": {
+						"initContainers": [{
+							"name": "hello-kubernetes-init",
+							"image": "paulbouwer/hello-kubernetes:1.5",
+							"ports": [{
+								"containerPort": 8080,
+								"protocol": "TCP"
+							}],
+							"resources": {},
+							"terminationMessagePath": "/dev/termination-log",
+							"terminationMessagePolicy": "File",
+							"imagePullPolicy": "IfNotPresent"
+						}],
 						"containers": [{
 							"name": "hello-kubernetes",
-							"image": "jmsearcy/hello-kubernetes:1.5",
+							"image": "paulbouwer/hello-kubernetes:1.5",
 							"ports": [{
 								"containerPort": 8080,
 								"protocol": "TCP"

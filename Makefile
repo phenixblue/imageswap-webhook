@@ -212,7 +212,7 @@ push-imageswap-init-versioned:
 
 # Build ImageSwap container image
 .PHONY: build-imageswap-versioned
-build-imageswap--versioned:
+build-imageswap-versioned:
 
 	$(DOCKER) build -t jmsearcy/imageswap:${IMAGESWAP_VERSION} app/imageswap/
 

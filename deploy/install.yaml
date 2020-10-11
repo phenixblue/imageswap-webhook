@@ -185,13 +185,11 @@ data:
               - CREATE
               - UPDATE
             apiGroups:
-              - "apps"
+              - "*"
             apiVersions:
               - "*"
             resources:
-              - "deployments"
-              - "statefulsets"
-              - "daemonsets"
+              - "pods"
         failurePolicy: Fail
         reinvocationPolicy: IfNeeded
         namespaceSelector:
@@ -286,7 +284,7 @@ spec:
               mountPath: /mwc
       containers:
       - name: imageswap
-        image: jmsearcy/imageswap:v1.2.0
+        image: jmsearcy/imageswap:v1.2.0-prerelease1
         ports:
         - containerPort: 5000
         command: ["gunicorn", "imageswap:app", "--config=config.py"]

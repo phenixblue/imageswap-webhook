@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-kubernetes
+  name: test-deploy03
 spec:
   replicas: 3
   selector:
@@ -18,7 +18,7 @@ spec:
         ports:
         - containerPort: 8080
       containers:
-      - name: hello-kubernetes
-        image: paulbouwer/hello-kubernetes:1.5
+      - name: toolbox
+        image: jmsearcy/twrtools:latest
         ports:
         - containerPort: 8080

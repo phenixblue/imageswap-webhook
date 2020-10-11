@@ -1,0 +1,10 @@
+{
+	"apiVersion": "admission.k8s.io/v1",
+	"kind": "AdmissionReview",
+	"response": {
+		"allowed": true,
+		"uid": "82a5b842-0cfb-4293-abea-0c2603d8a16a",
+		"patch": "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2luaXRDb250YWluZXJzLzAvaW1hZ2UiLCAidmFsdWUiOiAiam1zZWFyY3kvaGVsbG8ta3ViZXJuZXRlczoxLjUifV0=",
+		"patchtype": "JSONPatch"
+	}
+}

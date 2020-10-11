@@ -3,10 +3,10 @@ kind: Pod
 metadata:
   labels:
     run: toolbox
-  name: test-pod01
+  name: test-pod02
 spec:
   containers:
-    - name: toolbox
-      image: jmsearcy/toolbox:latest
+    - name: hello-kubernetes
+      image: paulbouwer/hello-kubernetes:1.5
       ports:
       - containerPort: 8080

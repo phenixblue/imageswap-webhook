@@ -1,0 +1,448 @@
+{
+	"kind": "AdmissionReview",
+	"apiVersion": "admission.k8s.io/v1beta1",
+	"request": {
+		"uid": "ffeb2e4a-a440-4f70-90cb-9e960f7471c4",
+		"kind": {
+			"group": "",
+			"version": "v1",
+			"kind": "Pod"
+		},
+		"resource": {
+			"group": "",
+			"version": "v1",
+			"resource": "pods"
+		},
+		"requestKind": {
+			"group": "",
+			"version": "v1",
+			"kind": "Pod"
+		},
+		"requestResource": {
+			"group": "",
+			"version": "v1",
+			"resource": "pods"
+		},
+		"name": "test-pod04",
+		"namespace": "test1",
+		"operation": "UPDATE",
+		"userInfo": {
+			"username": "kubernetes-admin",
+			"groups": ["system:masters", "system:authenticated"]
+		},
+		"object": {
+			"kind": "Pod",
+			"apiVersion": "v1",
+			"metadata": {
+				"name": "test-pod04",
+				"namespace": "test1",
+				"uid": "191d5498-9053-49c1-b106-46a73e1ae9d7",
+				"resourceVersion": "173491",
+				"creationTimestamp": "2020-10-11T03:41:20Z",
+				"labels": {
+					"run": "toolbox"
+				},
+				"annotations": {
+					"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"run\":\"toolbox\"},\"name\":\"test-pod04\",\"namespace\":\"test1\"},\"spec\":{\"containers\":[{\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"name\":\"hello-kubernetes\",\"ports\":[{\"containerPort\":8080}]}],\"initContainers\":[{\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"name\":\"hello-kubernetes-init\",\"ports\":[{\"containerPort\":8080}]}]}}\n"
+				},
+				"managedFields": [{
+					"manager": "kubelet",
+					"operation": "Update",
+					"apiVersion": "v1",
+					"time": "2020-10-11T03:41:21Z",
+					"fieldsType": "FieldsV1",
+					"fieldsV1": {
+						"f:status": {
+							"f:conditions": {
+								"k:{\"type\":\"ContainersReady\"}": {
+									".": {},
+									"f:lastProbeTime": {},
+									"f:lastTransitionTime": {},
+									"f:message": {},
+									"f:reason": {},
+									"f:status": {},
+									"f:type": {}
+								},
+								"k:{\"type\":\"Initialized\"}": {
+									".": {},
+									"f:lastProbeTime": {},
+									"f:lastTransitionTime": {},
+									"f:message": {},
+									"f:reason": {},
+									"f:status": {},
+									"f:type": {}
+								},
+								"k:{\"type\":\"Ready\"}": {
+									".": {},
+									"f:lastProbeTime": {},
+									"f:lastTransitionTime": {},
+									"f:message": {},
+									"f:reason": {},
+									"f:status": {},
+									"f:type": {}
+								}
+							},
+							"f:containerStatuses": {},
+							"f:hostIP": {},
+							"f:initContainerStatuses": {},
+							"f:podIP": {},
+							"f:podIPs": {
+								".": {},
+								"k:{\"ip\":\"10.244.0.61\"}": {
+									".": {},
+									"f:ip": {}
+								}
+							},
+							"f:startTime": {}
+						}
+					}
+				}, {
+					"manager": "kubectl",
+					"operation": "Update",
+					"apiVersion": "v1",
+					"time": "2020-10-11T05:21:38Z",
+					"fieldsType": "FieldsV1",
+					"fieldsV1": {
+						"f:metadata": {
+							"f:annotations": {
+								".": {},
+								"f:kubectl.kubernetes.io/last-applied-configuration": {}
+							},
+							"f:labels": {
+								".": {},
+								"f:run": {}
+							}
+						},
+						"f:spec": {
+							"f:containers": {
+								"k:{\"name\":\"hello-kubernetes\"}": {
+									".": {},
+									"f:image": {},
+									"f:imagePullPolicy": {},
+									"f:name": {},
+									"f:ports": {
+										".": {},
+										"k:{\"containerPort\":8080,\"protocol\":\"TCP\"}": {
+											".": {},
+											"f:containerPort": {},
+											"f:protocol": {}
+										}
+									},
+									"f:resources": {},
+									"f:terminationMessagePath": {},
+									"f:terminationMessagePolicy": {}
+								}
+							},
+							"f:dnsPolicy": {},
+							"f:enableServiceLinks": {},
+							"f:initContainers": {
+								".": {},
+								"k:{\"name\":\"hello-kubernetes-init\"}": {
+									".": {},
+									"f:image": {},
+									"f:imagePullPolicy": {},
+									"f:name": {},
+									"f:ports": {
+										".": {},
+										"k:{\"containerPort\":8080,\"protocol\":\"TCP\"}": {
+											".": {},
+											"f:containerPort": {},
+											"f:protocol": {}
+										}
+									},
+									"f:resources": {},
+									"f:terminationMessagePath": {},
+									"f:terminationMessagePolicy": {}
+								}
+							},
+							"f:restartPolicy": {},
+							"f:schedulerName": {},
+							"f:securityContext": {},
+							"f:terminationGracePeriodSeconds": {}
+						}
+					}
+				}]
+			},
+			"spec": {
+				"volumes": [{
+					"name": "default-token-b9kpf",
+					"secret": {
+						"secretName": "default-token-b9kpf",
+						"defaultMode": 420
+					}
+				}],
+				"initContainers": [{
+					"name": "hello-kubernetes-init",
+					"image": "paulbouwer/hello-kubernetes:1.5",
+					"ports": [{
+						"containerPort": 8080,
+						"protocol": "TCP"
+					}],
+					"resources": {},
+					"volumeMounts": [{
+						"name": "default-token-b9kpf",
+						"readOnly": true,
+						"mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+					}],
+					"terminationMessagePath": "/dev/termination-log",
+					"terminationMessagePolicy": "File",
+					"imagePullPolicy": "IfNotPresent"
+				}],
+				"containers": [{
+					"name": "hello-kubernetes",
+					"image": "paulbouwer/hello-kubernetes:1.5",
+					"ports": [{
+						"containerPort": 8080,
+						"protocol": "TCP"
+					}],
+					"resources": {},
+					"volumeMounts": [{
+						"name": "default-token-b9kpf",
+						"readOnly": true,
+						"mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+					}],
+					"terminationMessagePath": "/dev/termination-log",
+					"terminationMessagePolicy": "File",
+					"imagePullPolicy": "IfNotPresent"
+				}],
+				"restartPolicy": "Always",
+				"terminationGracePeriodSeconds": 30,
+				"dnsPolicy": "ClusterFirst",
+				"serviceAccountName": "default",
+				"serviceAccount": "default",
+				"nodeName": "kind-control-plane",
+				"securityContext": {},
+				"schedulerName": "default-scheduler",
+				"tolerations": [{
+					"key": "node.kubernetes.io/not-ready",
+					"operator": "Exists",
+					"effect": "NoExecute",
+					"tolerationSeconds": 300
+				}, {
+					"key": "node.kubernetes.io/unreachable",
+					"operator": "Exists",
+					"effect": "NoExecute",
+					"tolerationSeconds": 300
+				}],
+				"priority": 0,
+				"enableServiceLinks": true
+			},
+			"status": {
+				"phase": "Pending",
+				"conditions": [{
+					"type": "Initialized",
+					"status": "False",
+					"lastProbeTime": null,
+					"lastTransitionTime": "2020-10-11T03:41:20Z",
+					"reason": "ContainersNotInitialized",
+					"message": "containers with incomplete status: [hello-kubernetes-init]"
+				}, {
+					"type": "Ready",
+					"status": "False",
+					"lastProbeTime": null,
+					"lastTransitionTime": "2020-10-11T03:41:20Z",
+					"reason": "ContainersNotReady",
+					"message": "containers with unready status: [hello-kubernetes]"
+				}, {
+					"type": "ContainersReady",
+					"status": "False",
+					"lastProbeTime": null,
+					"lastTransitionTime": "2020-10-11T03:41:20Z",
+					"reason": "ContainersNotReady",
+					"message": "containers with unready status: [hello-kubernetes]"
+				}, {
+					"type": "PodScheduled",
+					"status": "True",
+					"lastProbeTime": null,
+					"lastTransitionTime": "2020-10-11T03:41:20Z"
+				}],
+				"hostIP": "172.18.0.2",
+				"podIP": "10.244.0.61",
+				"podIPs": [{
+					"ip": "10.244.0.61"
+				}],
+				"startTime": "2020-10-11T03:41:20Z",
+				"initContainerStatuses": [{
+					"name": "hello-kubernetes-init",
+					"state": {
+						"running": {
+							"startedAt": "2020-10-11T03:41:21Z"
+						}
+					},
+					"lastState": {},
+					"ready": false,
+					"restartCount": 0,
+					"image": "docker.io/jmsearcy/hello-kubernetes:1.5",
+					"imageID": "docker.io/jmsearcy/hello-kubernetes@sha256:88193b1092d70d8b0e38ea8aef69ae642366cde7be0b1bdb449f68bce51fc04d",
+					"containerID": "containerd://27139565511a49753f7415f27803c446fe7b852facebd72af06e27b1cd4aa536"
+				}],
+				"containerStatuses": [{
+					"name": "hello-kubernetes",
+					"state": {
+						"waiting": {
+							"reason": "PodInitializing"
+						}
+					},
+					"lastState": {},
+					"ready": false,
+					"restartCount": 0,
+					"image": "jmsearcy/hello-kubernetes:1.5",
+					"imageID": "",
+					"started": false
+				}],
+				"qosClass": "BestEffort"
+			}
+		},
+		"oldObject": {
+			"kind": "Pod",
+			"apiVersion": "v1",
+			"metadata": {
+				"name": "test-pod04",
+				"namespace": "test1",
+				"uid": "191d5498-9053-49c1-b106-46a73e1ae9d7",
+				"resourceVersion": "173491",
+				"creationTimestamp": "2020-10-11T03:41:20Z",
+				"labels": {
+					"run": "toolbox"
+				},
+				"annotations": {
+					"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"run\":\"toolbox\"},\"name\":\"test-pod04\",\"namespace\":\"test1\"},\"spec\":{\"containers\":[{\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"name\":\"hello-kubernetes\",\"ports\":[{\"containerPort\":8080}]}],\"initContainers\":[{\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"name\":\"hello-kubernetes-init\",\"ports\":[{\"containerPort\":8080}]}]}}\n"
+				}
+			},
+			"spec": {
+				"volumes": [{
+					"name": "default-token-b9kpf",
+					"secret": {
+						"secretName": "default-token-b9kpf",
+						"defaultMode": 420
+					}
+				}],
+				"initContainers": [{
+					"name": "hello-kubernetes-init",
+					"image": "paulbouwer/hello-kubernetes:1.5",
+					"ports": [{
+						"containerPort": 8080,
+						"protocol": "TCP"
+					}],
+					"resources": {},
+					"volumeMounts": [{
+						"name": "default-token-b9kpf",
+						"readOnly": true,
+						"mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+					}],
+					"terminationMessagePath": "/dev/termination-log",
+					"terminationMessagePolicy": "File",
+					"imagePullPolicy": "IfNotPresent"
+				}],
+				"containers": [{
+					"name": "hello-kubernetes",
+					"image": "jmsearcy/hello-kubernetes:1.5",
+					"ports": [{
+						"containerPort": 8080,
+						"protocol": "TCP"
+					}],
+					"resources": {},
+					"volumeMounts": [{
+						"name": "default-token-b9kpf",
+						"readOnly": true,
+						"mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+					}],
+					"terminationMessagePath": "/dev/termination-log",
+					"terminationMessagePolicy": "File",
+					"imagePullPolicy": "IfNotPresent"
+				}],
+				"restartPolicy": "Always",
+				"terminationGracePeriodSeconds": 30,
+				"dnsPolicy": "ClusterFirst",
+				"serviceAccountName": "default",
+				"serviceAccount": "default",
+				"nodeName": "kind-control-plane",
+				"securityContext": {},
+				"schedulerName": "default-scheduler",
+				"tolerations": [{
+					"key": "node.kubernetes.io/not-ready",
+					"operator": "Exists",
+					"effect": "NoExecute",
+					"tolerationSeconds": 300
+				}, {
+					"key": "node.kubernetes.io/unreachable",
+					"operator": "Exists",
+					"effect": "NoExecute",
+					"tolerationSeconds": 300
+				}],
+				"priority": 0,
+				"enableServiceLinks": true
+			},
+			"status": {
+				"phase": "Pending",
+				"conditions": [{
+					"type": "Initialized",
+					"status": "False",
+					"lastProbeTime": null,
+					"lastTransitionTime": "2020-10-11T03:41:20Z",
+					"reason": "ContainersNotInitialized",
+					"message": "containers with incomplete status: [hello-kubernetes-init]"
+				}, {
+					"type": "Ready",
+					"status": "False",
+					"lastProbeTime": null,
+					"lastTransitionTime": "2020-10-11T03:41:20Z",
+					"reason": "ContainersNotReady",
+					"message": "containers with unready status: [hello-kubernetes]"
+				}, {
+					"type": "ContainersReady",
+					"status": "False",
+					"lastProbeTime": null,
+					"lastTransitionTime": "2020-10-11T03:41:20Z",
+					"reason": "ContainersNotReady",
+					"message": "containers with unready status: [hello-kubernetes]"
+				}, {
+					"type": "PodScheduled",
+					"status": "True",
+					"lastProbeTime": null,
+					"lastTransitionTime": "2020-10-11T03:41:20Z"
+				}],
+				"hostIP": "172.18.0.2",
+				"podIP": "10.244.0.61",
+				"podIPs": [{
+					"ip": "10.244.0.61"
+				}],
+				"startTime": "2020-10-11T03:41:20Z",
+				"initContainerStatuses": [{
+					"name": "hello-kubernetes-init",
+					"state": {
+						"running": {
+							"startedAt": "2020-10-11T03:41:21Z"
+						}
+					},
+					"lastState": {},
+					"ready": false,
+					"restartCount": 0,
+					"image": "docker.io/jmsearcy/hello-kubernetes:1.5",
+					"imageID": "docker.io/jmsearcy/hello-kubernetes@sha256:88193b1092d70d8b0e38ea8aef69ae642366cde7be0b1bdb449f68bce51fc04d",
+					"containerID": "containerd://27139565511a49753f7415f27803c446fe7b852facebd72af06e27b1cd4aa536"
+				}],
+				"containerStatuses": [{
+					"name": "hello-kubernetes",
+					"state": {
+						"waiting": {
+							"reason": "PodInitializing"
+						}
+					},
+					"lastState": {},
+					"ready": false,
+					"restartCount": 0,
+					"image": "jmsearcy/hello-kubernetes:1.5",
+					"imageID": "",
+					"started": false
+				}],
+				"qosClass": "BestEffort"
+			}
+		},
+		"dryRun": false,
+		"options": {
+			"kind": "UpdateOptions",
+			"apiVersion": "meta.k8s.io/v1"
+		}
+	}
+}

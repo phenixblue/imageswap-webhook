@@ -14,13 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from config import BaseConfig
 from flask import Flask, request, jsonify
 from logging.handlers import MemoryHandler
 from pprint import pprint
 from prometheus_client import Counter
 from prometheus_flask_exporter import PrometheusMetrics
 import base64
+import config
 import copy
 import datetime
 import json
@@ -83,7 +83,8 @@ def mutate():
 
         workload = uid
 
-    pprint(request_info)
+    print(json.dumps(request.json))
+    print()
 
     # Change workflow/json path based on K8s object type
     if workload_type == "Pod":
@@ -93,9 +94,9 @@ def mutate():
             print("[INFO] - Processing container: {}/{}".format(namespace, workload))
             needs_patch = swap_image(container_spec)
 
-        if "initContainer" in modified_spec["request"]["object"]["spec"]:
+        if "initContainers" in modified_spec["request"]["object"]["spec"]:
 
-            for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainer"]:
+            for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainers"]:
 
                 print("[INFO] - Processing init-container: {}/{}".format(namespace, workload))
                 needs_patch = swap_image(init_container_spec)
@@ -107,9 +108,9 @@ def mutate():
             print("[INFO] - Processing container: {}/{}".format(namespace, workload))
             needs_patch = swap_image(container_spec)
 
-        if "initContainer" in modified_spec["request"]["object"]["spec"]["template"]["spec"]:
+        if "initContainers" in modified_spec["request"]["object"]["spec"]["template"]["spec"]:
 
-            for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["initContainer"]:
+            for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["initContainers"]:
 
                 print("[INFO] - Processing init-container: {}/{}".format(namespace, workload))
                 needs_patch = swap_image(init_container_spec)
@@ -151,7 +152,8 @@ def mutate():
         }
 
     print("[INFO] - Sending Response to K8s API Server:")
-    pprint(admissionReview)
+    print()
+    print(json.dumps(admissionReview))
     return jsonify(admissionReview)
 
 
@@ -219,11 +221,7 @@ def main():
     app.logger.info("ImageSwap Startup")
 
     app.run(
-        host="0.0.0.0",
-        port=5000,
-        debug=False,
-        threaded=True,
-        ssl_context=(f"{BaseConfig.imageswap_tls_path}/cert.pem", f"{BaseConfig.imageswap_tls_path}/key.pem",),
+        host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
     )
 
 

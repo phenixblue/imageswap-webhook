@@ -5,8 +5,21 @@ resources:
     manifests:
       - test-deploy01.yaml
       - test-deploy02.yaml
+      - test-deploy03.yaml
+      - test-deploy04.yaml
 #  - kind: deployments
 #    desired: fail
 #    script: 
 #    manifests:
 #      - test-deploy03.yaml
+  - kind: pods
+    desired: pass
+    script:
+    manifests:
+      - test-pod01.yaml
+      - test-pod02.yaml
+      - test-pod03.yaml
+      - test-pod04.yaml
+      - test-pod05.yaml
+      - test-pod06.yaml
+

@@ -3,10 +3,10 @@ kind: Pod
 metadata:
   labels:
     run: toolbox
-  name: test-pod01
+  generateName: test-pod06-
 spec:
   containers:
-    - name: toolbox
-      image: jmsearcy/toolbox:latest
+    - name: nginx
+      image: nginx:latest
       ports:
       - containerPort: 8080

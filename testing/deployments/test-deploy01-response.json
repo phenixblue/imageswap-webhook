@@ -1,0 +1,8 @@
+{
+	"apiVersion": "admission.k8s.io/v1",
+	"kind": "AdmissionReview",
+	"response": {
+		"allowed": true,
+		"uid": "d6a539c0-8605-4923-8b57-ed54313e359a"
+	}
+}

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: toolbox
+  name: test-pod04
+spec:
+  initContainers:
+    - name: hello-kubernetes-init
+      image: paulbouwer/hello-kubernetes:1.5
+      ports:
+      - containerPort: 8080
+  containers:
+    - name: hello-kubernetes
+      image: paulbouwer/hello-kubernetes:1.5
+      ports:
+      - containerPort: 8080
