@@ -1113,7 +1113,7 @@ def init_mwc(namespace, imageswap_tls_byoc):
 
     configuration = client.Configuration()
     core_api = client.CoreV1Api(client.ApiClient(configuration))
-    admission_api = client.AdmissionregistrationV1Api(client.ApiClient(configuration))
+    admission_api = client.AdmissionregistrationV1beta1Api(client.ApiClient(configuration))
 
     mwc = read_mwc(admission_api)
     write_mwc(
