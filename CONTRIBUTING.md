@@ -70,3 +70,7 @@ There is a pre-built template for bug ticketing that can be used for reporting i
 - It is generally expected that a "domain expert" for the code the PR touches should review the PR. This person does not necessarily need to have commit access.
 - The above rule may be waived for PRs which only update docs or comments, or trivial changes to tests and tools (where trivial is decided by the maintainer in question).
 - Anyone is welcome to review any PR that they want, whether they are a maintainer or not.
+
+## Releases
+
+The release process for ImageSwap is defined [here](/docs/release.md)

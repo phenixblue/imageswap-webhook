@@ -16,7 +16,6 @@
 
 from flask import Flask, request, jsonify
 from logging.handlers import MemoryHandler
-from pprint import pprint
 from prometheus_client import Counter
 from prometheus_flask_exporter import PrometheusMetrics
 import base64
@@ -32,8 +31,8 @@ import re
 app = Flask(__name__)
 
 # Set Global variables
-imageswap_namespace_name = os.environ["IMAGESWAP_NAMESPACE_NAME"]
-imageswap_pod_name = os.environ["IMAGESWAP_POD_NAME"]
+imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-system")
+imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
 
 # Setup Prometheus Metrics for Flask app
 metrics = PrometheusMetrics(app, defaults_prefix="imageswap")
@@ -44,7 +43,7 @@ metrics.info("app_info", "Application info", version="v1.2.0")
 # Set logging config
 log = logging.getLogger("werkzeug")
 log.disabled = True
-imageswap_log_level = os.environ["IMAGESWAP_LOG_LEVEL"]
+imageswap_log_level = os.getenv("IMAGESWAP_LOG_LEVEL", "INFO")
 app.logger.setLevel(imageswap_log_level)
 
 ################################################################################
@@ -63,9 +62,7 @@ def mutate():
     namespace = modified_spec["request"]["namespace"]
     needs_patch = False
 
-    print("")
-    print("##################################################################")
-    print("")
+    app.logger.info("##################################################################")
 
     # Detect if "name" in object metadata
     # this was added because the request object for pods don't
@@ -83,47 +80,46 @@ def mutate():
 
         workload = uid
 
-    print(json.dumps(request.json))
-    print()
+    app.logger.debug(json.dumps(request.json))
 
     # Change workflow/json path based on K8s object type
     if workload_type == "Pod":
 
         for container_spec in modified_spec["request"]["object"]["spec"]["containers"]:
 
-            print("[INFO] - Processing container: {}/{}".format(namespace, workload))
+            app.logger.info(f"Processing container: {namespace}/{workload}")
             needs_patch = swap_image(container_spec)
 
         if "initContainers" in modified_spec["request"]["object"]["spec"]:
 
             for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainers"]:
 
-                print("[INFO] - Processing init-container: {}/{}".format(namespace, workload))
+
+                app.logger.info(f"Processing init-container: {namespace}/{workload}")
                 needs_patch = swap_image(init_container_spec)
 
     else:
 
         for container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["containers"]:
 
-            print("[INFO] - Processing container: {}/{}".format(namespace, workload))
+            app.logger.info(f"Processing container: {namespace}/{workload}")
             needs_patch = swap_image(container_spec)
 
         if "initContainers" in modified_spec["request"]["object"]["spec"]["template"]["spec"]:
 
             for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["initContainers"]:
 
-                print("[INFO] - Processing init-container: {}/{}".format(namespace, workload))
+                app.logger.info(f"Processing init-container: {namespace}/{workload}")
                 needs_patch = swap_image(init_container_spec)
 
     if needs_patch:
 
-        print("[DEBUG] -Doesn't need patch")
-
-        print("[INFO] - Diffing original request to modified request and generating JSONPatch")
+        app.logger.debug("Doesn't need patch")
+        app.logger.info("Diffing original request to modified request and generating JSONPatch")
 
         patch = jsonpatch.JsonPatch.from_diff(request_info["request"]["object"], modified_spec["request"]["object"])
 
-        print("[INFO] - JSON Patch: {}".format(patch))
+        app.logger.info(f"JSON Patch: {patch}")
 
         admission_response = {
             "allowed": True,
@@ -139,7 +135,7 @@ def mutate():
 
     else:
 
-        print("[DEBUG] -Doesn't need patch")
+        app.logger.debug("Doesn't need patch")
         admission_response = {
             "allowed": True,
             "uid": request_info["request"]["uid"],
@@ -151,9 +147,9 @@ def mutate():
             "response": admission_response,
         }
 
-    print("[INFO] - Sending Response to K8s API Server:")
-    print()
-    print(json.dumps(admissionReview))
+    app.logger.info("Sending Response to K8s API Server:")
+    app.logger.info(json.dumps(admissionReview))
+
     return jsonify(admissionReview)
 
 
@@ -188,11 +184,11 @@ def swap_image(container_spec):
     name = container_spec["name"]
     image = container_spec["image"]
 
-    print("[INFO] - Swapping image definition for container spec: {}".format(name))
+    app.logger.info(f"Swapping image definition for container spec: {name}")
 
     if image_prefix in image:
 
-        print("[INFO] - Internal image definition detected, nothing to do")
+        app.logger.info("Internal image definition detected, nothing to do")
 
         return False
 
@@ -203,8 +199,8 @@ def swap_image(container_spec):
         else:
             new_image = image_prefix + re.sub(r"(^.*/)+(.*)", r"/\2", image)
 
-        print("[INFO] - External image definition detected: {}".format(image))
-        print("[INFO] - External image updated to Internal image: {}".format(new_image))
+        app.logger.info(f"External image definition detected: {image}")
+        app.logger.info(f"External image updated to Internal image: {new_image}")
 
         container_spec["image"] = new_image
 
@@ -218,7 +214,7 @@ def swap_image(container_spec):
 
 def main():
 
-    app.logger.info("ImageSwap Startup")
+    app.logger.info("ImageSwap v1.2.0 Startup")
 
     app.run(
         host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
