@@ -94,7 +94,6 @@ def mutate():
 
             for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainers"]:
 
-
                 app.logger.info(f"Processing init-container: {namespace}/{workload}")
                 needs_patch = swap_image(init_container_spec)
 
