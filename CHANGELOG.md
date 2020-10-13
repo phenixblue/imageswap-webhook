@@ -2,7 +2,7 @@
 
 ## 1.2.0
 
-This release focuses on some security enhancements.
+This release is a major overhaul to introduce many things I've learned since I first wrote the ImageSwap Webhook.
 
 ### Enhancements
 

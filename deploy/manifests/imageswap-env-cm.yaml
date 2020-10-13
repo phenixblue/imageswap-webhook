@@ -10,4 +10,4 @@ data:
   FLASK_ENV: "production"
   PYTHONUNBUFFERED: "TRUE"
   IMAGESWAP_LOG_LEVEL: "INFO"
-  IMAGE_PREFIX: "jmsearcy"
+  IMAGE_PREFIX: "thewebroot"

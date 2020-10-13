@@ -158,8 +158,8 @@ compare-single-manifest:
 .PHONY: set-release-version
 set-release-version:
 
-	sed -i='' "s/\(image: jmsearcy\/imageswap-init:\).*/\1${IMAGESWAP_INIT_VERSION}/" deploy/manifests/imageswap-deploy.yaml
-	sed -i='' "s/\(image: jmsearcy\/imageswap:\).*/\1${IMAGESWAP_VERSION}/" deploy/manifests/imageswap-deploy.yaml
+	sed -i='' "s/\(image: thewebroot\/imageswap-init:\).*/\1${IMAGESWAP_INIT_VERSION}/" deploy/manifests/imageswap-deploy.yaml
+	sed -i='' "s/\(image: thewebroot\/imageswap:\).*/\1${IMAGESWAP_VERSION}/" deploy/manifests/imageswap-deploy.yaml
 	sed -i='' "s/\(version\)=\"latest\"\(.*\)/\1=\"${IMAGESWAP_VERSION}\"\2/" app/imageswap/imageswap.py
 	sed -i='' "s/\(ImageSwap\).*\(Startup\)/\1 ${IMAGESWAP_VERSION} \2/" app/imageswap/imageswap.py
 
@@ -175,25 +175,25 @@ release: echo
 .PHONY: build-imageswap-init-latest
 build-imageswap-init-latest:
 
-	$(DOCKER) build -t jmsearcy/imageswap-init:latest app/imageswap-init/
+	$(DOCKER) build -t thewebroot/imageswap-init:latest app/imageswap-init/
 
 # Push ImageSwap-Init container image to DockerHub
 .PHONY: push-imageswap-init-latest
 push-imageswap-init-latest:
 
-	$(DOCKER) push jmsearcy/imageswap-init:latest
+	$(DOCKER) push thewebroot/imageswap-init:latest
 
 # Build ImageSwap container image
 .PHONY: build-imageswap-latest
 build-imageswap-latest:
 
-	$(DOCKER) build -t jmsearcy/imageswap:latest app/imageswap/
+	$(DOCKER) build -t thewebroot/imageswap:latest app/imageswap/
 
 # Push ImageSwap container image to DockerHub
 .PHONY: push-imageswap-latest
 push-imageswap-latest:
 
-	$(DOCKER) push jmsearcy/imageswap:latest
+	$(DOCKER) push thewebroot/imageswap:latest
 
 # Build and push all ImageSwap container images to DockerHub
 .PHONY: build-latest
@@ -203,25 +203,25 @@ build-latest: build-imageswap-init-latest push-imageswap-init-latest build-image
 .PHONY: build-imageswap-init-versioned
 build-imageswap-init-versioned:
 
-	$(DOCKER) build -t jmsearcy/imageswap-init:${IMAGESWAP_INIT_VERSION} app/imageswap-init/
+	$(DOCKER) build -t thewebroot/imageswap-init:${IMAGESWAP_INIT_VERSION} app/imageswap-init/
 
 # Push ImageSwap-Init container image to DockerHub
 .PHONY: push-imageswap-init-versioned
 push-imageswap-init-versioned:
 
-	$(DOCKER) push jmsearcy/imageswap-init:${IMAGESWAP_INIT_VERSION}
+	$(DOCKER) push thewebroot/imageswap-init:${IMAGESWAP_INIT_VERSION}
 
 # Build ImageSwap container image
 .PHONY: build-imageswap-versioned
 build-imageswap-versioned:
 
-	$(DOCKER) build -t jmsearcy/imageswap:${IMAGESWAP_VERSION} app/imageswap/
+	$(DOCKER) build -t thewebroot/imageswap:${IMAGESWAP_VERSION} app/imageswap/
 
 # Push ImageSwap container image to DockerHub
 .PHONY: push-imageswap-versioned
 push-imageswap-versioned:
 
-	$(DOCKER) push jmsearcy/imageswap:${IMAGESWAP_VERSION}
+	$(DOCKER) push thewebroot/imageswap:${IMAGESWAP_VERSION}
 
 # Build and push all ImageSwap container images to DockerHub
 .PHONY: build-versioned

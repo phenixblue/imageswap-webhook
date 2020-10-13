@@ -46,7 +46,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
         path: ./app/imageswap-init/
-        repository: jmsearcy/imageswap-init
+        repository: thewebroot/imageswap-init
         tag_with_sha: true
         push: false
 
@@ -58,7 +58,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
         path: ./app/imageswap/
-        repository: jmsearcy/imageswap
+        repository: thewebroot/imageswap
         tag_with_sha: true
         push: false
 
@@ -74,8 +74,8 @@ jobs:
       run: |
         echo "Loading ImageSwap images to KinD nodes"
         GIT_SHA=${{github.sha}}
-        kind load docker-image jmsearcy/imageswap-init:sha-${GIT_SHA::7}
-        kind load docker-image jmsearcy/imageswap:sha-${GIT_SHA::7}
+        kind load docker-image thewebroot/imageswap-init:sha-${GIT_SHA::7}
+        kind load docker-image thewebroot/imageswap:sha-${GIT_SHA::7}
         echo "Updating target image to use local ref"
         sed -i='' -E "s/(IMAGESWAP_VERSION := )(.*$)/\1sha-${GIT_SHA::7}/" Makefile
         sed -i='' -E 's/(imagePullPolicy:) Always/\1 IfNotPresent/' deploy/manifests/imageswap-deploy.yaml

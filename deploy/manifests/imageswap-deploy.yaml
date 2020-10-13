@@ -22,7 +22,7 @@ spec:
         runAsGroup: 1898
       initContainers:
         - name: imageswap-init
-          image: jmsearcy/imageswap-init:v0.0.1
+          image: thewebroot/imageswap-init:v0.0.1
           command: [/app/imageswap-init.py]
           imagePullPolicy: Always
           securityContext:
@@ -46,7 +46,7 @@ spec:
               mountPath: /mwc
       containers:
       - name: imageswap
-        image: jmsearcy/imageswap:v1.2.0
+        image: thewebroot/imageswap:v1.2.0
         ports:
         - containerPort: 5000
         command: ["gunicorn", "imageswap:app", "--config=config.py"]
