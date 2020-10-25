@@ -193,7 +193,9 @@ def swap_image(container_spec):
 
     else:
 
-        if "/" not in image:
+        if image_prefix[-1] == "-":
+            new_image = image_prefix + image
+        elif "/" not in image:
             new_image = image_prefix + re.sub(r"(^.*)", r"/\1", image)
         else:
             new_image = image_prefix + re.sub(r"(^.*/)+(.*)", r"/\2", image)
