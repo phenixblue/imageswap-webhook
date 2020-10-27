@@ -63,8 +63,8 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
             self.assertNotIn("patch", json.loads(result.data)["response"])
-            # self.assertNotIn("patchtype", json.loads(result.data)["response"])
-            # self.assertEqual(json.loads(result.data)["response"]["uid"], "d6a539c0-8605-4923-8b57-ed54313e359a")
+            self.assertNotIn("patchtype", json.loads(result.data)["response"])
+            self.assertEqual(json.loads(result.data)["response"]["uid"], "d6a539c0-8605-4923-8b57-ed54313e359a")
 
     def test_root_deploy_swap_container(self):
 
