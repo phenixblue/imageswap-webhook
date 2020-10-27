@@ -193,7 +193,9 @@ def swap_image(container_spec):
 
     else:
 
-        if "/" not in image:
+        if image_prefix[-1] == "-":
+            new_image = image_prefix + image
+        elif "/" not in image:
             new_image = image_prefix + re.sub(r"(^.*)", r"/\1", image)
         else:
             new_image = image_prefix + re.sub(r"(^.*/)+(.*)", r"/\2", image)
@@ -213,7 +215,7 @@ def swap_image(container_spec):
 
 def main():
 
-    app.logger.info("ImageSwap v1.2.0 Startup")
+    app.logger.info("ImageSwap v1.3.0 Startup")
 
     app.run(
         host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
