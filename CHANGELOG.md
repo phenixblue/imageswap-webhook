@@ -23,3 +23,10 @@ This release is a major overhaul to introduce many things I've learned since I f
 - Updated Readme
 - Added simple API metrics
 - Added proper logging for INFO and DEBUG log levels
+
+## 1.3.0
+
+### Enhancements
+
+Adds support for image prefixes that end with a `-`. (#14)
+
