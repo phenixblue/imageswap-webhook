@@ -33,6 +33,7 @@ app = Flask(__name__)
 # Set Global variables
 imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-system")
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
+imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
 
 # Setup Prometheus Metrics for Flask app
 metrics = PrometheusMetrics(app, defaults_prefix="imageswap")
@@ -65,7 +66,7 @@ def mutate():
     app.logger.info("##################################################################")
 
     # Detect if "name" in object metadata
-    # this was added because the request object for pods don't
+    # this was added because the request object for pods doesn't
     # include a "name" field in the object metadata. This is because generateName
     # occurs Server Side post-admission
     if "name" in workload_metadata:
@@ -82,34 +83,42 @@ def mutate():
 
     app.logger.debug(json.dumps(request.json))
 
-    # Change workflow/json path based on K8s object type
-    if workload_type == "Pod":
-
-        for container_spec in modified_spec["request"]["object"]["spec"]["containers"]:
-
-            app.logger.info(f"Processing container: {namespace}/{workload}")
-            needs_patch = swap_image(container_spec)
-
-        if "initContainers" in modified_spec["request"]["object"]["spec"]:
-
-            for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainers"]:
-
-                app.logger.info(f"Processing init-container: {namespace}/{workload}")
-                needs_patch = swap_image(init_container_spec)
+    # Skip patching if disable label is found and set to "disable"
+    if imageswap_disable_label in workload_metadata["labels"] and workload_metadata["labels"][imageswap_disable_label] == "disabled":
+        
+        app.logger.info(f"Disable label \"{imageswap_disable_label}=disabled\" detected, skipping image swap.")
+        needs_patch = False
 
     else:
 
-        for container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["containers"]:
+        # Change workflow/json path based on K8s object type
+        if workload_type == "Pod":
 
-            app.logger.info(f"Processing container: {namespace}/{workload}")
-            needs_patch = swap_image(container_spec)
+            for container_spec in modified_spec["request"]["object"]["spec"]["containers"]:
 
-        if "initContainers" in modified_spec["request"]["object"]["spec"]["template"]["spec"]:
+                app.logger.info(f"Processing container: {namespace}/{workload}")
+                needs_patch = swap_image(container_spec)
 
-            for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["initContainers"]:
+            if "initContainers" in modified_spec["request"]["object"]["spec"]:
 
-                app.logger.info(f"Processing init-container: {namespace}/{workload}")
-                needs_patch = swap_image(init_container_spec)
+                for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainers"]:
+
+                    app.logger.info(f"Processing init-container: {namespace}/{workload}")
+                    needs_patch = swap_image(init_container_spec)
+
+        else:
+
+            for container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["containers"]:
+
+                app.logger.info(f"Processing container: {namespace}/{workload}")
+                needs_patch = swap_image(container_spec)
+
+            if "initContainers" in modified_spec["request"]["object"]["spec"]["template"]["spec"]:
+
+                for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["initContainers"]:
+
+                    app.logger.info(f"Processing init-container: {namespace}/{workload}")
+                    needs_patch = swap_image(init_container_spec)
 
     if needs_patch:
 
@@ -215,7 +224,7 @@ def swap_image(container_spec):
 
 def main():
 
-    app.logger.info("ImageSwap v1.3.0 Startup")
+    app.logger.info("ImageSwap v1.3.1-prerelease Startup")
 
     app.run(
         host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
