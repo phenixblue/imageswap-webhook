@@ -84,7 +84,7 @@ def mutate():
     app.logger.debug(json.dumps(request.json))
 
     # Skip patching if disable label is found and set to "disable"
-    if imageswap_disable_label in workload_metadata["labels"] and workload_metadata["labels"][imageswap_disable_label] == "disabled":
+    if "labels" in workload_metadata and imageswap_disable_label in workload_metadata["labels"] and workload_metadata["labels"][imageswap_disable_label] == "disabled":
         
         app.logger.info(f"Disable label \"{imageswap_disable_label}=disabled\" detected, skipping image swap.")
         needs_patch = False
