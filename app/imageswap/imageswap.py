@@ -126,7 +126,7 @@ def mutate():
 
     if needs_patch:
 
-        app.logger.debug("Doesn't need patch")
+        app.logger.debug("Needs patch")
         app.logger.info("Diffing original request to modified request and generating JSONPatch")
 
         patch = jsonpatch.JsonPatch.from_diff(request_info["request"]["object"], modified_spec["request"]["object"])
