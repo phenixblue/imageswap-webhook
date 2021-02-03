@@ -59,7 +59,7 @@ You can use the following command to install ImageSwap from this repo with sane 
 **NOTE:** The quickstart installation is not meant for production use. Please read through the [Cautions](#cautions) sections, and as always, use your best judgement when configuring ImageSwap for production scenarios.
 
 ```shell
-$ kubectl apply -f https://raw.githubusercontent.com/phenixblue/imageswap-webhook/master/deploy/install.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/phenixblue/imageswap-webhook/v1.3.0/deploy/install.yaml
 ```
 
 #### This will do the following
@@ -105,6 +105,12 @@ ImageSwap uses the `imageswap-init` init-container to generate/rotate a TLS cert
 
 Change the `IMAGE_PREFIX` environment variable definition in the [imageswap-env-cm.yaml](./deploy/manifests/imageswap-env-cm.yaml) manifest to customize the repo/registry for the image prefix mutation.
 
+You can also customize the label used to granularly disable ImageSwap on a per workload basis. By default the `k8s.twr.io/imageswap` label is used, but you can override that by specifying a custom label with the `IMAGESWAP_DISABLE_LABEL` environment variable.
+
+The value of the label should be `disabled`.
+
+See the [Break Glass: Per Workload](#per-workload) section for more details.
+
 ## Metrics
 
 Prometheus formatted metrics for API rquests are exposed on the `/metrics` endpoint.
@@ -133,7 +139,17 @@ Assuming you've followed the quickstart steps
 
 ### Break Glass Scenarios
 
-ImageSwap can be enabled and disabled on a per namespace basis by utilizing the `k8s.twr.io/imageswap` label on namespace resources. In emergency situations the label can be removed from a namespace to disable image swapping in that namespace.
+#### Per Workload
+
+ImageSwap can be disabled on a per workload level by adding the `k8s.twr.io/imageswap` label with a value of `disabled` to the pod template.
+
+Refer to this test manifest as an example: [./testing/deployments/test-deploy05.yaml](./testing/deployments/test-deploy05.yaml)
+#### Per Namespace
+
+ImageSwap can be enabled and disabled on a per namespace basis by utilizing the `k8s.twr.io/imageswap` label on the namespace resources. In emergency situations the label can be removed from a namespace to disable image swapping in that namespace.
+
+
+#### Cluster Wide
 
 If there are cluster-wide issues you can disable ImageSwap completely by removing the `imagewap-webhook` Mutating Webhook Configuration and deleting the ImageSwap deployment.
 

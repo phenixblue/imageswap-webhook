@@ -1,0 +1,183 @@
+{
+  "kind": "AdmissionReview",
+  "apiVersion": "admission.k8s.io/v1beta1",
+  "request": {
+    "uid": "a1b56548-759b-4d44-afd1-d4aae8714d04",
+    "kind": {
+      "group": "",
+      "version": "v1",
+      "kind": "Pod"
+    },
+    "resource": {
+      "group": "",
+      "version": "v1",
+      "resource": "pods"
+    },
+    "requestKind": {
+      "group": "",
+      "version": "v1",
+      "kind": "Pod"
+    },
+    "requestResource": {
+      "group": "",
+      "version": "v1",
+      "resource": "pods"
+    },
+    "namespace": "test2",
+    "operation": "CREATE",
+    "userInfo": {
+      "username": "system:serviceaccount:kube-system:replicaset-controller",
+      "uid": "b2066843-0bb9-49d3-af8c-17408cc11b3b",
+      "groups": [
+        "system:serviceaccounts",
+        "system:serviceaccounts:kube-system",
+        "system:authenticated"
+      ]
+    },
+    "object": {
+      "kind": "Pod",
+      "apiVersion": "v1",
+      "metadata": {
+        "generateName": "test-deploy05-6bbdbd8bc6-",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "hello-kubernetes",
+          "k8s.twr.io/imageswap": "disabled",
+          "pod-template-hash": "6bbdbd8bc6"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "test-deploy05-6bbdbd8bc6",
+            "uid": "73ceb99f-9bca-42c8-95c6-0c7a08f33c81",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ],
+        "managedFields": [
+          {
+            "manager": "kube-controller-manager",
+            "operation": "Update",
+            "apiVersion": "v1",
+            "time": "2021-02-02T07:03:41Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:generateName": {},
+                "f:labels": {
+                  ".": {},
+                  "f:app": {},
+                  "f:k8s.twr.io/imageswap": {},
+                  "f:pod-template-hash": {}
+                },
+                "f:ownerReferences": {
+                  ".": {},
+                  "k:{\"uid\":\"73ceb99f-9bca-42c8-95c6-0c7a08f33c81\"}": {
+                    ".": {},
+                    "f:apiVersion": {},
+                    "f:blockOwnerDeletion": {},
+                    "f:controller": {},
+                    "f:kind": {},
+                    "f:name": {},
+                    "f:uid": {}
+                  }
+                }
+              },
+              "f:spec": {
+                "f:containers": {
+                  "k:{\"name\":\"hello-kubernetes\"}": {
+                    ".": {},
+                    "f:image": {},
+                    "f:imagePullPolicy": {},
+                    "f:name": {},
+                    "f:ports": {
+                      ".": {},
+                      "k:{\"containerPort\":8080,\"protocol\":\"TCP\"}": {
+                        ".": {},
+                        "f:containerPort": {},
+                        "f:protocol": {}
+                      }
+                    },
+                    "f:resources": {},
+                    "f:terminationMessagePath": {},
+                    "f:terminationMessagePolicy": {}
+                  }
+                },
+                "f:dnsPolicy": {},
+                "f:enableServiceLinks": {},
+                "f:restartPolicy": {},
+                "f:schedulerName": {},
+                "f:securityContext": {},
+                "f:terminationGracePeriodSeconds": {}
+              }
+            }
+          }
+        ]
+      },
+      "spec": {
+        "volumes": [
+          {
+            "name": "default-token-4hrkz",
+            "secret": {
+              "secretName": "default-token-4hrkz"
+            }
+          }
+        ],
+        "containers": [
+          {
+            "name": "hello-kubernetes",
+            "image": "jmsearcy/hello-kubernetes:1.5",
+            "ports": [
+              {
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {},
+            "volumeMounts": [
+              {
+                "name": "default-token-4hrkz",
+                "readOnly": true,
+                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+              }
+            ],
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "securityContext": {},
+        "schedulerName": "default-scheduler",
+        "tolerations": [
+          {
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          },
+          {
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          }
+        ],
+        "priority": 0,
+        "enableServiceLinks": true
+      },
+      "status": {}
+    },
+    "oldObject": null,
+    "dryRun": false,
+    "options": {
+      "kind": "CreateOptions",
+      "apiVersion": "meta.k8s.io/v1"
+    }
+  }
+}

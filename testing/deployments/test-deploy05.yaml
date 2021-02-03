@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deploy05
+  annotations:
+    test-description: "This is to test disabling the imageswap via label on the pod template"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-kubernetes
+  template:
+    metadata:
+      labels:
+        app: hello-kubernetes
+        k8s.twr.io/imageswap: disabled
+    spec:
+      containers:
+      - name: hello-kubernetes
+        image: jmsearcy/hello-kubernetes:1.5
+        ports:
+        - containerPort: 8080

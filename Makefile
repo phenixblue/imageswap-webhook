@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-IMAGESWAP_VERSION := v1.3.0
+IMAGESWAP_VERSION := v1.3.1-prerelease
 IMAGESWAP_INIT_VERSION := v0.0.1
 
 REPO_ROOT := $(CURDIR)
@@ -22,6 +22,22 @@ TESTING_DIR ?= $(CURDIR)/testing
 WEBHOOK_NAMESPACE ?= "imageswap-system"
 TEST_NAMESPACE ?= "test1"
 DOCKER := docker
+
+# Pin utilities at specific versions for CI stability
+KUBECTL_VERSION ?= v1.19.1
+
+###############################################################################
+# CI Bootstrap Related Targets ################################################
+###############################################################################
+
+# Download and install required utilities
+.PHONY: ci-bootstrap
+ci-bootstrap:
+
+	# Create local bin directory
+	mkdir -p "${GITHUB_WORKSPACE}/bin"
+	# Download and install kubectl
+	curl -L https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -o ${GITHUB_WORKSPACE}/bin/kubectl && chmod +x ${GITHUB_WORKSPACE}/bin/kubectl && sudo mv "${GITHUB_WORKSPACE}/bin/kubectl" /usr/local/bin/
 
 ###############################################################################
 # K8s Related Targets #########################################################

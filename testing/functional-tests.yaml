@@ -7,6 +7,7 @@ resources:
       - test-deploy02.yaml
       - test-deploy03.yaml
       - test-deploy04.yaml
+      - test-deploy05.yaml
 #  - kind: deployments
 #    desired: fail
 #    script: 
