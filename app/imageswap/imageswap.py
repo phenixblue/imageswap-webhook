@@ -160,7 +160,7 @@ def mutate():
         }
 
     app.logger.info("Sending Response to K8s API Server:")
-    app.logger.info(json.dumps(admissionReview))
+    app.logger.info(f"Admission Review: {json.dumps(admissionReview)}")
 
     return jsonify(admissionReview)
 

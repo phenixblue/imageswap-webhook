@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
 import json
 import os
 import sys
@@ -122,7 +123,6 @@ class TestRoutes(unittest.TestCase):
 
     # TO-DO (pehnixblue): Need to figure out how to produce consistent results
     # on jsonpath with both init/containers swapped
-    '''
     def test_root_deploy_swap_both(self):
 
         """Method to test root route with deployment request that should swap both the primary container and init-container image definitions"""
@@ -133,15 +133,16 @@ class TestRoutes(unittest.TestCase):
 
             result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
+            # Decode base64 encoded patch string into Python List of Dicts. This allows for comparison without the List order impacting assertion
+            result_patch = base64.b64decode(json.loads(result.data)["response"]["patch"]).decode()
+            expected_patch = "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvaW5pdENvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9LCB7Im9wIjogInJlcGxhY2UiLCAicGF0aCI6ICIvc3BlYy90ZW1wbGF0ZS9zcGVjL2NvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9XQ=="
+            expected_patch_decoded = base64.b64decode(expected_patch).decode()
+
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
-            self.assertEqual(
-                json.loads(result.data)["response"]["patch"],
-                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvaW5pdENvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9LCB7Im9wIjogInJlcGxhY2UiLCAicGF0aCI6ICIvc3BlYy90ZW1wbGF0ZS9zcGVjL2NvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9XQ==",
-            )
+            self.assertCountEqual(result_patch, expected_patch_decoded)
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "2d213641-c136-49d5-b162-a0d2593639f7")
-    '''
 
     def test_root_pod_noswap(self):
 
@@ -199,7 +200,6 @@ class TestRoutes(unittest.TestCase):
 
     # TO-DO (pehnixblue): Need to figure out how to produce consistent results
     # on jsonpath with both init/containers swapped
-    '''
     def test_root_pod_swap_both(self):
 
         """Method to test root route with pod request that should swap both the primary container and init-container image definitions"""
@@ -210,15 +210,16 @@ class TestRoutes(unittest.TestCase):
 
             result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
+            # Decode base64 encoded patch string into Python List of Dicts. This allows for comparison without the List order impacting assertion
+            result_patch = base64.b64decode(json.loads(result.data)["response"]["patch"]).decode()
+            expected_patch = "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2luaXRDb250YWluZXJzLzAvaW1hZ2UiLCAidmFsdWUiOiAiam1zZWFyY3kvaGVsbG8ta3ViZXJuZXRlczoxLjUifSwgeyJvcCI6ICJyZXBsYWNlIiwgInBhdGgiOiAiL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d"
+            expected_patch_decoded = base64.b64decode(expected_patch).decode()
+
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
-            self.assertEqual(
-                json.loads(result.data)["response"]["patch"],
-                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2luaXRDb250YWluZXJzLzAvaW1hZ2UiLCAidmFsdWUiOiAiam1zZWFyY3kvaGVsbG8ta3ViZXJuZXRlczoxLjUifSwgeyJvcCI6ICJyZXBsYWNlIiwgInBhdGgiOiAiL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
-            )
+            self.assertCountEqual(result_patch, expected_patch_decoded)
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "ffeb2e4a-a440-4f70-90cb-9e960f7471c4")
-    '''
 
     def test_root_pod_swap_noslash(self):
 
@@ -238,6 +239,26 @@ class TestRoutes(unittest.TestCase):
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "2ca21f3f-a77f-4145-b7ac-bf656a976f46")
+
+    @patch.dict(os.environ, {"IMAGE_PREFIX": "jmsearcy-"})
+    def test_root_pod_swap_dash(self):
+
+        """Method to test root route with pod request that should swap the primary container image definition where the IMAGE_PREFIX ends with a '-'"""
+
+        with open("./testing/deployments/test-deploy02.json") as json_file:
+
+            request_object_json = json.load(json_file)
+
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
+
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
+            self.assertEqual(
+                json.loads(result.data)["response"]["patch"],
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5LXBhdWxib3V3ZXIvaGVsbG8ta3ViZXJuZXRlczoxLjUifV0=",
+            )
+            self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
+            self.assertEqual(json.loads(result.data)["response"]["uid"], "29df64b9-da70-4044-ac07-4fcff7c3eb5c")
 
     def test_root_pod_swap_generatename(self):
 
