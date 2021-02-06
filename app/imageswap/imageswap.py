@@ -19,7 +19,6 @@ from logging.handlers import MemoryHandler
 from prometheus_client import Counter
 from prometheus_flask_exporter import PrometheusMetrics
 import base64
-import config
 import copy
 import datetime
 import json
