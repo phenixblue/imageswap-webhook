@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import IO
 from flask import Flask, request, jsonify
 from logging.handlers import MemoryHandler
 from prometheus_client import Counter
@@ -33,6 +34,8 @@ app = Flask(__name__)
 imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-system")
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
 imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
+imageswap_enable_maps = os.getenv("IMAGESWAP_MODE", "LEGACY")
+imageswap_maps_file = "/app/imageswap-maps.conf"
 
 # Setup Prometheus Metrics for Flask app
 metrics = PrometheusMetrics(app, defaults_prefix="imageswap")
@@ -53,6 +56,8 @@ app.logger.setLevel(imageswap_log_level)
 
 @app.route("/", methods=["POST"])
 def mutate():
+
+    """Function to run main logic to handle imageswap mutation"""
 
     request_info = request.json
     modified_spec = copy.deepcopy(request_info)
@@ -189,11 +194,37 @@ def healthz():
 ################################################################################
 
 
+def build_swap_map(map_file):
+
+    """Function to build a map of imageswap customizations"""
+
+    maps = {}
+
+    with open(map_file) as f:
+        for line in f:
+            (key, val) = line.split()
+            maps[int(key)] = val
+
+    return maps
+
+################################################################################
+################################################################################
+################################################################################
+
+
 def swap_image(container_spec):
 
-    image_prefix = os.environ["IMAGE_PREFIX"]
+    """Function to rperform imageswap for a container spec"""
+
     name = container_spec["name"]
     image = container_spec["image"]
+    swamp_maps = build_swap_map(imageswap_maps_file)
+
+    if imageswap_enable_maps.lower() in ['true', '1', 't', 'y', 'yes']:
+
+    else:
+
+        image_prefix = os.environ["IMAGE_PREFIX"]
 
     app.logger.info(f"Swapping image definition for container spec: {name}")
 
