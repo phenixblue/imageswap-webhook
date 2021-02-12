@@ -75,6 +75,8 @@ spec:
         volumeMounts:
           - name: imageswap-tls
             mountPath: /tls
+          - name: imageswap-maps
+            mountPath: /app/imageswap-maps.conf
       volumes:
         - name: imageswap-mwc
           configMap:
@@ -82,5 +84,11 @@ spec:
               items:
               - key: imageswap-mwc
                 path: imageswap-mwc.yaml
+        - name: imageswap-maps
+          configMap:
+              name: imageswap-maps
+              items:
+              - key: maps
+                path: maps.conf
         - name: imageswap-tls
           emptyDir: {}
