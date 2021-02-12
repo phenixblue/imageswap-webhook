@@ -78,6 +78,7 @@ jobs:
         kind load docker-image thewebroot/imageswap:sha-${GIT_SHA::7}
         echo "Updating target image to use local ref"
         sed -i='' -E "s/(IMAGESWAP_VERSION := )(.*$)/\1sha-${GIT_SHA::7}/" Makefile
+        sed -i='' -E "s/(IMAGESWAP_INIT_VERSION := )(.*$)/\1sha-${GIT_SHA::7}/" Makefile
         sed -i='' -E 's/(imagePullPolicy:) Always/\1 IfNotPresent/' deploy/manifests/imageswap-deploy.yaml
         make set-release-version
         make build-single-manifest
