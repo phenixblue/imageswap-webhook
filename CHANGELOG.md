@@ -25,8 +25,17 @@ This release is a major overhaul to introduce many things I've learned since I f
 - Added proper logging for INFO and DEBUG log levels
 
 ## 1.3.0
-
 ### Enhancements
 
 Adds support for image prefixes that end with a `-`. (#14)
+
+## 1.3.1
+### Enhancements
+
+Bump cryptography from 3.2 to 3.3.2 in /app/imageswap-init (Dependabot)
+
+    Bumps [cryptography](https://github.com/pyca/cryptography) from 3.2 to 3.3.2.
+    - [Release notes](https://github.com/pyca/cryptography/releases)
+    - [Changelog](https://github.com/pyca/cryptography/blob/master/CHANGELOG.rst)
+    - [Commits](https://github.com/pyca/cryptography/compare/3.2...3.3.2)
 
