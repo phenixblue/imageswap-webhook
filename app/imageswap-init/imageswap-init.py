@@ -132,7 +132,16 @@ def build_k8s_csr(namespace, service_name, key):
         x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, dns_names[2])])
     )
 
-    csr = csr.add_extension(x509.SubjectAlternativeName([x509.DNSName(dns_names[0]), x509.DNSName(dns_names[1]), x509.DNSName(dns_names[2]),]), critical=False,)
+    csr = csr.add_extension(
+        x509.SubjectAlternativeName(
+            [
+                x509.DNSName(dns_names[0]),
+                x509.DNSName(dns_names[1]),
+                x509.DNSName(dns_names[2]),
+            ]
+        ),
+        critical=False,
+    )
 
     # Sign the CSR with our private key.
     csr = csr.sign(key, hashes.SHA256(), default_backend())
@@ -140,7 +149,11 @@ def build_k8s_csr(namespace, service_name, key):
     csr_pem = csr.public_bytes(serialization.Encoding.PEM)
 
     # Build Kubernetes CSR
-    k8s_csr_meta = client.V1ObjectMeta(name=dns_names[1] + ".cert-request", namespace=namespace, labels={"app": "imageswap"},)
+    k8s_csr_meta = client.V1ObjectMeta(
+        name=dns_names[1] + ".cert-request",
+        namespace=namespace,
+        labels={"app": "imageswap"},
+    )
 
     k8s_csr_spec = client.V1beta1CertificateSigningRequestSpec(
         groups=["system:authenticated"],
@@ -149,7 +162,10 @@ def build_k8s_csr(namespace, service_name, key):
     )
 
     k8s_csr = client.V1beta1CertificateSigningRequest(
-        api_version="certificates.k8s.io/v1beta1", kind="CertificateSigningRequest", metadata=k8s_csr_meta, spec=k8s_csr_spec,
+        api_version="certificates.k8s.io/v1beta1",
+        kind="CertificateSigningRequest",
+        metadata=k8s_csr_meta,
+        spec=k8s_csr_spec,
     )
 
     logging.debug(f"CSR: {k8s_csr}\n")
@@ -322,14 +338,21 @@ def build_tls_pair(namespace, secret_name, service_name, certificates_api):
     tls_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
 
     tls_key_pem = tls_key.private_bytes(
-        encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption(),
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
     )
 
     # Build K8s CSR
     logging.info("Building K8s CSR")
     k8s_csr = build_k8s_csr(namespace, service_name, tls_key)
     k8s_csr = submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr)
-    tls_cert_pem = get_tls_cert_from_request(namespace, imageswap_tls_pair_secret_name, k8s_csr.metadata.name, certificates_api,)
+    tls_cert_pem = get_tls_cert_from_request(
+        namespace,
+        imageswap_tls_pair_secret_name,
+        k8s_csr.metadata.name,
+        certificates_api,
+    )
 
     tls_pair = {
         "cert": tls_cert_pem,
@@ -469,7 +492,14 @@ def read_tls_pair(namespace, secret_name, tls_pair, core_api):
 
 
 def write_tls_pair(
-    namespace, secret_name, secret_exists, secret_should_update, tls_secret, tls_pair, imageswap_tls_byoc, core_api,
+    namespace,
+    secret_name,
+    secret_exists,
+    secret_should_update,
+    tls_secret,
+    tls_pair,
+    imageswap_tls_byoc,
+    core_api,
 ):
 
     """Function to write k8s secret for admission webhook to k8s secret and/or local files"""
@@ -501,7 +531,12 @@ def write_tls_pair(
         logging.info(f'Creating secret "{secret_name}" in namespace "{namespace}"')
 
         secret_metadata = client.V1ObjectMeta(
-            name=secret_name, namespace=namespace, labels={"app": "imageswap", "imageswap/updated-by-pod": imageswap_pod_name,},
+            name=secret_name,
+            namespace=namespace,
+            labels={
+                "app": "imageswap",
+                "imageswap/updated-by-pod": imageswap_pod_name,
+            },
         )
 
         secret_data = {
@@ -647,11 +682,23 @@ def init_tls_pair(namespace):
             logging.info(f"Generating new cert/key pair for TLS")
 
             # Generate TLS Pair
-            tls_pair = build_tls_pair(namespace, imageswap_tls_pair_secret_name, imageswap_service_name, certificates_api,)
+            tls_pair = build_tls_pair(
+                namespace,
+                imageswap_tls_pair_secret_name,
+                imageswap_service_name,
+                certificates_api,
+            )
 
     # Handle cert creation or update
     write_tls_pair(
-        namespace, imageswap_tls_secret_name, secret_exists, secret_should_update, tls_secret, tls_pair, imageswap_tls_byoc, core_api,
+        namespace,
+        imageswap_tls_secret_name,
+        secret_exists,
+        secret_should_update,
+        tls_secret,
+        tls_pair,
+        imageswap_tls_byoc,
+        core_api,
     )
 
 
@@ -892,7 +939,13 @@ def find_webhook_index(mwc_template):
 
 
 def mwc_should_update(
-    namespace, configuration, mwc, mwc_template, imageswap_tls_byoc, core_api, admission_api,
+    namespace,
+    configuration,
+    mwc,
+    mwc_template,
+    imageswap_tls_byoc,
+    core_api,
+    admission_api,
 ):
 
     """Function to determine if an MWC should be updated"""
@@ -1054,7 +1107,15 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
     # each replica stomping on the MWC
     if mwc != "":
 
-        should_update, mwc = mwc_should_update(namespace, configuration, mwc, mwc_template, imageswap_tls_byoc, core_api, admission_api,)
+        should_update, mwc = mwc_should_update(
+            namespace,
+            configuration,
+            mwc,
+            mwc_template,
+            imageswap_tls_byoc,
+            core_api,
+            admission_api,
+        )
 
         if should_update:
 
@@ -1117,7 +1178,12 @@ def init_mwc(namespace, imageswap_tls_byoc):
 
     mwc = read_mwc(admission_api)
     write_mwc(
-        namespace, imageswap_tls_rootca_secret_name, mwc, configuration, admission_api, core_api,
+        namespace,
+        imageswap_tls_rootca_secret_name,
+        mwc,
+        configuration,
+        admission_api,
+        core_api,
     )
 
 
@@ -1130,7 +1196,9 @@ def main():
 
     # Setup logging
     logging.basicConfig(
-        level=os.getenv("IMAGESWAP_LOG_LEVEL", "INFO"), stream=sys.stdout, format="[%(asctime)s] %(levelname)s: %(message)s",
+        level=os.getenv("IMAGESWAP_LOG_LEVEL", "INFO"),
+        stream=sys.stdout,
+        format="[%(asctime)s] %(levelname)s: %(message)s",
     )
 
     logging.info("ImageSwap Init")
