@@ -298,8 +298,11 @@ def swap_image(container_spec):
 
             app.logger.debug(f"No Swap map for \"{image_registry_noport}\" detected, using default map")
             app.logger.debug(f"Swap Map = \"default\" : \"{swap_maps[imageswap_maps_default_key]}\"")
-            
-            if image_registry_noport in image:
+
+            if swap_maps[imageswap_maps_default_key] == "":
+                app.logger.debug(f"Default map has no value assigned, skipping swap")
+                return False
+            elif image_registry_noport in image:
                 new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
             else:
                 new_image = swap_maps[imageswap_maps_default_key] + "/" + image
