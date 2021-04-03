@@ -80,6 +80,22 @@ class GoodConfig(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
+    def test_map_config_default_empty(self):
+
+        """Method to test Map File config (default swap map has no value)"""
+
+        imageswap.imageswap_maps_file = "./testing/map_files/map_file_empty_default.conf"
+        
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "john.io/paulbower/hello-kubernetes:1.5"
+
+        expected_image = "john.io/paulbower/hello-kubernetes:1.5"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertFalse(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
     def test_map_config_with_trailing_dash(self):
 
         """Method to test Map File config (map value with trailing "-")"""
