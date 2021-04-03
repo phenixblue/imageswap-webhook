@@ -2,6 +2,13 @@
 
 This [Admission Controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks) will swap an existing image definition in a Pod with a user specified image prefix. This allows you to use the same manifests for airgapped environments that don't have access to commonly used image registries (dockerhub, quay, gcr, etc.). 
 
+**NOTE: v1.4.0 has major changes**
+
+>There is a new [MAPS](#maps-mode) mode logic that has been added to allow for more flexibility in imageswap logic.
+>The existing logic, referred to as `LEGACY` mode is still the default, but has been deprecated.
+>The `LEGACY` mode logic will no longer be the default in v1.5.0 and is slated for removal in v1.6.0.
+
+
 The webhook is written in `Python` using the `Flask` framework.
 
 ## Example
@@ -103,7 +110,86 @@ ImageSwap uses the `imageswap-init` init-container to generate/rotate a TLS cert
 
 ## Configuration
 
+A new `IMAGESWAP_MODE` environment variable has been added to control the imageswap logic for the webhook. The value should be `LEGACY` (current default) or `MAPS`.
+
+### MAPS Mode
+
+MAPS Mode enables a high degree of flexibility for the ImageSwap Webhook.
+
+In MAPS mode, the webhook reads from a `map file` that defines one or more mappings (key/value pairs) for imageswap logic. With the `map file` configuration, swap logic for multiple registries and patterns can be configured. In contrast, the LEGACY mode only allowed for a single `IMAGE_PREFIX` to be defined for image swaps.
+
+A `map file` is composed of key/value pairs separated by a `:` and looks like this:
+
+```
+default:default.example.com
+docker.io:my.example.com/mirror-
+quay.io:quay.example3.com
+gitlab.com:registry.example.com/gitlab
+#gcr.io: # This is a comment 
+cool.io:
+registry.internal.twr.io:registry.example.com
+harbor.geo.pks.twr.io:harbor2.com ###### This is a comment with many symbols
+noswap_wildcards:twr.io, walrus.io
+```
+
+NOTE: Lines in the `map file` that are commented out with a leading `#` are ignored. Trailing comments following a map definition are also ignored.
+
+The only mapping that is required in the `map_file` is the `default` map. The `default` map alone provides similar functionality to the `LEGACY` mode.
+
+A map definition that includes a `key` only can be used to disable image swapping for that particular registry.
+
+A map file can also include a special `noswap_wildcards` mapping that disabled swapping based on greedy pattern matching. Don't actually include an `*` in this section. A value of `example` is essentialy equivalent to `*example*`. [See examples below for more detail](#example-maps-configs)
+
+By adding additional mappings to the `map file`, you can have much finer granularity to control swapping logic per registry.
+
+
+#### Example MAPS Configs
+
+- Disable image swapping for all registries EXCEPT `gcr.io`
+
+  ```
+  default:
+  gcr.io:harbor.internal.example.com
+  ```
+
+- Enable image swapping for all registries except `gcr.io`
+
+  ```
+  default: harbor.internal.example.com
+  gcr.io:
+  ```
+
+- Enabling swapping for all registries except those that match the `example.com` pattern
+
+  ```
+  default:harbor.internal.example.com
+  noswap_wildcards:example.com
+  ```
+
+  With this, images that have any part of the registry that matches `example.com` will skip the swap logic
+
+  EXAMPLE:
+    - `example.com/image:latest`
+    - `external.example.com/image:v1.0`
+    - `edge.example.com/image:latest`)
+
+- Enabled swapping for all registries, but skip those that match the `example.com` pattern, except for `external.example.com`
+
+  ```
+  default:harbor.internal.example.com
+  external.example.com:harbor.internal.example.com
+  noswap_wildcards:example.com
+  ```
+
+  With this, the `edge.example.com/image:latest` image would skip swapping, but `external.example.com/image:latest` would be swapped to `harbor.internal.example.com/image:latest`
+
+### LEGACY Mode
+
+**DEPRECATED: This mode will be removed in a future release**
+
 Change the `IMAGE_PREFIX` environment variable definition in the [imageswap-env-cm.yaml](./deploy/manifests/imageswap-env-cm.yaml) manifest to customize the repo/registry for the image prefix mutation.
+
+### Granularly Disable Image Swapping for a Workload
 
 You can also customize the label used to granularly disable ImageSwap on a per workload basis. By default the `k8s.twr.io/imageswap` label is used, but you can override that by specifying a custom label with the `IMAGESWAP_DISABLE_LABEL` environment variable.
 
