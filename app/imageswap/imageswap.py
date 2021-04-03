@@ -34,8 +34,10 @@ app = Flask(__name__)
 imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-system")
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
 imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
-imageswap_enable_maps = os.getenv("IMAGESWAP_MODE", "LEGACY")
+imageswap_mode = os.getenv("IMAGESWAP_MODE", "LEGACY")
 imageswap_maps_file = "/app/imageswap-maps.conf"
+imageswap_maps_default_key = "default"
+imageswap_maps_wildcard_key = "noswap_wildcards"
 
 # Setup Prometheus Metrics for Flask app
 metrics = PrometheusMetrics(app, defaults_prefix="imageswap")
@@ -200,10 +202,22 @@ def build_swap_map(map_file):
 
     maps = {}
 
-    with open(map_file) as f:
+    # Read maps from file
+    with open(map_file, "r") as f:
+        # Read lines in the file to build a Dict of imageswap maps
         for line in f:
-            (key, val) = line.split()
-            maps[int(key)] = val
+            # Skip commented lines
+            if line[0] == "#":
+                continue
+            (key, val) = line.split(':')
+            # Trim trailing comments
+            if "#" in val:
+                val_trimmed = re.sub(r"(^.*[^#])(#.*$)", r"\1", val)
+                maps[key] = re.sub(r' ', '', val_trimmed.rstrip())
+            else:
+                maps[key] = re.sub(r' ', '', val.rstrip())
+
+    f.close()
 
     return maps
 
@@ -214,41 +228,119 @@ def build_swap_map(map_file):
 
 def swap_image(container_spec):
 
-    """Function to rperform imageswap for a container spec"""
+    """Function to perform imageswap for a container spec"""
 
     name = container_spec["name"]
     image = container_spec["image"]
-    swamp_maps = build_swap_map(imageswap_maps_file)
+    new_image = image
+    image_split = image.partition("/")
+    wildcard_maps = {}
+    no_registry = False
 
-    if imageswap_enable_maps.lower() in ['true', '1', 't', 'y', 'yes']:
-
+    # Check if first section is a Registry URL
+    if "." in image_split[0]:
+        image_registry = image_split[0]
     else:
+        # Set docker.io if no registry is detected
+        image_registry = "docker.io"
+        no_registry = True
+    # Check if Registry portion includes a ":<port_number>"
+    if ":" in image_registry:
+        image_registry_noport = image_registry.partition(":")[0]
+    else:
+        image_registry_noport = image_registry
+
+    # Check the imageswap mode
+    if imageswap_mode.lower() in ["maps"]:
+
+        app.logger.info("ImageSwap Webhook running in \"MAPS\" mode")
+
+        swap_maps = build_swap_map(imageswap_maps_file)
+        
+        # Verify the default map exists or skip swap
+        if imageswap_maps_default_key not in swap_maps:
+            app.logger.warning(f"You don't have a \"{imageswap_maps_default_key}\" entry in your ImageSwap Map config")
+            return False
+
+        # Check for noswap wildcards in map file
+        if imageswap_maps_wildcard_key in swap_maps and swap_maps[imageswap_maps_wildcard_key] != "":
+            wildcard_maps = str(swap_maps[imageswap_maps_wildcard_key]).split(",")
+
+        # Check if bare registry has a map specified
+        if image_registry_noport in swap_maps:
+
+            # If the swap map has no value, swapping should be skipped
+            if swap_maps[image_registry_noport] == "":
+                app.logger.debug(f"Swap map for \"{image_registry_noport}\" has no value assigned, skipping swap")
+                return False
+            # If the image prefix ends with "-" just append existing image (minus any ":<port_number>")
+            elif swap_maps[image_registry_noport][-1] == "-":
+                if no_registry:
+                    new_image = swap_maps[image_registry_noport] + image_registry + "/" +  re.sub(r":.*/", "/", image)
+                else:
+                    new_image = swap_maps[image_registry_noport] + re.sub(r":.*/", "/", image)
+            # If the image registry without a port pattern is found in the original image
+            elif image_registry_noport in image:
+                new_image = re.sub(image_registry_noport, swap_maps[image_registry_noport], image)
+            # For everything else
+            else:
+                new_image = swap_maps[image_registry_noport] + "/" + image
+            
+            app.logger.debug(f"Swap Map = \"{image_registry_noport}\" : \"{swap_maps[image_registry_noport]}\"")
+
+        # Check if any of the noswap wildcard patterns from the swap map exist within the original image
+        elif len(wildcard_maps) > 0 and any(noswap in image for noswap in wildcard_maps):
+            app.logger.debug(f"Image matches a configured noswap_wildcard pattern, skipping swap")
+            app.logger.debug(f"Swap Map = \"noswap_wilcard\" : \"{wildcard_maps}\"")
+            return False
+        # Using Default image swap map
+        else:
+
+            app.logger.debug(f"No Swap map for \"{image_registry_noport}\" detected, using default map")
+            app.logger.debug(f"Swap Map = \"default\" : \"{swap_maps[imageswap_maps_default_key]}\"")
+            
+            if image_registry_noport in image:
+                new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
+            else:
+                new_image = swap_maps[imageswap_maps_default_key] + "/" + image
+
+    # TO-DO (phenixblue): Remove this else block sometime in the future...
+    # This "else" block represents the legacy imageswap logic which is now
+    # deprecated. It should be cleaned up after some amount of time following
+    # the below schedule
+    #
+    # - 1 release to keep legacy logic as the default
+    # - 1 release to switch the new MAPS logic as the default
+    # - 1 release to remove legacy logic
+    else:
+
+        app.logger.warning("ImageSwap Webhook running in \"LEGACY\" mode. This mode is now deprecated. Please read the docs to setup the new MAPS configuration that will be the default in future releases")
 
         image_prefix = os.environ["IMAGE_PREFIX"]
 
-    app.logger.info(f"Swapping image definition for container spec: {name}")
+        app.logger.info(f"Swapping image definition for container spec: {name}")
 
-    if image_prefix in image:
+        if image_prefix in image:
 
-        app.logger.info("Internal image definition detected, nothing to do")
+            app.logger.info("Internal image definition detected, nothing to do")
 
-        return False
+            return False
 
-    else:
-
-        if image_prefix[-1] == "-":
-            new_image = image_prefix + image
-        elif "/" not in image:
-            new_image = image_prefix + re.sub(r"(^.*)", r"/\1", image)
         else:
-            new_image = image_prefix + re.sub(r"(^.*/)+(.*)", r"/\2", image)
 
-        app.logger.info(f"External image definition detected: {image}")
-        app.logger.info(f"External image updated to Internal image: {new_image}")
+            if image_prefix[-1] == "-":
+                new_image = image_prefix + image
+            elif "/" not in image:
+                new_image = image_prefix + re.sub(r"(^.*)", r"/\1", image)
+            else:
+                new_image = image_prefix + re.sub(r"(^.*/)+(.*)", r"/\2", image)
 
-        container_spec["image"] = new_image
+    app.logger.info(f"External image definition detected: {image}")
+    app.logger.info(f"External image updated to Internal image: {new_image}")
 
-        return True
+    container_spec["image"] = new_image
+
+    return True
 
 
 ################################################################################
