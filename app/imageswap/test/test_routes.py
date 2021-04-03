@@ -24,14 +24,12 @@ from unittest.mock import patch
 sys.path.append("./app/imageswap")
 import imageswap
 
-os.environ["IMAGESWAP_NAMESPACE_NAME"] = "imageswap-system"
 os.environ["IMAGESWAP_POD_NAME"] = "imageswap-abc1234"
 os.environ["IMAGESWAP_CLUSTER_NAME"] = "test-cluster"
 os.environ["IMAGESWAP_LOG_LEVEL"] = "DEBUG"
 os.environ["IMAGE_PREFIX"] = "jmsearcy"
 
-
-class TestRoutes(unittest.TestCase):
+class RoutePatterns(unittest.TestCase):
     def setUp(self):
 
         self.app = imageswap.app.test_client()
@@ -40,7 +38,8 @@ class TestRoutes(unittest.TestCase):
     def tearDown(self):
 
         pass
-
+    
+    @patch("imageswap.imageswap_pod_name", "imageswap-abc1234")
     def test_healthz(self):
 
         """Method to test healthz route"""
@@ -121,8 +120,6 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "2f95b6dc-0dd9-4729-9cd3-d5577d2b0621")
 
-    # TO-DO (pehnixblue): Need to figure out how to produce consistent results
-    # on jsonpath with both init/containers swapped
     def test_root_deploy_swap_both(self):
 
         """Method to test root route with deployment request that should swap both the primary container and init-container image definitions"""
@@ -198,8 +195,6 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "82a5b842-0cfb-4293-abea-0c2603d8a16a")
 
-    # TO-DO (pehnixblue): Need to figure out how to produce consistent results
-    # on jsonpath with both init/containers swapped
     def test_root_pod_swap_both(self):
 
         """Method to test root route with pod request that should swap both the primary container and init-container image definitions"""
@@ -278,7 +273,6 @@ class TestRoutes(unittest.TestCase):
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "1ee8aaf2-d96b-401e-9db6-76282587df24")
-
 
 if __name__ == "__main__":
     unittest.main()
