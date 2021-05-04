@@ -299,6 +299,7 @@ def swap_image(container_spec):
 
             app.logger.debug(f"No Swap map for \"{image_registry_noport}\" detected, using default map")
             app.logger.debug(f"Swap Map = \"default\" : \"{swap_maps[imageswap_maps_default_key]}\"")
+<<<<<<< HEAD
 
             if swap_maps[imageswap_maps_default_key] == "":
                 app.logger.debug(f"Default map has no value assigned, skipping swap")
@@ -319,6 +320,33 @@ def swap_image(container_spec):
 
         app.logger.info(f"Swapping image definition for container spec: {name}")
 
+=======
+
+            if swap_maps[imageswap_maps_default_key] == "":
+                app.logger.debug(f"Default map has no value assigned, skipping swap")
+                return False
+            elif image_registry_noport in image:
+                new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
+            else:
+                new_image = swap_maps[imageswap_maps_default_key] + "/" + image
+
+    # TO-DO (phenixblue): Remove this else block sometime in the future...
+    # This "else" block represents the legacy imageswap logic which is now
+    # deprecated. It should be cleaned up after some amount of time following
+    # the below schedule
+    #
+    # - 1 release to keep legacy logic as the default
+    # - 1 release to switch the new MAPS logic as the default
+    # - 1 release to remove legacy logic
+    else:
+
+        app.logger.warning("ImageSwap Webhook running in \"LEGACY\" mode. This mode is now deprecated. Please read the docs to setup the new MAPS configuration that will be the default in future releases")
+
+        image_prefix = os.environ["IMAGE_PREFIX"]
+
+        app.logger.info(f"Swapping image definition for container spec: {name}")
+
+>>>>>>> 2b82192a8b195b54573895d3163e219a83494c39
         if image_prefix in image:
 
             app.logger.info("Internal image definition detected, nothing to do")

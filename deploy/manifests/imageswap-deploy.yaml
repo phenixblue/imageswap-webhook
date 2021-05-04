@@ -76,7 +76,7 @@ spec:
           - name: imageswap-tls
             mountPath: /tls
           - name: imageswap-maps
-            mountPath: /app
+            mountPath: /app/imageswap-maps.conf
       volumes:
         - name: imageswap-mwc
           configMap:

@@ -2,7 +2,18 @@
 
 The ImageSwap [webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks) enables you to define one or more mappings to automatically swap image definitions within Kubernetes Pods with a different registry. This is useful to easily transition from external to internal image registries, work around rate limiting issues, or to maintain consistency with manifests in environments that are airgapped and unable to access commonly used image registries (DockerHub, Quay, GCR, etc.)
 
+<<<<<<< HEAD
 **An existing image:**
+=======
+**NOTE: v1.4.0 has major changes**
+
+>There is a new [MAPS](#maps-mode) mode logic that has been added to allow for more flexibility in imageswap logic.
+>The existing logic, referred to as `LEGACY` mode is still the default, but has been deprecated.
+>The `LEGACY` mode logic will no longer be the default in v1.5.0 and is slated for removal in v1.6.0.
+
+
+The webhook is written in `Python` using the `Flask` framework.
+>>>>>>> 2b82192a8b195b54573895d3163e219a83494c39
 
 ```
 nginx/nginx:latest
@@ -108,7 +119,11 @@ ImageSwap uses the `imageswap-init` init-container to generate/rotate a TLS cert
 
 ## Configuration
 
+<<<<<<< HEAD
 A new `IMAGESWAP_MODE` environment variable has been added to control the imageswap logic for the webhook. The value should be `LEGACY` or `MAPS` (new default).
+=======
+A new `IMAGESWAP_MODE` environment variable has been added to control the imageswap logic for the webhook. The value should be `LEGACY` (current default) or `MAPS`.
+>>>>>>> 2b82192a8b195b54573895d3163e219a83494c39
 
 ### MAPS Mode
 
