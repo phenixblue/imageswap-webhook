@@ -14,14 +14,16 @@ nginx/nginx:latest
 registry.example.com/nginx/nginx:latest
 ```
 
+## NOTICE
 
-**NOTE: v1.4.0 has major changes**
+ImageSwap v1.4.0 has major changes
 
->There is a new [MAPS](#maps-mode) mode logic that has been added to allow for more flexibility in imageswap logic.
->The existing logic, referred to as `LEGACY` mode is still available, but is no longer the default operating mode and has been deprecated.
+>**MAPS LOGIC:** There is a new [MAPS](#maps-mode) mode logic that has been added to allow for more flexibility in the image swapping logic.
+>The existing logic, referred to as `LEGACY` mode, is still available, but has been deprecated.
 >To continue using the `LEGACY` mode logic set the `IMAGESWAP_MODE` environment variable accordingly. Please reference the [configuration](#configuration) section for more information. 
 
-The webhook is written in `Python` using the `Flask` framework.
+>**Image Definition Preservation:** Updates have been made to how image definitions are processed during a swap. Previously the swap logic would drop the image org/project before adding the prefix (ie. `nginx/nginx-ingress:latest` would drop the `nginx/` portion of the image definition).
+>In v1.4.0+ the swap logic will preserve all parts of the image except the Registry (ie. `docker.io/nginx/nginx-ingress` will drop the `docker.io` only form the image definition).
 
 ## Overview
 
@@ -108,11 +110,7 @@ ImageSwap uses the `imageswap-init` init-container to generate/rotate a TLS cert
 
 ## Configuration
 
-<<<<<<< HEAD
 A new `IMAGESWAP_MODE` environment variable has been added to control the imageswap logic for the webhook. The value should be `LEGACY` or `MAPS` (new default).
-=======
-A new `IMAGESWAP_MODE` environment variable has been added to control the imageswap logic for the webhook. The value should be `LEGACY` (current default) or `MAPS`.
->>>>>>> 2b82192a8b195b54573895d3163e219a83494c39
 
 ### MAPS Mode
 
