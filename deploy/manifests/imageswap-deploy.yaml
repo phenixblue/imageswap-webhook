@@ -49,7 +49,7 @@ spec:
         image: thewebroot/imageswap:v1.3.2
         ports:
         - containerPort: 5000
-        command: ["gunicorn", "imageswap:app", "--config=config.py"]
+        command: ["gunicorn", "imageswap:app", "--config=/app/config.py"]
         imagePullPolicy: Always
         securityContext:
             allowPrivilegeEscalation: false
@@ -76,7 +76,7 @@ spec:
           - name: imageswap-tls
             mountPath: /tls
           - name: imageswap-maps
-            mountPath: /app/imageswap-maps.conf
+            mountPath: /app
       volumes:
         - name: imageswap-mwc
           configMap:
@@ -89,6 +89,6 @@ spec:
               name: imageswap-maps
               items:
               - key: maps
-                path: maps.conf
+                path: imageswap-maps.conf
         - name: imageswap-tls
           emptyDir: {}

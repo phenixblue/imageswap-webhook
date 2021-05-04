@@ -158,8 +158,9 @@ metadata:
 data:
   FLASK_ENV: "production"
   PYTHONUNBUFFERED: "TRUE"
+  IMAGESWAP_MODE: "MAPS"
   IMAGESWAP_LOG_LEVEL: "INFO"
-  IMAGE_PREFIX: "thewebroot"
+
 
 ---
 apiVersion: v1
@@ -199,6 +200,17 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: imageswap-mwc-template
+  namespace: imageswap-system
+
+---
+apiVersion: v1
+data:
+  maps: |
+    default:registry.example.com
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: imageswap-maps
   namespace: imageswap-system
 
 ---
@@ -313,6 +325,8 @@ spec:
         volumeMounts:
           - name: imageswap-tls
             mountPath: /tls
+          - name: imageswap-maps
+            mountPath: /app
       volumes:
         - name: imageswap-mwc
           configMap:
@@ -320,6 +334,12 @@ spec:
               items:
               - key: imageswap-mwc
                 path: imageswap-mwc.yaml
+        - name: imageswap-maps
+          configMap:
+              name: imageswap-maps
+              items:
+              - key: maps
+                path: imageswap-maps.conf
         - name: imageswap-tls
           emptyDir: {}
 ---

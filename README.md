@@ -1,29 +1,27 @@
 # ImageSwap Mutating Admission Controller for Kubernetes
 
-This [Admission Controller](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks) will swap an existing image definition in a Pod with a user specified image prefix. This allows you to use the same manifests for airgapped environments that don't have access to commonly used image registries (dockerhub, quay, gcr, etc.). 
+The ImageSwap [webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks) enables you to define one or more mappings to automatically swap image definitions within Kubernetes Pods with a different registry. This is useful to easily transition from external to internal image registries, work around rate limiting issues, or to maintain consistency with manifests in environments that are airgapped and unable to access commonly used image registries (DockerHub, Quay, GCR, etc.)
+
+**An existing image:**
+
+```
+nginx/nginx:latest
+```
+
+**can be swapped to:**
+
+```
+registry.example.com/nginx/nginx:latest
+```
+
 
 **NOTE: v1.4.0 has major changes**
 
 >There is a new [MAPS](#maps-mode) mode logic that has been added to allow for more flexibility in imageswap logic.
->The existing logic, referred to as `LEGACY` mode is still the default, but has been deprecated.
->The `LEGACY` mode logic will no longer be the default in v1.5.0 and is slated for removal in v1.6.0.
-
+>The existing logic, referred to as `LEGACY` mode is still available, but is no longer the default operating mode and has been deprecated.
+>To continue using the `LEGACY` mode logic set the `IMAGESWAP_MODE` environment variable accordingly. Please reference the [configuration](#configuration) section for more information. 
 
 The webhook is written in `Python` using the `Flask` framework.
-
-## Example
-
-Existing Image Definition:
-
-```yaml
-docker.io/nginx/nginx:latest
-```
-
-Image After the Swap:
-
-```yaml
-my-registry.example.com/nginx/nginx:latest
-```
 
 ## Overview
 
@@ -110,7 +108,7 @@ ImageSwap uses the `imageswap-init` init-container to generate/rotate a TLS cert
 
 ## Configuration
 
-A new `IMAGESWAP_MODE` environment variable has been added to control the imageswap logic for the webhook. The value should be `LEGACY` (current default) or `MAPS`.
+A new `IMAGESWAP_MODE` environment variable has been added to control the imageswap logic for the webhook. The value should be `LEGACY` or `MAPS` (new default).
 
 ### MAPS Mode
 

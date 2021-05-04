@@ -19,6 +19,7 @@ from flask import Flask, request, jsonify
 from logging.handlers import MemoryHandler
 from prometheus_client import Counter
 from prometheus_flask_exporter import PrometheusMetrics
+from . import config
 import base64
 import copy
 import datetime
@@ -34,7 +35,7 @@ app = Flask(__name__)
 imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-system")
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
 imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
-imageswap_mode = os.getenv("IMAGESWAP_MODE", "LEGACY")
+imageswap_mode = os.getenv("IMAGESWAP_MODE", "MAPS")
 imageswap_maps_file = "/app/imageswap-maps.conf"
 imageswap_maps_default_key = "default"
 imageswap_maps_wildcard_key = "noswap_wildcards"
@@ -308,16 +309,11 @@ def swap_image(container_spec):
                 new_image = swap_maps[imageswap_maps_default_key] + "/" + image
 
     # TO-DO (phenixblue): Remove this else block sometime in the future...
-    # This "else" block represents the legacy imageswap logic which is now
-    # deprecated. It should be cleaned up after some amount of time following
-    # the below schedule
-    #
-    # - 1 release to keep legacy logic as the default
-    # - 1 release to switch the new MAPS logic as the default
-    # - 1 release to remove legacy logic
+    # This "else" block maintains the legacy imageswap logic, which is now
+    # deprecated.
     else:
 
-        app.logger.warning("ImageSwap Webhook running in \"LEGACY\" mode. This mode is now deprecated. Please read the docs to setup the new MAPS configuration that will be the default in future releases")
+        app.logger.warning("ImageSwap Webhook running in \"LEGACY\" mode. This mode is now deprecated. Please read the docs to setup the new MAPS configuration")
 
         image_prefix = os.environ["IMAGE_PREFIX"]
 
@@ -356,7 +352,7 @@ def main():
     app.logger.info("ImageSwap v1.3.2 Startup")
 
     app.run(
-        host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
+        host="0.0.0.0", port=5000, debug=True, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
     )
 
 
