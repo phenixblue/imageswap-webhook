@@ -29,6 +29,7 @@ os.environ["IMAGESWAP_CLUSTER_NAME"] = "test-cluster"
 os.environ["IMAGESWAP_LOG_LEVEL"] = "DEBUG"
 os.environ["IMAGE_PREFIX"] = "jmsearcy"
 
+
 class RoutePatterns(unittest.TestCase):
     def setUp(self):
 
@@ -38,7 +39,7 @@ class RoutePatterns(unittest.TestCase):
     def tearDown(self):
 
         pass
-    
+
     @patch("imageswap.imageswap_pod_name", "imageswap-abc1234")
     def test_healthz(self):
 
@@ -273,6 +274,7 @@ class RoutePatterns(unittest.TestCase):
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "1ee8aaf2-d96b-401e-9db6-76282587df24")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -19,7 +19,6 @@ from flask import Flask, request, jsonify
 from logging.handlers import MemoryHandler
 from prometheus_client import Counter
 from prometheus_flask_exporter import PrometheusMetrics
-from . import config
 import base64
 import copy
 import datetime
@@ -36,7 +35,7 @@ imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-syst
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
 imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
 imageswap_mode = os.getenv("IMAGESWAP_MODE", "MAPS")
-imageswap_maps_file = "/app/imageswap-maps.conf"
+imageswap_maps_file = "/app/maps/imageswap-maps.conf"
 imageswap_maps_default_key = "default"
 imageswap_maps_wildcard_key = "noswap_wildcards"
 
@@ -138,7 +137,7 @@ def mutate():
 
         patch = jsonpatch.JsonPatch.from_diff(request_info["request"]["object"], modified_spec["request"]["object"])
 
-        app.logger.info(f"JSON Patch: {patch}")
+        app.logger.debug(f"JSON Patch: {patch}")
 
         admission_response = {
             "allowed": True,
@@ -167,7 +166,7 @@ def mutate():
         }
 
     app.logger.info("Sending Response to K8s API Server:")
-    app.logger.info(f"Admission Review: {json.dumps(admissionReview)}")
+    app.logger.debug(f"Admission Review: {json.dumps(admissionReview)}")
 
     return jsonify(admissionReview)
 
@@ -210,17 +209,18 @@ def build_swap_map(map_file):
             # Skip commented lines
             if line[0] == "#":
                 continue
-            (key, val) = line.split(':')
+            (key, val) = line.split(":")
             # Trim trailing comments
             if "#" in val:
                 val_trimmed = re.sub(r"(^.*[^#])(#.*$)", r"\1", val)
-                maps[key] = re.sub(r' ', '', val_trimmed.rstrip())
+                maps[key] = re.sub(r" ", "", val_trimmed.rstrip())
             else:
-                maps[key] = re.sub(r' ', '', val.rstrip())
+                maps[key] = re.sub(r" ", "", val.rstrip())
 
     f.close()
 
     return maps
+
 
 ################################################################################
 ################################################################################
@@ -252,15 +252,15 @@ def swap_image(container_spec):
         image_registry_noport = image_registry
 
     # Check the imageswap mode
-    if imageswap_mode.lower() in ["maps"]:
+    if imageswap_mode.lower() == "maps":
 
-        app.logger.info("ImageSwap Webhook running in \"MAPS\" mode")
+        app.logger.info('ImageSwap Webhook running in "MAPS" mode')
 
         swap_maps = build_swap_map(imageswap_maps_file)
-        
+
         # Verify the default map exists or skip swap
         if imageswap_maps_default_key not in swap_maps:
-            app.logger.warning(f"You don't have a \"{imageswap_maps_default_key}\" entry in your ImageSwap Map config")
+            app.logger.warning(f'You don\'t have a "{imageswap_maps_default_key}" entry in your ImageSwap Map config, skipping swap')
             return False
 
         # Check for noswap wildcards in map file
@@ -272,12 +272,12 @@ def swap_image(container_spec):
 
             # If the swap map has no value, swapping should be skipped
             if swap_maps[image_registry_noport] == "":
-                app.logger.debug(f"Swap map for \"{image_registry_noport}\" has no value assigned, skipping swap")
+                app.logger.debug(f'Swap map for "{image_registry_noport}" has no value assigned, skipping swap')
                 return False
             # If the image prefix ends with "-" just append existing image (minus any ":<port_number>")
             elif swap_maps[image_registry_noport][-1] == "-":
                 if no_registry:
-                    new_image = swap_maps[image_registry_noport] + image_registry + "/" +  re.sub(r":.*/", "/", image)
+                    new_image = swap_maps[image_registry_noport] + image_registry + "/" + re.sub(r":.*/", "/", image)
                 else:
                     new_image = swap_maps[image_registry_noport] + re.sub(r":.*/", "/", image)
             # If the image registry without a port pattern is found in the original image
@@ -286,20 +286,19 @@ def swap_image(container_spec):
             # For everything else
             else:
                 new_image = swap_maps[image_registry_noport] + "/" + image
-            
-            app.logger.debug(f"Swap Map = \"{image_registry_noport}\" : \"{swap_maps[image_registry_noport]}\"")
+
+            app.logger.debug(f'Swap Map = "{image_registry_noport}" : "{swap_maps[image_registry_noport]}"')
 
         # Check if any of the noswap wildcard patterns from the swap map exist within the original image
         elif len(wildcard_maps) > 0 and any(noswap in image for noswap in wildcard_maps):
             app.logger.debug(f"Image matches a configured noswap_wildcard pattern, skipping swap")
-            app.logger.debug(f"Swap Map = \"noswap_wilcard\" : \"{wildcard_maps}\"")
+            app.logger.debug(f'Swap Map = "noswap_wilcard" : "{wildcard_maps}"')
             return False
         # Using Default image swap map
         else:
 
-            app.logger.debug(f"No Swap map for \"{image_registry_noport}\" detected, using default map")
-            app.logger.debug(f"Swap Map = \"default\" : \"{swap_maps[imageswap_maps_default_key]}\"")
-<<<<<<< HEAD
+            app.logger.debug(f'No Swap map for "{image_registry_noport}" detected, using default map')
+            app.logger.debug(f'Swap Map = "default" : "{swap_maps[imageswap_maps_default_key]}"')
 
             if swap_maps[imageswap_maps_default_key] == "":
                 app.logger.debug(f"Default map has no value assigned, skipping swap")
@@ -314,43 +313,19 @@ def swap_image(container_spec):
     # deprecated.
     else:
 
-        app.logger.warning("ImageSwap Webhook running in \"LEGACY\" mode. This mode is now deprecated. Please read the docs to setup the new MAPS configuration")
+        app.logger.warning('ImageSwap Webhook running in "LEGACY" mode. This mode is now deprecated. Please read the docs to setup the new MAPS configuration')
 
-        image_prefix = os.environ["IMAGE_PREFIX"]
-
-        app.logger.info(f"Swapping image definition for container spec: {name}")
-
-=======
-
-            if swap_maps[imageswap_maps_default_key] == "":
-                app.logger.debug(f"Default map has no value assigned, skipping swap")
-                return False
-            elif image_registry_noport in image:
-                new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
-            else:
-                new_image = swap_maps[imageswap_maps_default_key] + "/" + image
-
-    # TO-DO (phenixblue): Remove this else block sometime in the future...
-    # This "else" block represents the legacy imageswap logic which is now
-    # deprecated. It should be cleaned up after some amount of time following
-    # the below schedule
-    #
-    # - 1 release to keep legacy logic as the default
-    # - 1 release to switch the new MAPS logic as the default
-    # - 1 release to remove legacy logic
-    else:
-
-        app.logger.warning("ImageSwap Webhook running in \"LEGACY\" mode. This mode is now deprecated. Please read the docs to setup the new MAPS configuration that will be the default in future releases")
-
-        image_prefix = os.environ["IMAGE_PREFIX"]
+        if "IMAGE_PREFIX" in os.environ and os.environ["IMAGE_PREFIX"] != "":
+            image_prefix = os.environ["IMAGE_PREFIX"]
+        else:
+            app.logger.warning('The "IMAGESWAP_PREFIX" is empty, skipping swap.')
+            return False
 
         app.logger.info(f"Swapping image definition for container spec: {name}")
 
->>>>>>> 2b82192a8b195b54573895d3163e219a83494c39
         if image_prefix in image:
 
             app.logger.info("Internal image definition detected, nothing to do")
-
             return False
 
         else:
@@ -377,7 +352,7 @@ def swap_image(container_spec):
 
 def main():
 
-    app.logger.info("ImageSwap v1.3.2 Startup")
+    app.logger.info("ImageSwap v1.3.2-prerelease Startup")
 
     app.run(
         host="0.0.0.0", port=5000, debug=True, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),

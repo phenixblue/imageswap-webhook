@@ -25,6 +25,7 @@ import imageswap
 # Test image definition/syntax scenarios ##################################
 ###########################################################################
 
+
 @patch("imageswap.imageswap_mode", "MAPS")
 @patch("imageswap.imageswap_maps_file", "./testing/map_files/map_file.conf")
 class ImageFormats(unittest.TestCase):
@@ -41,7 +42,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_image_only(self):
 
         """Method to test MAP based swap (image only: \"alpine\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "alpine"
@@ -55,7 +56,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_image_tag(self):
 
         """Method to test MAP based swap (image+tag: \"nginx:latest\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "nginx:latest"
@@ -69,7 +70,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_project_image(self):
 
         """Method to test MAP based swap (project+image: \"nginx:latest\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "ubuntu/ubuntu"
@@ -83,7 +84,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_project_image_tag(self):
 
         """Method to test MAP based swap (project+image+tag: \"ubuntu/ubuntu:latest\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "ubuntu/ubuntu:latest"
@@ -99,7 +100,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_registry_project_image(self):
 
         """Method to test MAP based swap (registry+project+image: \"quay.io/solo/gloo\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "quay.io/solo/gloo"
@@ -113,7 +114,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_registry_project_image_tag(self):
 
         """Method to test MAP based swap (registry+project+image+tag: \"quay.io/solo/gloo:v1.0\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "quay.io/solo/gloo:v1.0"
@@ -127,7 +128,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_registry_port_project_image_tag(self):
 
         """Method to test MAP based swap (registry+port+project+image+tag: \"gcr.io:443/istio/istiod:latest\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "gcr.io:443/istio/istiod:latest"
@@ -141,7 +142,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_nested_project_image(self):
 
         """Method to test MAP based swap (nested project+image: \"some/random/test/without/registry-or-tag\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "some/random/test/without/registry-or-tag"
@@ -155,7 +156,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_nested_project_image_tag(self):
 
         """Method to test MAP based swap (nested project+image+tag: \"some/random/test/without/registry-or-tag:latest\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "some/random/test/without/registry-or-tag:latest"
@@ -169,7 +170,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_registry_nested_project_image_tag(self):
 
         """Method to test MAP based swap (registry+nested project+image+tag: \"myregistry.com/some/random/test/with/registry:latest\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "myregistry.com/some/random/test/with/registry:latest"
@@ -183,7 +184,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_registry_with_many_domain_levels(self):
 
         """Method to test MAP based swap (registry with more than 3 domain levels+project+image+tag: \"harbor.geo.k8s.twr.io/stuff/magtape:latest\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "harbor.geo.k8s.twr.io/stuff/magtape:latest"
@@ -197,7 +198,7 @@ class ImageFormats(unittest.TestCase):
     def test_image_format_project_image_digest(self):
 
         """Method to test MAP based swap (project+image@digest: \"kindest/node@sha256:15d3b5c4f521a84896ed1ead1b14e4774d02202d5c65ab68f30eeaf310a3b1a7\")"""
-        
+
         container_spec = {}
         container_spec["name"] = "test-container"
         container_spec["image"] = "kindest/node@sha256:15d3b5c4f521a84896ed1ead1b14e4774d02202d5c65ab68f30eeaf310a3b1a7"
@@ -207,6 +208,7 @@ class ImageFormats(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
+
 
 if __name__ == "__main__":
     unittest.main()
