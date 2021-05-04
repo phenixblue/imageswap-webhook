@@ -46,7 +46,7 @@ spec:
               mountPath: /mwc
       containers:
       - name: imageswap
-        image: thewebroot/imageswap:v1.3.2-prerelease
+        image: thewebroot/imageswap:v1.4.0-prerelease
         ports:
         - containerPort: 5000
         command: ["gunicorn", "imageswap:app", "--config=config.py"]

@@ -352,7 +352,7 @@ def swap_image(container_spec):
 
 def main():
 
-    app.logger.info("ImageSwap v1.3.2-prerelease Startup")
+    app.logger.info("ImageSwap v1.4.0-prerelease Startup")
 
     app.run(
         host="0.0.0.0", port=5000, debug=True, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
