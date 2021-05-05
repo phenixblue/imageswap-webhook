@@ -9,7 +9,10 @@ NOTE: The following environment variable are defined in the `imageswap-env-cm.ya
 | Variable                 | Description                                 | Values                        |
 |---                       |---                                          |---                            |
 | `IMAGESWAP_LOG_LEVEL`    | The log level to use                        | `INFO` or `DEBUG`             |
-| `IMAGE_PREFIX`           | The prefix to use in the image swap         | Any value supported for the [Kubernetes Container spec image field](https://kubernetes.io/docs/concepts/containers/images/#image-names)      |
+| `IMAGE_PREFIX` (**DEPRECATED**)          | The prefix to use in the image swap         | Any value supported for the [Kubernetes Container spec image field](https://kubernetes.io/docs/concepts/containers/images/#image-names)      |
+| `IMAGESWAP_MODE`         | The operating mode for the swap logic       | `MAPS` (default in v1.4.0+) or `LEGACY`              |
+| `IMAGESWAP_MAPS_FILE`    | The location of the MAPS file               | `/app/maps/imageswap-maps.conf` (default)            |
+| `IMAGESWAP_DISABLE_LABEL`| The label to identify granular disablement of image swapping per resource | `k8s.twr.io/imageswap` |
 
 ## Installation
 
@@ -24,7 +27,6 @@ You can find some generic examples of using kustomize overlays to manage per env
 | `deploy/manifests`              | The base YAML manifests                           |
 | `deploy/overlays/development`   | Development environment specific substitutions    |
 | `deploy/overlays/production`    | Production environment specific substitutions     |
-| `IMAGESWAP_TLS_SECRET`          | **OPTIONAL** - Overrides the default secret (`imageswap-tls`) for BYOC (Bring Your Own Cert) scenarios  | <name_of_secret> (STRING)     |
 
 Once the proper edits have been made you can generate the YAML manifests:
 
@@ -42,11 +44,21 @@ NOTE: A TLS Cert and Key need to be generated for the Webhook. MagTape has an in
 
 ## Bring Your Own Cert
 
-By default ImageSwap will handle creation and rotation of the required TLS cert/key automatically. In cases where you need to BYOC, you can adjust the configuration.
+By default ImageSwap will use the Kubernetes Certificate API to handle creation and rotation of the required TLS cert/key automatically. In cases where you need to BYOC, you will need to handle certificate creation and rotation yourself.
 
-### Specify a different secret name
+Create the `imageswap-tls` secret in the `imageswap-system` namespace and add the `imageswap-byoc` anntation.
 
-Reference the `IMAGESWAP_TLS_SECRET` option in the [configuration options](#configuration-options) section.
+>NOTE: Any value for this annotation is acceptable, the annotation just needs to exist.
+
+```shell
+$ kubectl create secret tls imageswap-tls --cert=/path/to/cert.pem --key=/path/to/key.pem -n imageswap-system
+```
+
+Create the `imageswap-tls-ca` secret in the `imageswap-system` and add the pem formatted CA Certificate to the `rootca.pem` key
+
+```shell
+$ kubectl create secret generic imageswap-tls-ca --from-file=rootca.pem=./path/to/rootca.pem -n imageswap-system
+```
 
 ### Root CA
 

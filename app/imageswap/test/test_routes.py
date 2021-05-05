@@ -35,6 +35,7 @@ class RoutePatterns(unittest.TestCase):
 
         self.app = imageswap.app.test_client()
         self.app.testing = True
+        self.maxDiff = None
 
     def tearDown(self):
 
@@ -97,7 +98,7 @@ class RoutePatterns(unittest.TestCase):
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
             self.assertEqual(
                 json.loads(result.data)["response"]["patch"],
-                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L3BhdWxib3V3ZXIvaGVsbG8ta3ViZXJuZXRlczoxLjUifV0=",
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "29df64b9-da70-4044-ac07-4fcff7c3eb5c")
@@ -116,7 +117,7 @@ class RoutePatterns(unittest.TestCase):
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
             self.assertEqual(
                 json.loads(result.data)["response"]["patch"],
-                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvaW5pdENvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9XQ==",
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvaW5pdENvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9wYXVsYm91d2VyL2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "2f95b6dc-0dd9-4729-9cd3-d5577d2b0621")
@@ -133,7 +134,7 @@ class RoutePatterns(unittest.TestCase):
 
             # Decode base64 encoded patch string into Python List of Dicts. This allows for comparison without the List order impacting assertion
             result_patch = base64.b64decode(json.loads(result.data)["response"]["patch"]).decode()
-            expected_patch = "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvaW5pdENvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9LCB7Im9wIjogInJlcGxhY2UiLCAicGF0aCI6ICIvc3BlYy90ZW1wbGF0ZS9zcGVjL2NvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9XQ=="
+            expected_patch = "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvaW5pdENvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9wYXVsYm91d2VyL2hlbGxvLWt1YmVybmV0ZXM6MS41In0sIHsib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L3BhdWxib3V3ZXIvaGVsbG8ta3ViZXJuZXRlczoxLjUifV0="
             expected_patch_decoded = base64.b64decode(expected_patch).decode()
 
             self.assertEqual(result.status_code, 200)
@@ -172,7 +173,7 @@ class RoutePatterns(unittest.TestCase):
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
             self.assertEqual(
                 json.loads(result.data)["response"]["patch"],
-                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2NvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9XQ==",
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2NvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9wYXVsYm91d2VyL2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "8350e416-408e-4d89-b219-4c6811a2e099")
@@ -191,7 +192,7 @@ class RoutePatterns(unittest.TestCase):
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
             self.assertEqual(
                 json.loads(result.data)["response"]["patch"],
-                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2luaXRDb250YWluZXJzLzAvaW1hZ2UiLCAidmFsdWUiOiAiam1zZWFyY3kvaGVsbG8ta3ViZXJuZXRlczoxLjUifV0=",
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2luaXRDb250YWluZXJzLzAvaW1hZ2UiLCAidmFsdWUiOiAiam1zZWFyY3kvcGF1bGJvdXdlci9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9XQ==",
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "82a5b842-0cfb-4293-abea-0c2603d8a16a")
@@ -208,7 +209,7 @@ class RoutePatterns(unittest.TestCase):
 
             # Decode base64 encoded patch string into Python List of Dicts. This allows for comparison without the List order impacting assertion
             result_patch = base64.b64decode(json.loads(result.data)["response"]["patch"]).decode()
-            expected_patch = "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2luaXRDb250YWluZXJzLzAvaW1hZ2UiLCAidmFsdWUiOiAiam1zZWFyY3kvaGVsbG8ta3ViZXJuZXRlczoxLjUifSwgeyJvcCI6ICJyZXBsYWNlIiwgInBhdGgiOiAiL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d"
+            expected_patch = "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2luaXRDb250YWluZXJzLzAvaW1hZ2UiLCAidmFsdWUiOiAiam1zZWFyY3kvcGF1bGJvdXdlci9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9LCB7Im9wIjogInJlcGxhY2UiLCAicGF0aCI6ICIvc3BlYy9jb250YWluZXJzLzAvaW1hZ2UiLCAidmFsdWUiOiAiam1zZWFyY3kvcGF1bGJvdXdlci9oZWxsby1rdWJlcm5ldGVzOjEuNSJ9XQ=="
             expected_patch_decoded = base64.b64decode(expected_patch).decode()
 
             self.assertEqual(result.status_code, 200)
@@ -236,7 +237,7 @@ class RoutePatterns(unittest.TestCase):
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "2ca21f3f-a77f-4145-b7ac-bf656a976f46")
 
-    @patch.dict(os.environ, {"IMAGE_PREFIX": "jmsearcy-"})
+    @patch("imageswap.imageswap_maps_file", "./testing/map_files/map_file_ci_trailing_dash.conf")
     def test_root_pod_swap_dash(self):
 
         """Method to test root route with pod request that should swap the primary container image definition where the IMAGE_PREFIX ends with a '-'"""
@@ -251,7 +252,7 @@ class RoutePatterns(unittest.TestCase):
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
             self.assertEqual(
                 json.loads(result.data)["response"]["patch"],
-                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5LXBhdWxib3V3ZXIvaGVsbG8ta3ViZXJuZXRlczoxLjUifV0=",
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5LWRvY2tlci5pby9wYXVsYm91d2VyL2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "29df64b9-da70-4044-ac07-4fcff7c3eb5c")
@@ -274,6 +275,102 @@ class RoutePatterns(unittest.TestCase):
             )
             self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
             self.assertEqual(json.loads(result.data)["response"]["uid"], "1ee8aaf2-d96b-401e-9db6-76282587df24")
+
+    @patch("imageswap.imageswap_mode", "LEGACY")
+    def test_root_legacy_deploy_swap_container(self):
+
+        """Method to test root route in LEGACY mode with deployment request that should swap the primary container image definition"""
+
+        with open("./testing/deployments/test-deploy02.json") as json_file:
+
+            request_object_json = json.load(json_file)
+
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
+
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
+            self.assertEqual(
+                json.loads(result.data)["response"]["patch"],
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5L2hlbGxvLWt1YmVybmV0ZXM6MS41In1d",
+            )
+            self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
+            self.assertEqual(json.loads(result.data)["response"]["uid"], "29df64b9-da70-4044-ac07-4fcff7c3eb5c")
+
+    @patch.dict(os.environ, {"IMAGE_PREFIX": ""})
+    @patch("imageswap.imageswap_mode", "LEGACY")
+    def test_root_legacy_empty_prefix(self):
+
+        """Method to test root route in LEGACY mode with an empty IMAGE_PREFIX environment variable"""
+
+        with open("./testing/deployments/test-deploy02.json") as json_file:
+
+            request_object_json = json.load(json_file)
+
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
+
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
+            self.assertNotIn("patch", json.loads(result.data)["response"])
+            self.assertNotIn("patchtype", json.loads(result.data)["response"])
+            self.assertEqual(json.loads(result.data)["response"]["uid"], "29df64b9-da70-4044-ac07-4fcff7c3eb5c")
+
+    @patch("imageswap.imageswap_mode", "LEGACY")
+    def test_root_legacy_deploy_noswap(self):
+
+        """Method to test root route in LEGACY mode with deployment request that should not swap the image definition"""
+
+        with open("./testing/deployments/test-deploy01.json") as json_file:
+
+            request_object_json = json.load(json_file)
+
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
+
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
+            self.assertNotIn("patch", json.loads(result.data)["response"])
+            self.assertNotIn("patchtype", json.loads(result.data)["response"])
+            self.assertEqual(json.loads(result.data)["response"]["uid"], "d6a539c0-8605-4923-8b57-ed54313e359a")
+
+    @patch("imageswap.imageswap_mode", "LEGACY")
+    @patch.dict(os.environ, {"IMAGE_PREFIX": "jmsearcy-"})
+    def test_root_legacy_pod_swap_dash(self):
+
+        """Method to test root route in LEGACY mode with pod request that should swap the primary container image definition where the IMAGE_PREFIX ends with a '-'"""
+
+        with open("./testing/deployments/test-deploy02.json") as json_file:
+
+            request_object_json = json.load(json_file)
+
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
+
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
+            self.assertEqual(
+                json.loads(result.data)["response"]["patch"],
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL3RlbXBsYXRlL3NwZWMvY29udGFpbmVycy8wL2ltYWdlIiwgInZhbHVlIjogImptc2VhcmN5LXBhdWxib3V3ZXIvaGVsbG8ta3ViZXJuZXRlczoxLjUifV0=",
+            )
+            self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
+            self.assertEqual(json.loads(result.data)["response"]["uid"], "29df64b9-da70-4044-ac07-4fcff7c3eb5c")
+
+    @patch("imageswap.imageswap_mode", "LEGACY")
+    def test_root_pod_swap_noslash(self):
+
+        """Method to test root route in LEGACY mode with pod request that should swap the primary container image definition that doesn't include a slash"""
+
+        with open("./testing/pods/test-pod05.json") as json_file:
+
+            request_object_json = json.load(json_file)
+
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
+
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
+            self.assertEqual(
+                json.loads(result.data)["response"]["patch"],
+                "W3sib3AiOiAicmVwbGFjZSIsICJwYXRoIjogIi9zcGVjL2NvbnRhaW5lcnMvMC9pbWFnZSIsICJ2YWx1ZSI6ICJqbXNlYXJjeS9uZ2lueDpsYXRlc3QifV0=",
+            )
+            self.assertEqual(json.loads(result.data)["response"]["patchtype"], "JSONPatch")
+            self.assertEqual(json.loads(result.data)["response"]["uid"], "2ca21f3f-a77f-4145-b7ac-bf656a976f46")
 
 
 if __name__ == "__main__":

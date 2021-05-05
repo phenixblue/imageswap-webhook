@@ -35,7 +35,7 @@ imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-syst
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
 imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
 imageswap_mode = os.getenv("IMAGESWAP_MODE", "MAPS")
-imageswap_maps_file = "/app/maps/imageswap-maps.conf"
+imageswap_maps_file = os.getenv("IMAGESWAP_MAPS_FILE", "/app/maps/imageswap-maps.conf")
 imageswap_maps_default_key = "default"
 imageswap_maps_wildcard_key = "noswap_wildcards"
 
@@ -277,7 +277,7 @@ def swap_image(container_spec):
             # If the image prefix ends with "-" just append existing image (minus any ":<port_number>")
             elif swap_maps[image_registry_noport][-1] == "-":
                 if no_registry:
-                    new_image = swap_maps[image_registry_noport] + image_registry + "/" + re.sub(r":.*/", "/", image)
+                    new_image = swap_maps[image_registry_noport] + image_registry_noport + "/" + re.sub(r":.*/", "/", image)
                 else:
                     new_image = swap_maps[image_registry_noport] + re.sub(r":.*/", "/", image)
             # If the image registry without a port pattern is found in the original image
@@ -303,6 +303,8 @@ def swap_image(container_spec):
             if swap_maps[imageswap_maps_default_key] == "":
                 app.logger.debug(f"Default map has no value assigned, skipping swap")
                 return False
+            elif swap_maps[imageswap_maps_default_key][-1] == "-":
+                new_image = swap_maps[imageswap_maps_default_key] + image_registry_noport + "/" + image
             elif image_registry_noport in image:
                 new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
             else:
