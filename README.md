@@ -23,7 +23,7 @@ ImageSwap v1.4.0 has major changes
 >To continue using the `LEGACY` mode logic set the `IMAGESWAP_MODE` environment variable accordingly. Please reference the [configuration](#configuration) section for more information. 
 
 >**Image Definition Preservation:** Updates have been made to how image definitions are processed during a swap. Previously the swap logic would drop the image org/project before adding the prefix (ie. `nginx/nginx-ingress:latest` would drop the `nginx/` portion of the image definition).
->In v1.4.0+ the swap logic will preserve all parts of the image except the Registry (ie. `docker.io/nginx/nginx-ingress` will drop the `docker.io` only form the image definition).
+>In v1.4.0+ the swap logic will preserve all parts of the image except the Registry (ie. `docker.io/nginx/nginx-ingress` will drop the `docker.io` only from the image definition).
 
 ## Overview
 
@@ -159,6 +159,15 @@ By adding additional mappings to the `map file`, you can have much finer granula
   gcr.io:
   ```
 
+- Imitate LEGACY functionality as close as possible
+
+  ```
+  default:harbor.internal.example.com
+  noswap_wildcards:harbor.internal.example.com
+  ```
+
+  With this, all images will be swapped except those that already match the `harbor.internal.example.com` pattern
+
 - Enabling swapping for all registries except those that match the `example.com` pattern
 
   ```
@@ -173,7 +182,7 @@ By adding additional mappings to the `map file`, you can have much finer granula
     - `external.example.com/image:v1.0`
     - `edge.example.com/image:latest`)
 
-- Enabled swapping for all registries, but skip those that match the `example.com` pattern, except for `external.example.com`
+- Enable swapping for all registries, but skip those that match the `example.com` pattern, except for `external.example.com`
 
   ```
   default:harbor.internal.example.com
