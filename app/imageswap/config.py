@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## Some random text to initiate a change
-
 # Gunicorn config
 bind = ":5000"
 workers = 2
