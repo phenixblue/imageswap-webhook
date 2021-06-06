@@ -39,3 +39,31 @@ Bump cryptography from 3.2 to 3.3.2 in /app/imageswap-init (Dependabot)
     - [Changelog](https://github.com/pyca/cryptography/blob/master/CHANGELOG.rst)
     - [Commits](https://github.com/pyca/cryptography/compare/3.2...3.3.2)
 
+## 1.4.0
+
+This release addresses a few security fixes for dependent libraries and introduces some major enhancements.
+
+**!!! Please read carefully as there is new functoinality that is not directly backwards compatible !!!**
+
+ImageSwap v1.4.0 requires some new configuration settings and makes major changes to the default image swap logic.
+
+
+### Enhancements
+
+- Introduces new MAPS swap mode logic (#29)
+- Updates to logging when disable label is supplied (#29)
+- Added a kustomize overlay for LEGACY swap mode (#29)
+- Update image swap logic to preserve image org/project (#29)
+
+>**MAPS LOGIC:** There is a new [MAPS](#maps-mode) mode logic that has been added to allow for more flexibility in the image swapping logic.
+>The existing logic, referred to as `LEGACY` mode, is still available, but has been deprecated.
+>To continue using the `LEGACY` mode logic set the `IMAGESWAP_MODE` environment variable accordingly. Please reference the [configuration](#configuration) section for more information. 
+
+>**Image Definition Preservation:** Updates have been made to how image definitions are processed during a swap. Previously the swap logic would drop the image org/project before adding the prefix (ie. `nginx/nginx-ingress:latest` would drop the `nginx/` portion of the image definition).
+>In v1.4.0+ the swap logic will preserve all parts of the image except the Registry (ie. `docker.io/nginx/nginx-ingress` will drop the `docker.io` only from the image definition).
+
+### Security Fixes
+
+- Bump jinja2 from 2.11.2 to 2.11.3 in /app/imageswap (#28 authored by dependabot)
+- Bump urllib3 from 1.26.3 to 1.26.4 in /app/imageswap-init (#26 authored by dependabot)
+- Bump urllib3 from 1.26.4 to 1.26.5 in /app/imageswap-init (#25 authored by dependabot)
