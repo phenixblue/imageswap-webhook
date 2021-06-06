@@ -1,0 +1,5 @@
+resources:
+  - ../../manifests
+
+patches:
+- env-cm-patch.yaml

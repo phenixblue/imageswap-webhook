@@ -9,5 +9,6 @@ metadata:
 data:
   FLASK_ENV: "production"
   PYTHONUNBUFFERED: "TRUE"
+  IMAGESWAP_MODE: "MAPS"
   IMAGESWAP_LOG_LEVEL: "INFO"
-  IMAGE_PREFIX: "thewebroot"
+

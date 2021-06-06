@@ -46,7 +46,7 @@ spec:
               mountPath: /mwc
       containers:
       - name: imageswap
-        image: thewebroot/imageswap:v1.3.2
+        image: thewebroot/imageswap:v1.4.0-prerelease
         ports:
         - containerPort: 5000
         command: ["gunicorn", "imageswap:app", "--config=config.py"]
@@ -75,6 +75,8 @@ spec:
         volumeMounts:
           - name: imageswap-tls
             mountPath: /tls
+          - name: imageswap-maps
+            mountPath: /app/maps
       volumes:
         - name: imageswap-mwc
           configMap:
@@ -82,5 +84,11 @@ spec:
               items:
               - key: imageswap-mwc
                 path: imageswap-mwc.yaml
+        - name: imageswap-maps
+          configMap:
+              name: imageswap-maps
+              items:
+              - key: maps
+                path: imageswap-maps.conf
         - name: imageswap-tls
           emptyDir: {}
