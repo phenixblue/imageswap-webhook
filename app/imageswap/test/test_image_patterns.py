@@ -69,7 +69,7 @@ class ImageFormats(unittest.TestCase):
 
     def test_image_format_project_image(self):
 
-        """Method to test MAP based swap (project+image: \"nginx:latest\")"""
+        """Method to test MAP based swap (project+image: \"ubuntu/ubuntu\")"""
 
         container_spec = {}
         container_spec["name"] = "test-container"
