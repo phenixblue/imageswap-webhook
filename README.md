@@ -1,3 +1,9 @@
+[![Latest release](https://img.shields.io/github/release/phenixblue/imageswap-webhook.svg)](https://github.com/phenixblue/imageswap-webhook/releases/latest)
+[![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/tmobile/magtape/blob/master/LICENSE)
+![python-checks](https://github.com/phenixblue/imageswap-webhook/workflows/python-checks/badge.svg)
+![e2e-checks](https://github.com/phenixblue/imageswap-webhook/workflows/e2e-checks/badge.svg)
+![image-build](https://github.com/phenixblue/imageswap-webhook/workflows/image-build/badge.svg)
+
 # ImageSwap Mutating Admission Controller for Kubernetes
 
 The ImageSwap [webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks) enables you to define one or more mappings to automatically swap image definitions within Kubernetes Pods with a different registry. This is useful to easily transition from external to internal image registries, work around rate limiting issues, or to maintain consistency with manifests in environments that are airgapped and unable to access commonly used image registries (DockerHub, Quay, GCR, etc.)
