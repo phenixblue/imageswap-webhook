@@ -44,6 +44,7 @@ ImageSwap v1.4.0 has major changes
 - [Cautions](#cautions)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](./CONTRIBUTING.md)
+- [Adopters](./ADOPTERS.md)
 
 ## Prereqs
 
