@@ -85,7 +85,7 @@ jobs:
       with:
           version: "v0.9.0"
           image: ${{ matrix.kind-node-image }}
-          wait: 600
+          wait: 600s
 
     - name: Install ImageSwap
       timeout-minutes: 10
