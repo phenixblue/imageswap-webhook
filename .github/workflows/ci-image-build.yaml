@@ -55,7 +55,7 @@ jobs:
           # push is no longer defaulted to true under v2; to push you must specify push is true
           push: true
           # Uses the releasetag output exposed by the Collect Release Tag step to set the tag under v2
-          tags: phenixblue/imageswap-init:${{ steps.prep.outputs.releasetag }},phenixblue/imageswap-init:latest
+          tags: thewebroot/imageswap-init:${{ steps.prep.outputs.releasetag }},thewebroot/imageswap-init:latest
 
   # Build and push imageswap container image
   build-imageswap-image:
@@ -102,4 +102,4 @@ jobs:
           # push is no longer defaulted to true under v2; to push you must specify push is true
           push: true
           # Uses the releasetag output exposed by the Collect Release Tag step to set the tag under v2
-          tags: phenixblue/imageswap:${{ steps.prep.outputs.releasetag }},phenixblue/imageswap:latest
+          tags: thewebroot/imageswap:${{ steps.prep.outputs.releasetag }},thewebroot/imageswap:latest

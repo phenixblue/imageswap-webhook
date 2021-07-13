@@ -62,7 +62,7 @@ jobs:
         # Load image into local docker default context
         outputs: type=docker
         # Uses the releasetag output exposed by the Collect Release SHA Tag step to set the tag under v2
-        tags: phenixblue/imageswap-init:${{ steps.prep.outputs.releasetag }}
+        tags: thewebroot/imageswap-init:${{ steps.prep.outputs.releasetag }}
 
 
     - name: Build imageswap Container Image
@@ -77,7 +77,7 @@ jobs:
         # Load image into local docker default context
         outputs: type=docker
         # Uses the releasetag output exposed by the Collect Release SHA Tag step to set the tag under v2
-        tags: phenixblue/imageswap:${{ steps.prep.outputs.releasetag }}
+        tags: thewebroot/imageswap:${{ steps.prep.outputs.releasetag }}
 
     - name: Setup KinD Cluster
       timeout-minutes: 10
