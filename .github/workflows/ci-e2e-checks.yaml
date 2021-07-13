@@ -85,6 +85,7 @@ jobs:
       with:
           version: "v0.9.0"
           image: ${{ matrix.kind-node-image }}
+          wait: 600
 
     - name: Install ImageSwap
       timeout-minutes: 10
@@ -108,6 +109,8 @@ jobs:
         kubectl logs -n imageswap-system -l app=imageswap
         kubectl get events -n imageswap-system
         kubectl describe pods -n imageswap-system -l app=imageswap
+        kubectl get nodes -o wide
+        docker ps -a
         kubectl wait --for=condition=Ready pods -l app=imageswap -n imageswap-system
         while [ "${READY_REPLICAS}" != "${EXPECTED_REPLICAS}" ]; do
           READY_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.readyReplicas}')
