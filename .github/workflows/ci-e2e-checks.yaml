@@ -104,6 +104,7 @@ jobs:
         EXPECTED_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.replicas}')
         READY_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.readyReplicas}')
         kubectl get pods -n imageswap-system
+        kubectl logs -n imageswap-system -l app=imageswap
         while [ "${READY_REPLICAS}" != "${EXPECTED_REPLICAS}" ]; do
           READY_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.readyReplicas}')
           echo "Replicas aren't all ready yet: ${READY_REPLICAS:=0}/${EXPECTED_REPLICAS}"
