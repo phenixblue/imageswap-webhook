@@ -106,7 +106,9 @@ jobs:
         kubectl get pods -n imageswap-system
         sleep 30
         kubectl logs -n imageswap-system -l app=imageswap
-        wait --for=condition=Ready pods -l app=imageswap -n imageswap-system
+        kubectl get events -n imageswap-system
+        kubectl describe pods -n imageswap-system -l app=imageswap
+        kubectl wait --for=condition=Ready pods -l app=imageswap -n imageswap-system
         while [ "${READY_REPLICAS}" != "${EXPECTED_REPLICAS}" ]; do
           READY_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.readyReplicas}')
           echo "Replicas aren't all ready yet: ${READY_REPLICAS:=0}/${EXPECTED_REPLICAS}"
