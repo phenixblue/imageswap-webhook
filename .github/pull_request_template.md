@@ -15,6 +15,7 @@
 > /kind design
 > /kind documentation
 > /kind feature
+> /kind release
 
 **What this PR does / why we need it**:
 
