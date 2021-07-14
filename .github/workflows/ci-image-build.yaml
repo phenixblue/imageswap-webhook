@@ -43,7 +43,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push imageswap-init image to DockerHub
-        if: github.repository == 'phenixblue/imageswap'
+        if: github.repository == 'phenixblue/imageswap-webhook'
         timeout-minutes: 30
         uses: docker/build-push-action@v2
         with:
@@ -90,7 +90,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push imageswap image to DockerHub
-        if: github.repository == 'phenixblue/imageswap'
+        if: github.repository == 'phenixblue/imageswap-webhook'
         timeout-minutes: 30
         uses: docker/build-push-action@v2
         with:
