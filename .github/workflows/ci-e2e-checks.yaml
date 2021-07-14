@@ -83,7 +83,7 @@ jobs:
       timeout-minutes: 10
       uses: engineerd/setup-kind@v0.5.0
       with:
-          version: "v0.9.0"
+          version: "v0.11.1"
           image: ${{ matrix.kind-node-image }}
           wait: 600s
 
