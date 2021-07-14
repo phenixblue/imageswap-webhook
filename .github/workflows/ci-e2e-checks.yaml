@@ -85,7 +85,7 @@ jobs:
       with:
           version: "v0.11.1"
           image: ${{ matrix.kind-node-image }}
-          wait: 600s
+          wait: 360s
 
     - name: Install ImageSwap
       timeout-minutes: 10
@@ -102,21 +102,7 @@ jobs:
         make build-single-manifest
         echo "Install ImageSwap"
         make install
-        EXPECTED_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.replicas}')
-        READY_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.readyReplicas}')
-        kubectl get pods -n imageswap-system
-        sleep 30
-        kubectl logs -n imageswap-system -l app=imageswap
-        kubectl get events -n imageswap-system
-        kubectl describe pods -n imageswap-system -l app=imageswap
-        kubectl get nodes -o wide
-        docker ps -a
         kubectl wait --for=condition=Ready pods -l app=imageswap -n imageswap-system
-        while [ "${READY_REPLICAS}" != "${EXPECTED_REPLICAS}" ]; do
-          READY_REPLICAS=$(kubectl get deploy -n imageswap-system imageswap -o jsonpath='{.status.readyReplicas}')
-          echo "Replicas aren't all ready yet: ${READY_REPLICAS:=0}/${EXPECTED_REPLICAS}"
-          sleep 2
-        done
 
     - name: Configure Test Namespace
       timeout-minutes: 5
