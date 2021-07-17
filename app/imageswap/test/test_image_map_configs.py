@@ -182,6 +182,22 @@ class GoodConfig(unittest.TestCase):
         self.assertFalse(result)
         self.assertEqual(container_spec["image"], expected_image)
 
+    def test_map_config_with_library_image(self):
+    
+        """Method to test Map File config (map with library registry)"""
+    
+        imageswap.imageswap_maps_file = "./testing/map_files/map_file_library_image.conf"
+    
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "nginx:latest"
+    
+        expected_image = "harbor.example.com/library/nginx:latest"
+        result = imageswap.swap_image(container_spec)
+    
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
 
 if __name__ == "__main__":
     unittest.main()
