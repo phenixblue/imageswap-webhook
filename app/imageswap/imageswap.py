@@ -268,7 +268,7 @@ def swap_image(container_spec):
         if imageswap_maps_wildcard_key in swap_maps and swap_maps[imageswap_maps_wildcard_key] != "":
             wildcard_maps = str(swap_maps[imageswap_maps_wildcard_key]).split(",")
 
-        # Check if bare registry has a map specified
+        # Check if bare registry/registry+library has a map specified
         if image_registry_noport in swap_maps or image_registry_noport + "/library" in swap_maps:
 
             # Check for Library image (ie. empty strings for index 1 an 2 in image_split)
