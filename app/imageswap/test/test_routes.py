@@ -60,11 +60,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -80,11 +76,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -100,11 +92,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -123,11 +111,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -146,11 +130,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             # Decode base64 encoded patch string into Python List of Dicts. This allows for comparison without the List order impacting assertion
             result_patch = base64.b64decode(json.loads(result.data)["response"]["patch"]).decode()
@@ -171,11 +151,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -191,11 +167,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -214,11 +186,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -237,11 +205,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             # Decode base64 encoded patch string into Python List of Dicts. This allows for comparison without the List order impacting assertion
             result_patch = base64.b64decode(json.loads(result.data)["response"]["patch"]).decode()
@@ -262,11 +226,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -286,11 +246,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -309,11 +265,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -333,11 +285,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -358,11 +306,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -379,11 +323,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -401,11 +341,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
@@ -425,11 +361,7 @@ class RoutePatterns(unittest.TestCase):
 
             request_object_json = json.load(json_file)
 
-            result = self.app.post(
-                "/",
-                data=json.dumps(request_object_json),
-                headers={"Content-Type": "application/json"},
-            )
+            result = self.app.post("/", data=json.dumps(request_object_json), headers={"Content-Type": "application/json"},)
 
             self.assertEqual(result.status_code, 200)
             self.assertEqual(json.loads(result.data)["response"]["allowed"], True)
