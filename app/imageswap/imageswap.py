@@ -165,7 +165,7 @@ def mutate():
             "response": admission_response,
         }
 
-    app.logger.info("Sending Response to K8s API Server:")
+    app.logger.info("Sending Response to K8s API Server")
     app.logger.debug(f"Admission Review: {json.dumps(admissionReview)}")
 
     return jsonify(admissionReview)
@@ -237,6 +237,7 @@ def swap_image(container_spec):
     image_split = image.partition("/")
     wildcard_maps = {}
     no_registry = False
+    library_image = False
 
     # Check if first section is a Registry URL
     if "." in image_split[0]:
@@ -267,8 +268,21 @@ def swap_image(container_spec):
         if imageswap_maps_wildcard_key in swap_maps and swap_maps[imageswap_maps_wildcard_key] != "":
             wildcard_maps = str(swap_maps[imageswap_maps_wildcard_key]).split(",")
 
-        # Check if bare registry has a map specified
-        if image_registry_noport in swap_maps:
+        # Check if bare registry/registry+library has a map specified
+        if image_registry_noport in swap_maps or image_registry_noport + "/library" in swap_maps:
+
+            # Check for Library image (ie. empty strings for index 1 an 2 in image_split)
+            if image_split[1] == "" and image_split[2] == "":
+                library_image = True
+                app.logger.debug("Image is a Library image")
+            else:
+                app.logger.debug("Image is not a Library image")
+
+            if library_image and image_registry_noport + "/library" in swap_maps:
+
+                image_registry_noport = image_registry_noport + "/library"
+                app.logger.info(f"Library Image detected and matching Map found: {image_registry_noport}")
+                app.logger.debug("More info on Library Image: https://docs.docker.com/registry/introduction/#understanding-image-naming")
 
             # If the swap map has no value, swapping should be skipped
             if swap_maps[image_registry_noport] == "":
