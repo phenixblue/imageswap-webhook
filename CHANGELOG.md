@@ -67,3 +67,33 @@ ImageSwap v1.4.0 requires some new configuration settings and makes major change
 - Bump jinja2 from 2.11.2 to 2.11.3 in /app/imageswap (#28 authored by dependabot)
 - Bump urllib3 from 1.26.3 to 1.26.4 in /app/imageswap-init (#26 authored by dependabot)
 - Bump urllib3 from 1.26.4 to 1.26.5 in /app/imageswap-init (#25 authored by dependabot)
+
+## 1.4.1
+
+This release adds logic to process maps for library level images differently from images nested under a specific project/organization.
+
+**EXAMPLE:**
+
+```
+docker.io:harbor.example.com
+docker.io-library:harbor.example.com/library
+```
+
+This would be the output for the library vs. non-library images:
+
+`nginx:latest` **->** `harbor.example.com/library/nginx:latest`
+
+`tmobile/magtape:latest` **->** `harbor.example.com/tmobile/magtape:latest`
+
+This is applicable for use cases such as the [Harbor projects image pull-through cache](https://goharbor.io/docs/2.1.0/administration/configure-proxy-cache/)
+
+- See the [maps examples](https://github.com/phenixblue/imageswap-webhook/blob/9e8d9abb9ed9b7e480140e64ff730a4c4eaf716c/README.md#maps-mode) for specific syntax on using the library map
+- [Docker documentation for image naming](https://docs.docker.com/registry/introduction/#understanding-image-naming)
+
+### Enhancements
+
+- Add logic to handle maps for library level images (#42)
+
+### Acknowledgements
+
+- Thanks to @fragolinux for the suggestion!
