@@ -145,7 +145,7 @@ The only mapping that is required in the `map_file` is the `default` map. The `d
 
 A map definition that includes a `key` only can be used to disable image swapping for that particular registry.
 
-A map file can also include a special `noswap_wildcards` mapping that disabled swapping based on greedy pattern matching. Don't actually include an `*` in this section. A value of `example` is essentialy equivalent to `*example*`. [See examples below for more detail](#example-maps-configs)
+A map file can also include a special `noswap_wildcards` mapping that disables swapping based on greedy pattern matching. Don't actually include an `*` in this section. A value of `example` is essentialy equivalent to `*example*`. [See examples below for more detail](#example-maps-configs)
 
 By adding additional mappings to the `map file`, you can have much finer granularity to control swapping logic per registry.
 
@@ -175,7 +175,7 @@ By adding additional mappings to the `map file`, you can have much finer granula
 
   With this, all images will be swapped except those that already match the `harbor.internal.example.com` pattern
 
-- Enabling swapping for all registries except those that match the `example.com` pattern
+- Enable swapping for all registries except those that match the `example.com` pattern
 
   ```
   default:harbor.internal.example.com
@@ -198,6 +198,24 @@ By adding additional mappings to the `map file`, you can have much finer granula
   ```
 
   With this, the `edge.example.com/image:latest` image would skip swapping, but `external.example.com/image:latest` would be swapped to `harbor.internal.example.com/image:latest`
+
+- Enable different swapping for top level "library" images vs. images that are nested under a project/org
+
+  Example library image: `nginx:latest`
+
+  This format is a shortcut for `docker.io/library/nginx:latest`
+
+  [Official Docker documentation on image naming](https://docs.docker.com/registry/introduction/#understanding-image-naming)
+
+  ```
+  default:
+  docker.io:
+  docker.io/library:harbor.example.com/library
+  ```
+
+  This map uses a special syntax of adding `/library` to a registry for the key in map file.
+
+  This configuration can be useful for scenarios like [Harbor's](https://goharbor.io) [image proxy cache](https://goharbor.io/docs/2.1.0/administration/configure-proxy-cache/) feature].
 
 ### LEGACY Mode
 
