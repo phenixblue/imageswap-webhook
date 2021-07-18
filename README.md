@@ -215,6 +215,8 @@ By adding additional mappings to the `map file`, you can have much finer granula
 
   This map uses a special syntax of adding `/library` to a registry for the key in map file.
 
+  With this, the `nginx:latest` image would be swapped to `harbor.example.com/library/nginx:latest`, but the `tmobile/magtape:latest` image would be swapped to `harbor.example.com/tmobile/magtape:latest`
+
   This configuration can be useful for scenarios like [Harbor's](https://goharbor.io) [image proxy cache](https://goharbor.io/docs/2.1.0/administration/configure-proxy-cache/) feature].
 
 ### LEGACY Mode
