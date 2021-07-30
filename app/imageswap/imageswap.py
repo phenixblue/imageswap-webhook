@@ -240,7 +240,7 @@ def swap_image(container_spec):
     library_image = False
 
     # Check if first section is a Registry URL
-    if "." in image_split[0]:
+    if "." in image_split[0] and image_split[1] != "" and image_split[2] != "":
         image_registry = image_split[0]
     else:
         # Set docker.io if no registry is detected
