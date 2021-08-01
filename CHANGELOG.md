@@ -97,3 +97,17 @@ This is applicable for use cases such as the [Harbor projects image pull-through
 ### Acknowledgements
 
 - Thanks to @fragolinux for the suggestion!
+
+## 1.4.2
+
+This release fixes a bug in the image swap logic related to a scenario where a library level image is used and the image tag contains `.`'s.
+
+More info can be found in this issue: #46
+
+### Enahncements
+
+- Add fix for dotted tag on library image (#47)
+
+### Acknowledgements
+
+- Thanks to @adavenpo for bringing this to our attention
