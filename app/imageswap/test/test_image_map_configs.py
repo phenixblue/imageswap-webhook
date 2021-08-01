@@ -198,6 +198,22 @@ class GoodConfig(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
+    def test_map_config_with_library_image_with_dotted_tag(self):
+
+        """Method to test Map File config (map with library registry and a tag that contains a ".")"""
+
+        imageswap.imageswap_maps_file = "./testing/map_files/map_file_library_image.conf"
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "rabbitmq:3.8.18-management"
+
+        expected_image = "harbor.example.com/library/rabbitmq:3.8.18-management"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -209,6 +209,20 @@ class ImageFormats(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
+    def test_image_format_library_image_with_dotted_tag(self):
+
+        """Method to test MAP based swap (library image with tag that contains a ".": \"rabbitmq:3.8.18-management\")"""
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "rabbitmq:3.8.18-management"
+
+        expected_image = "my.example.com/mirror-docker.io/rabbitmq:3.8.18-management"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
 
 if __name__ == "__main__":
     unittest.main()
