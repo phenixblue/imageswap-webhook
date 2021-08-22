@@ -54,6 +54,22 @@ class BadConfig(unittest.TestCase):
         self.assertFalse(result)
         self.assertEqual(container_spec["image"], expected_image)
 
+    def test_map_config_with_port_in_key_and_old_separator(self):
+
+        """Method to test Map File config (map with port in key and old separator ":")"""
+
+        imageswap.imageswap_maps_file = "./testing/map_files/map_file.conf"
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "registry2.bar.com:8443/jmsearcy/twrtools:latest"
+
+        expected_image = "default.example.com/jmsearcy/twrtools:latest"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
 
 @patch("imageswap.imageswap_mode", "MAPS")
 @patch("imageswap.imageswap_maps_file", "./testing/map_files/map_file.conf")
@@ -213,6 +229,53 @@ class GoodConfig(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
+
+    def test_map_config_with_port_in_key(self):
+
+        """Method to test Map File config (map with port in key)"""
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "registry.waldo.com:8443/jmsearcy/twrtools:latest"
+
+        expected_image = "registry.garply.com/jmsearcy/twrtools:latest"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
+    def test_map_config_with_port_in_value(self):
+
+        """Method to test Map File config (map with port in value)"""
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "registry.foo.com/jmsearcy/twrtools:latest"
+
+        expected_image = "localhost:30003/foo/jmsearcy/twrtools:latest"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
+    def test_map_config_with_port_in_key_and_value(self):
+
+        """Method to test Map File config (map with port in key & value)"""
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "registry.bar.com:8443/jmsearcy/twrtools:latest"
+
+        expected_image = "registry.baz.com:30003/bar/jmsearcy/twrtools:latest"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
+#registry.waldo.com:8443:registry.garply.com # Swap map key that includes a port
+#registry.foo.com:localhost:30003/foo # Swap map value that includes a port
+#registry.bar.com:8443:registry.baz.com:30003/bar # Swap map key & value that include a port
+#registry2.bar.com:8443:registry2.baz.com:30003/bar # Bad config without "::" separator
 
 
 if __name__ == "__main__":
