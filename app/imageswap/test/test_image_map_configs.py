@@ -62,7 +62,23 @@ class BadConfig(unittest.TestCase):
 
         container_spec = {}
         container_spec["name"] = "test-container"
-        container_spec["image"] = "registry2.bar.com:8443/jmsearcy/twrtools:latest"
+        container_spec["image"] = "registry2.bar.com/jmsearcy/twrtools:latest"
+
+        expected_image = "default.example.com/jmsearcy/twrtools:latest"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
+    def test_map_config_with_port_in_value_and_old_separator(self):
+
+        """Method to test Map File config (map with port in value and old separator ":")"""
+
+        imageswap.imageswap_maps_file = "./testing/map_files/map_file.conf"
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "registry3.bar.com:8443/jmsearcy/twrtools:latest"
 
         expected_image = "default.example.com/jmsearcy/twrtools:latest"
         result = imageswap.swap_image(container_spec)
