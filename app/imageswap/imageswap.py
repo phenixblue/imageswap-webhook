@@ -219,12 +219,16 @@ def build_swap_map(map_file):
                 (key, val) = line.split("::")
             # Check for old style separator (":") and verify the map splits correctly
             elif ":" in line and len(line.split(":")) == 2:
-                app.logger.warning(f"Map defined with \":\" as separator. This syntax is now deprecated. Please use \"::\" to separate the key and value in the map file: {line}")
+                app.logger.warning(
+                    f'Map defined with ":" as separator. This syntax is now deprecated. Please use "::" to separate the key and value in the map file: {line}'
+                )
                 (key, val) = line.split(":")
             else:
                 # Check if map key contains a ":port" and that the new style separator ("::") is not used
                 if line.count(":") > 1 and "::" not in line:
-                    app.logger.warning(f"Invalid map is specified. A port in the map key or value requires using \"::\" as the separator. Skipping map for line: {line}")
+                    app.logger.warning(
+                        f'Invalid map is specified. A port in the map key or value requires using "::" as the separator. Skipping map for line: {line}'
+                    )
                 # Warn for any other invalid map syntax
                 else:
                     app.logger.warning(f"Invalid map is specified. Incorrect syntax for map definition. Skipping map for line: {line}")
