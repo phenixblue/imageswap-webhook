@@ -288,11 +288,6 @@ class GoodConfig(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
-#registry.waldo.com:8443:registry.garply.com # Swap map key that includes a port
-#registry.foo.com:localhost:30003/foo # Swap map value that includes a port
-#registry.bar.com:8443:registry.baz.com:30003/bar # Swap map key & value that include a port
-#registry2.bar.com:8443:registry2.baz.com:30003/bar # Bad config without "::" separator
-
 
 if __name__ == "__main__":
     unittest.main()
