@@ -270,7 +270,16 @@ def swap_image(container_spec):
     image_registry_key = image_registry
 
     # Check the imageswap mode
-    if imageswap_mode.lower() == "maps":
+    if imageswap_mode.lower() == "exact":
+        app.logger.info('ImageSwap Webhook running in "EXACT" mode')
+        swap_maps = build_swap_map(imageswap_maps_file)
+        app.logger.debug(f"Swap Maps:\n{swap_maps}")
+        if image not in swap_maps:
+            return False
+        new_image = swap_maps[image]
+
+    
+    elif imageswap_mode.lower() == "maps":
 
         app.logger.info('ImageSwap Webhook running in "MAPS" mode')
 
