@@ -125,27 +125,31 @@ MAPS Mode enables a high degree of flexibility for the ImageSwap Webhook.
 
 In MAPS mode, the webhook reads from a `map file` that defines one or more mappings (key/value pairs) for imageswap logic. With the `map file` configuration, swap logic for multiple registries and patterns can be configured. In contrast, the LEGACY mode only allowed for a single `IMAGE_PREFIX` to be defined for image swaps.
 
-A `map file` is composed of key/value pairs separated by a `:` and looks like this:
+A `map file` is composed of key/value pairs separated by a `::` and looks like this:
 
 ```
-default:default.example.com
-docker.io:my.example.com/mirror-
-quay.io:quay.example3.com
-gitlab.com:registry.example.com/gitlab
-#gcr.io: # This is a comment 
-cool.io:
-registry.internal.twr.io:registry.example.com
-harbor.geo.pks.twr.io:harbor2.com ###### This is a comment with many symbols
-noswap_wildcards:twr.io, walrus.io
+default::default.example.com
+docker.io::my.example.com/mirror-
+quay.io::quay.example3.com
+gitlab.com::registry.example.com/gitlab
+#gcr.io:: # This is a comment 
+cool.io::
+registry.internal.twr.io::registry.example.com
+harbor.geo.pks.twr.io::harbor2.com ###### This is a comment with many symbols
+noswap_wildcards::twr.io, walrus.io
 ```
 
 NOTE: Lines in the `map file` that are commented out with a leading `#` are ignored. Trailing comments following a map definition are also ignored.
+
+NOTE: Previous versions of ImageSwap used a single `:` syntax to separate the key and value portions of a map definition. This syntax is deprecated as of v1.4.3 and will be removed in future versions. Please be sure to update any existing map file configurations to use the new syntax (ie. `::`).
+
+NOTE: Prior to v1.4.3 any use of a registry that includes a port for the key of a map definition will result in errors.
 
 The only mapping that is required in the `map_file` is the `default` map. The `default` map alone provides similar functionality to the `LEGACY` mode.
 
 A map definition that includes a `key` only can be used to disable image swapping for that particular registry.
 
-A map file can also include a special `noswap_wildcards` mapping that disables swapping based on greedy pattern matching. Don't actually include an `*` in this section. A value of `example` is essentialy equivalent to `*example*`. [See examples below for more detail](#example-maps-configs)
+A map file can also include a special `noswap_wildcards` mapping that disables swapping based on greedy pattern matching. Don't actually include an `*` in this section. A value of `example` is essentially equivalent to `*example*`. [See examples below for more detail](#example-maps-configs)
 
 By adding additional mappings to the `map file`, you can have much finer granularity to control swapping logic per registry.
 
@@ -156,21 +160,21 @@ By adding additional mappings to the `map file`, you can have much finer granula
 
   ```
   default:
-  gcr.io:harbor.internal.example.com
+  gcr.io::harbor.internal.example.com
   ```
 
 - Enable image swapping for all registries except `gcr.io`
 
   ```
-  default: harbor.internal.example.com
-  gcr.io:
+  default::harbor.internal.example.com
+  gcr.io::
   ```
 
 - Imitate LEGACY functionality as close as possible
 
   ```
-  default:harbor.internal.example.com
-  noswap_wildcards:harbor.internal.example.com
+  default::harbor.internal.example.com
+  noswap_wildcards::harbor.internal.example.com
   ```
 
   With this, all images will be swapped except those that already match the `harbor.internal.example.com` pattern
@@ -178,8 +182,8 @@ By adding additional mappings to the `map file`, you can have much finer granula
 - Enable swapping for all registries except those that match the `example.com` pattern
 
   ```
-  default:harbor.internal.example.com
-  noswap_wildcards:example.com
+  default::harbor.internal.example.com
+  noswap_wildcards::example.com
   ```
 
   With this, images that have any part of the registry that matches `example.com` will skip the swap logic
@@ -208,9 +212,9 @@ By adding additional mappings to the `map file`, you can have much finer granula
   [Official Docker documentation on image naming](https://docs.docker.com/registry/introduction/#understanding-image-naming)
 
   ```
-  default:
-  docker.io:
-  docker.io/library:harbor.example.com/library
+  default::
+  docker.io::
+  docker.io/library::harbor.example.com/library
   ```
 
   This map uses a special syntax of adding `/library` to a registry for the key in map file.
