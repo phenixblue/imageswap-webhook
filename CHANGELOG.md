@@ -104,10 +104,25 @@ This release fixes a bug in the image swap logic related to a scenario where a l
 
 More info can be found in this issue: #46
 
-### Enahncements
+### Enhancements
 
 - Add fix for dotted tag on library image (#47)
 
 ### Acknowledgements
 
 - Thanks to @adavenpo for bringing this to our attention
+
+## 1.4.3
+
+This release moves to using a new syntax (`::`) to separate the key and value portions of a map definition in the maps file. Backwards compatibility is maintained for the existing `:` syntax, but this has been deprecated and should not be used. Please update any existing map configurations to use the new syntax.
+
+This release also adds additional validation to catch errors associated with specifying a registry in a map definition key that includes the `:<port_number>` syntax. Previously this would result in an error and a stack trace. This is now handled gracefully and the new map separator syntax should allow for registries to include ports going forward.
+
+### Enhancements
+
+- Add support for new map definition deparator syntax (#50)
+
+### Acknowledgements
+
+- Thanks to @sblair-metrostar for bringing this to our attention
+
