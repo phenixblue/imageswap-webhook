@@ -201,6 +201,7 @@ def build_swap_map(map_file):
     """Function to build a map of imageswap customizations"""
 
     maps = {}
+    exact_maps = {}
 
     # Read maps from file
     with open(map_file, "r") as f:
@@ -214,6 +215,9 @@ def build_swap_map(map_file):
                 line = re.sub(r"(^.*[^#])(#.*$)", r"\1", line)
             # Trim whitespace
             line = re.sub(r" ", "", line.rstrip())
+            # Skip empty lines
+            if not line:
+                continue
             # Check for new style separator ("::") and verify the map splits correctly
             if "::" in line and len(line.split("::")) == 2:
                 (key, val) = line.split("::")
@@ -234,11 +238,15 @@ def build_swap_map(map_file):
                     app.logger.warning(f"Invalid map is specified. Incorrect syntax for map definition. Skipping map for line: {line}")
                 continue
             # Store processed line key/value pair in map
-            maps[key] = val
+            if key.startswith("[EXACT]"):
+                key = key[7:].lstrip()
+                exact_maps[key] = val
+            else:
+                maps[key] = val
 
     f.close()
 
-    return maps
+    return (exact_maps, maps)
 
 
 ################################################################################
@@ -274,83 +282,88 @@ def swap_image(container_spec):
 
         app.logger.info('ImageSwap Webhook running in "MAPS" mode')
 
-        swap_maps = build_swap_map(imageswap_maps_file)
+        (exact_maps, swap_maps)= build_swap_map(imageswap_maps_file)
 
         app.logger.debug(f"Swap Maps:\n{swap_maps}")
+        app.logger.debug(f"Exact Maps:\n{exact_maps}")
 
-        # Check if Registry portion includes a ":<port_number>"
-        if ":" in image_registry:
-            image_registry_noport = image_registry.partition(":")[0]
+        if image in exact_maps:
+            app.logger.debug("found exact mapping")
+            new_image = exact_maps[image]
         else:
-            image_registry_noport = image_registry
-
-        if image_registry not in swap_maps and image_registry_noport in swap_maps:
-            image_registry_key = image_registry_noport
-
-        # Verify the default map exists or skip swap
-        if imageswap_maps_default_key not in swap_maps:
-            app.logger.warning(f'You don\'t have a "{imageswap_maps_default_key}" entry in your ImageSwap Map config, skipping swap')
-            return False
-
-        # Check for noswap wildcards in map file
-        if imageswap_maps_wildcard_key in swap_maps and swap_maps[imageswap_maps_wildcard_key] != "":
-            wildcard_maps = str(swap_maps[imageswap_maps_wildcard_key]).split(",")
-
-        # Check if registry or registry+library has a map specified
-        if image_registry_key in swap_maps or image_registry_key + "/library" in swap_maps:
-
-            # Check for Library image (ie. empty strings for index 1 an 2 in image_split)
-            if image_split[1] == "" and image_split[2] == "":
-                library_image = True
-                app.logger.debug("Image is a Library image")
+            # Check if Registry portion includes a ":<port_number>"
+            if ":" in image_registry:
+                image_registry_noport = image_registry.partition(":")[0]
             else:
-                app.logger.debug("Image is not a Library image")
-
-            if library_image and image_registry_key + "/library" in swap_maps:
-
-                image_registry_key = image_registry_key + "/library"
-                app.logger.info(f"Library Image detected and matching Map found: {image_registry_key}")
-                app.logger.debug("More info on Library Image: https://docs.docker.com/registry/introduction/#understanding-image-naming")
-
-            # If the swap map has no value, swapping should be skipped
-            if swap_maps[image_registry_key] == "":
-                app.logger.debug(f'Swap map for "{image_registry_key}" has no value assigned, skipping swap')
+                image_registry_noport = image_registry
+    
+            if image_registry not in swap_maps and image_registry_noport in swap_maps:
+                image_registry_key = image_registry_noport
+    
+            # Verify the default map exists or skip swap
+            if imageswap_maps_default_key not in swap_maps:
+                app.logger.warning(f'You don\'t have a "{imageswap_maps_default_key}" entry in your ImageSwap Map config, skipping swap')
                 return False
-            # If the image prefix ends with "-" just append existing image (minus any ":<port_number>")
-            elif swap_maps[image_registry_key][-1] == "-":
-                if no_registry:
-                    new_image = swap_maps[image_registry_key] + image_registry_noport + "/" + re.sub(r":.*/", "/", image)
+    
+            # Check for noswap wildcards in map file
+            if imageswap_maps_wildcard_key in swap_maps and swap_maps[imageswap_maps_wildcard_key] != "":
+                wildcard_maps = str(swap_maps[imageswap_maps_wildcard_key]).split(",")
+    
+            # Check if registry or registry+library has a map specified
+            if image_registry_key in swap_maps or image_registry_key + "/library" in swap_maps:
+    
+                # Check for Library image (ie. empty strings for index 1 an 2 in image_split)
+                if image_split[1] == "" and image_split[2] == "":
+                    library_image = True
+                    app.logger.debug("Image is a Library image")
                 else:
-                    new_image = swap_maps[image_registry_key] + re.sub(r":.*/", "/", image)
-            # If the image registry pattern is found in the original image
-            elif image_registry_key in image:
-                new_image = re.sub(image_registry_key, swap_maps[image_registry_key], image)
-            # For everything else
-            else:
-                new_image = swap_maps[image_registry_key] + "/" + image
-
-            app.logger.debug(f'Swap Map = "{image_registry_key}" : "{swap_maps[image_registry_key]}"')
-
-        # Check if any of the noswap wildcard patterns from the swap map exist within the original image
-        elif len(wildcard_maps) > 0 and any(noswap in image for noswap in wildcard_maps):
-            app.logger.debug(f"Image matches a configured noswap_wildcard pattern, skipping swap")
-            app.logger.debug(f'Swap Map = "noswap_wilcard" : "{wildcard_maps}"')
-            return False
-        # Using Default image swap map
-        else:
-
-            app.logger.debug(f'No Swap map for "{image_registry_key}" detected, using default map')
-            app.logger.debug(f'Swap Map = "default" : "{swap_maps[imageswap_maps_default_key]}"')
-
-            if swap_maps[imageswap_maps_default_key] == "":
-                app.logger.debug(f"Default map has no value assigned, skipping swap")
+                    app.logger.debug("Image is not a Library image")
+    
+                if library_image and image_registry_key + "/library" in swap_maps:
+    
+                    image_registry_key = image_registry_key + "/library"
+                    app.logger.info(f"Library Image detected and matching Map found: {image_registry_key}")
+                    app.logger.debug("More info on Library Image: https://docs.docker.com/registry/introduction/#understanding-image-naming")
+    
+                # If the swap map has no value, swapping should be skipped
+                if swap_maps[image_registry_key] == "":
+                    app.logger.debug(f'Swap map for "{image_registry_key}" has no value assigned, skipping swap')
+                    return False
+                # If the image prefix ends with "-" just append existing image (minus any ":<port_number>")
+                elif swap_maps[image_registry_key][-1] == "-":
+                    if no_registry:
+                        new_image = swap_maps[image_registry_key] + image_registry_noport + "/" + re.sub(r":.*/", "/", image)
+                    else:
+                        new_image = swap_maps[image_registry_key] + re.sub(r":.*/", "/", image)
+                # If the image registry pattern is found in the original image
+                elif image_registry_key in image:
+                    new_image = re.sub(image_registry_key, swap_maps[image_registry_key], image)
+                # For everything else
+                else:
+                    new_image = swap_maps[image_registry_key] + "/" + image
+    
+                app.logger.debug(f'Swap Map = "{image_registry_key}" : "{swap_maps[image_registry_key]}"')
+    
+            # Check if any of the noswap wildcard patterns from the swap map exist within the original image
+            elif len(wildcard_maps) > 0 and any(noswap in image for noswap in wildcard_maps):
+                app.logger.debug(f"Image matches a configured noswap_wildcard pattern, skipping swap")
+                app.logger.debug(f'Swap Map = "noswap_wilcard" : "{wildcard_maps}"')
                 return False
-            elif swap_maps[imageswap_maps_default_key][-1] == "-":
-                new_image = swap_maps[imageswap_maps_default_key] + image_registry_noport + "/" + image
-            elif image_registry_key in image:
-                new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
+            # Using Default image swap map
             else:
-                new_image = swap_maps[imageswap_maps_default_key] + "/" + image
+    
+                app.logger.debug(f'No Swap map for "{image_registry_key}" detected, using default map')
+                app.logger.debug(f'Swap Map = "default" : "{swap_maps[imageswap_maps_default_key]}"')
+    
+                if swap_maps[imageswap_maps_default_key] == "":
+                    app.logger.debug(f"Default map has no value assigned, skipping swap")
+                    return False
+                elif swap_maps[imageswap_maps_default_key][-1] == "-":
+                    new_image = swap_maps[imageswap_maps_default_key] + image_registry_noport + "/" + image
+                elif image_registry_key in image:
+                    new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
+                else:
+                    new_image = swap_maps[imageswap_maps_default_key] + "/" + image
 
     # TO-DO (phenixblue): Remove this else block sometime in the future...
     # This "else" block maintains the legacy imageswap logic, which is now
