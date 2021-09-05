@@ -40,7 +40,6 @@ class ExactMapping(unittest.TestCase):
 
         pass
 
-
     def test_map_default(self):
 
         """Method to test that default mapping is working"""
@@ -56,7 +55,6 @@ class ExactMapping(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
-
 
     def test_map_host(self):
 
@@ -74,7 +72,6 @@ class ExactMapping(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
-
     def test_map_exact_helloworld(self):
 
         """Method to test Map File config (default swap map has no value)"""
@@ -90,7 +87,6 @@ class ExactMapping(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
-
 
     def test_map_exact_ubuntu(self):
 
@@ -108,7 +104,6 @@ class ExactMapping(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
-
     def test_map_mysqlserver(self):
 
         """Method to test Map File config (default swap map has no value)"""
@@ -124,7 +119,6 @@ class ExactMapping(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
-
 
     def test_map_mysqlserver56(self):
 
@@ -142,7 +136,6 @@ class ExactMapping(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
-
     def test_map_exact_nvcr(self):
 
         """Method to test Map File config (default swap map has no value)"""
@@ -158,7 +151,6 @@ class ExactMapping(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
-
 
 
 if __name__ == "__main__":
