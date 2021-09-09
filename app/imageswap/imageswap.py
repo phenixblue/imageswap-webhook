@@ -413,8 +413,11 @@ def main():
     app.logger.info("ImageSwap v1.4.2patched Startup")
 
     app.run(
-        #host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
-        host="0.0.0.0", port=5000, debug=False, threaded=True,
+        # host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
+        host="0.0.0.0",
+        port=5000,
+        debug=False,
+        threaded=True,
     )
 
 
