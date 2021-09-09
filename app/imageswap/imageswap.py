@@ -67,7 +67,6 @@ def mutate():
     workload_metadata = modified_spec["request"]["object"]["metadata"]
     workload_type = modified_spec["request"]["kind"]["kind"]
     namespace = modified_spec["request"]["namespace"]
-    needs_patch = False
 
     app.logger.info("##################################################################")
 
@@ -89,6 +88,9 @@ def mutate():
 
     app.logger.debug(json.dumps(request.json))
 
+    # flag, whether there were any changes for at lease one image.
+    needs_patch = False
+
     # Skip patching if disable label is found and set to "disable"
     if (
         "labels" in workload_metadata
@@ -97,7 +99,6 @@ def mutate():
     ):
 
         app.logger.info(f'Disable label "{imageswap_disable_label}=disabled" detected for "{workload}" {workload_type}", skipping image swap.')
-        needs_patch = False
 
     else:
 
@@ -107,28 +108,28 @@ def mutate():
             for container_spec in modified_spec["request"]["object"]["spec"]["containers"]:
 
                 app.logger.info(f"Processing container: {namespace}/{workload}")
-                needs_patch = swap_image(container_spec)
+                needs_patch = swap_image(container_spec) or needs_patch
 
             if "initContainers" in modified_spec["request"]["object"]["spec"]:
 
                 for init_container_spec in modified_spec["request"]["object"]["spec"]["initContainers"]:
 
                     app.logger.info(f"Processing init-container: {namespace}/{workload}")
-                    needs_patch = swap_image(init_container_spec)
+                    needs_patch = swap_image(init_container_spec) or needs_patch
 
         else:
 
             for container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["containers"]:
 
                 app.logger.info(f"Processing container: {namespace}/{workload}")
-                needs_patch = swap_image(container_spec)
+                needs_patch = swap_image(container_spec) or needs_patch
 
             if "initContainers" in modified_spec["request"]["object"]["spec"]["template"]["spec"]:
 
                 for init_container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["initContainers"]:
 
                     app.logger.info(f"Processing init-container: {namespace}/{workload}")
-                    needs_patch = swap_image(init_container_spec)
+                    needs_patch = swap_image(init_container_spec) or needs_patch
 
     if needs_patch:
 
@@ -409,10 +410,11 @@ def swap_image(container_spec):
 
 def main():
 
-    app.logger.info("ImageSwap v1.4.2 Startup")
+    app.logger.info("ImageSwap v1.4.2patched Startup")
 
     app.run(
-        host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
+        #host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
+        host="0.0.0.0", port=5000, debug=False, threaded=True,
     )
 
 
