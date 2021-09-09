@@ -137,6 +137,8 @@ cool.io::
 registry.internal.twr.io::registry.example.com
 harbor.geo.pks.twr.io::harbor2.com ###### This is a comment with many symbols
 noswap_wildcards::twr.io, walrus.io
+# exact image mapping (full docker image name)
+[EXACT]ghcr.io/fantasy/coolstuff:v1.0::my-local-registry.com/patched-coolstuff:latest
 ```
 
 NOTE: Lines in the `map file` that are commented out with a leading `#` are ignored. Trailing comments following a map definition are also ignored.
@@ -153,7 +155,13 @@ A map file can also include a special `noswap_wildcards` mapping that disables s
 
 By adding additional mappings to the `map file`, you can have much finer granularity to control swapping logic per registry.
 
+#### Exact image mapping
 
+By using the prefix `[EXACT]` entries of the mapping file can be marked to be handled as exact image name matching. 
+Those entries `[EXACT]<source-imafe>::<target-image>` will be matched exactly against the <source-image> name (no logic about `docker.io` host or `:latest` image tag) and replaced with the <target-image> name.
+
+Exact image matches are handled before all other mapping rules.
+ 
 #### Example MAPS Configs
 
 - Disable image swapping for all registries EXCEPT `gcr.io`
