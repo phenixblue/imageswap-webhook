@@ -158,7 +158,7 @@ By adding additional mappings to the `map file`, you can have much finer granula
 #### Exact image mapping
 
 By using the prefix `[EXACT]` entries of the mapping file can be marked to be handled as exact image name matching. 
-Those entries `[EXACT]<source-imafe>::<target-image>` will be matched exactly against the <source-image> name (no logic about `docker.io` host or `:latest` image tag) and replaced with the <target-image> name.
+Those entries `[EXACT]<source-imafe>::<target-image>` will be matched exactly against the `<source-image>` name (no logic about `docker.io/` host or `:latest` image tag) and replaced with the `<target-image>` name.
 
 Exact image matches are handled before all other mapping rules.
  
