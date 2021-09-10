@@ -42,7 +42,7 @@ class ExactMapping(unittest.TestCase):
 
     def test_map_default(self):
 
-        """Method to test that default mapping is working"""
+        """Method to test that default mapping is working for config files with [EXACT] entries"""
 
         imageswap.imageswap_maps_file = "./testing/map_files/map_file_exact.conf"
 
@@ -58,7 +58,7 @@ class ExactMapping(unittest.TestCase):
 
     def test_map_host(self):
 
-        """Method to test that host based mapping is working"""
+        """Method to test that host based mapping is working for config files with [EXACT] entries"""
 
         imageswap.imageswap_maps_file = "./testing/map_files/map_file_exact.conf"
 
@@ -74,7 +74,7 @@ class ExactMapping(unittest.TestCase):
 
     def test_map_exact_helloworld(self):
 
-        """Method to test Map File config (default swap map has no value)"""
+        """Method to test exact mapping for entries without hostname, path and image tag"""
 
         imageswap.imageswap_maps_file = "./testing/map_files/map_file_exact.conf"
 
@@ -90,7 +90,7 @@ class ExactMapping(unittest.TestCase):
 
     def test_map_exact_ubuntu(self):
 
-        """Method to test Map File config (default swap map has no value)"""
+        """Method to test exact mapping for entries with hostname but without path and image tag"""
 
         imageswap.imageswap_maps_file = "./testing/map_files/map_file_exact.conf"
 
@@ -106,7 +106,7 @@ class ExactMapping(unittest.TestCase):
 
     def test_map_mysqlserver(self):
 
-        """Method to test Map File config (default swap map has no value)"""
+        """Method to test exact mapping for entries without hostname and image tag but with a path"""
 
         imageswap.imageswap_maps_file = "./testing/map_files/map_file_exact.conf"
 
@@ -122,7 +122,7 @@ class ExactMapping(unittest.TestCase):
 
     def test_map_mysqlserver56(self):
 
-        """Method to test Map File config (default swap map has no value)"""
+        """Method to test exact mapping for entries without hostname but with path and image tag"""
 
         imageswap.imageswap_maps_file = "./testing/map_files/map_file_exact.conf"
 
@@ -138,7 +138,7 @@ class ExactMapping(unittest.TestCase):
 
     def test_map_exact_nvcr(self):
 
-        """Method to test Map File config (default swap map has no value)"""
+        """Method to test exact mapping for entries with hostname and image tag (also a host based mapping exists for this host)"""
 
         imageswap.imageswap_maps_file = "./testing/map_files/map_file_exact.conf"
 
