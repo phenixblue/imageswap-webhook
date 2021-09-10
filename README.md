@@ -155,7 +155,7 @@ A map file can also include a special `noswap_wildcards` mapping that disables s
 
 By adding additional mappings to the `map file`, you can have much finer granularity to control swapping logic per registry.
 
-#### Exact image mapping
+#### Exact Image Mapping
 
 By using the prefix `[EXACT]` entries of the mapping file can be marked to be handled as exact image name matching. 
 Those entries `[EXACT]<source-image>::<target-image>` will be matched exactly against the `<source-image>` name (no logic about `docker.io/` host or `:latest` image tag) and replaced with the `<target-image>` name.
