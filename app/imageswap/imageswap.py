@@ -67,6 +67,8 @@ def mutate():
     workload_metadata = modified_spec["request"]["object"]["metadata"]
     workload_type = modified_spec["request"]["kind"]["kind"]
     namespace = modified_spec["request"]["namespace"]
+    # flag, whether there was at least one change, so that a patch has to be returned
+    needs_patch = False
 
     app.logger.info("##################################################################")
 
@@ -88,9 +90,6 @@ def mutate():
 
     app.logger.debug(json.dumps(request.json))
 
-    # flag, whether there were any changes for at lease one image.
-    needs_patch = False
-
     # Skip patching if disable label is found and set to "disable"
     if (
         "labels" in workload_metadata
@@ -99,6 +98,7 @@ def mutate():
     ):
 
         app.logger.info(f'Disable label "{imageswap_disable_label}=disabled" detected for "{workload}" {workload_type}", skipping image swap.')
+        needs_patch = False
 
     else:
 
