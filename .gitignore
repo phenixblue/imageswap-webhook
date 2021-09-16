@@ -9,3 +9,5 @@
 **/__pycache__
 .coverage
 .vscode
+/.project
+/.pydevproject
