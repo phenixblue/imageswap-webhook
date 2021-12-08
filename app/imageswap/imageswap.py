@@ -19,6 +19,7 @@ from flask import Flask, request, jsonify
 from logging.handlers import MemoryHandler
 from prometheus_client import Counter
 from prometheus_flask_exporter import PrometheusMetrics
+from kubernetes import client, config
 import base64
 import copy
 import datetime
@@ -33,6 +34,8 @@ app = Flask(__name__)
 # Set Global variables
 imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-system")
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
+imageswap_pull_secret_destination_name = "imageswap-shared-pull-secrets"
+imageswap_pull_secret_source_name = os.getenv("IMAGESWAP_PULL_SECRET_SOURCE_NAME")
 imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
 imageswap_mode = os.getenv("IMAGESWAP_MODE", "MAPS")
 imageswap_maps_file = os.getenv("IMAGESWAP_MAPS_FILE", "/app/maps/imageswap-maps.conf")
@@ -117,6 +120,8 @@ def mutate():
                     app.logger.info(f"Processing init-container: {namespace}/{workload}")
                     needs_patch = swap_image(init_container_spec) or needs_patch
 
+            add_image_pull_secrets(modified_spec["request"]["object"]["spec"], modified_spec["request"]["object"]["metadata"]["namespace"])
+
         else:
 
             for container_spec in modified_spec["request"]["object"]["spec"]["template"]["spec"]["containers"]:
@@ -130,6 +135,8 @@ def mutate():
 
                     app.logger.info(f"Processing init-container: {namespace}/{workload}")
                     needs_patch = swap_image(init_container_spec) or needs_patch
+
+            add_image_pull_secrets(modified_spec["request"]["object"]["spec"]["template"]["spec"], modified_spec["request"]["object"]["metadata"]["namespace"])
 
     if needs_patch:
 
@@ -408,18 +415,92 @@ def swap_image(container_spec):
 ################################################################################
 
 
+def add_image_pull_secrets(spec, namespace):
+
+    """adds imagePullSecrets to a k8s object"""
+
+    if imageswap_pull_secret_source_name:
+
+        configuration = client.Configuration()
+        core_api = client.CoreV1Api(client.ApiClient(configuration))
+
+        if "imagePullSecrets" not in spec:
+            spec["imagePullSecrets"] = []
+
+        # Make a copy of the secret in a pod in the target namespace if it doesn't already exist
+        if not any((x.get("name") == imageswap_pull_secret_destination_name for x in spec["imagePullSecrets"])):
+            spec["imagePullSecrets"].append({"name": imageswap_pull_secret_destination_name})
+
+        try:
+            # Read in secret from imageswap-system namespace
+            secret = core_api.read_namespaced_secret(imageswap_pull_secret_source_name, imageswap_namespace_name)
+
+            api_version = secret.api_version
+            data = secret.data
+            kind = secret.kind
+            secret_type = secret.type
+            metadata = {"name": imageswap_pull_secret_destination_name}
+
+            try:
+                # Create or update the secret in the target namespace
+                body = client.V1Secret(api_version=api_version, data=data, kind=kind, metadata=metadata, type=secret_type)
+
+                imageswap_secret = core_api.read_namespaced_secret(imageswap_pull_secret_destination_name, namespace)
+                api_response = core_api.replace_namespaced_secret(imageswap_pull_secret_destination_name, namespace, body)
+            except Exception as exception:
+                app.logger.info(f"Secret cannot be updated, attempting to create secret.")
+                api_response = core_api.create_namespaced_secret(namespace, body)
+
+        except Exception as exception:
+            app.logger.info(f"Cannot read in secret from imageswap-system namespace")
+
+
+################################################################################
+################################################################################
+################################################################################
+
+
+@app.before_first_request
+def init_imageswap():
+
+    if imageswap_pull_secret_source_name:
+        app.logger.info("Loading configuration for imagePullSecrets.")
+        try:
+            config.load_incluster_config()
+        except Exception as exception:
+            app.logger.info(f"Exception loading in-cluster configuration: {exception}")
+            try:
+                app.logger.info("Loading local kubeconfig")
+                config.load_kube_config()
+            except Exception as exception:
+                app.logger.error(f"Exception loading local kubeconfig: {exception}")
+                sys.exit(1)
+
+
+################################################################################
+################################################################################
+################################################################################
+
+
 def main():
 
     app.logger.info("ImageSwap v1.4.2 Startup")
-
     app.run(
-        host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
+        host="0.0.0.0",
+        port=5000,
+        debug=False,
+        threaded=True,
+        ssl_context=(
+            "./tls/cert.pem",
+            "./tls/key.pem",
+        ),
     )
 
 
 ################################################################################
 ################################################################################
 ################################################################################
+
 
 if __name__ == "__main__":
 

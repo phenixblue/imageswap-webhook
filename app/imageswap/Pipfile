@@ -12,6 +12,7 @@ prometheus-flask-exporter = "*"
 gunicorn = "*"
 werkzeug = "*"
 jsonpatch = "*"
+kubernetes = "~=11.0.0"
 
 [requires]
 python_version = "3.8"
