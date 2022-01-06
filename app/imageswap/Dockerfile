@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.8.12-alpine3.15
 
 LABEL maintainer=joe@twr.io
 
