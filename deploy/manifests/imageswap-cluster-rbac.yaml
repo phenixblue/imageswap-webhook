@@ -5,7 +5,7 @@ metadata:
   namespace: imageswap-system
   labels:
     app: imageswap
-    resource: clulsterrole
+    resource: clusterrole
 rules:
 - apiGroups:
   - admissionregistration.k8s.io
@@ -34,7 +34,7 @@ metadata:
   name: imageswap-read
   labels:
     app: imageswap
-    resource: clulsterrole
+    resource: clusterrole
 rules:
 - apiGroups:
   - ""
