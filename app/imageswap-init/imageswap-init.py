@@ -142,14 +142,15 @@ def build_k8s_csr(namespace, service_name, key):
     # Build Kubernetes CSR
     k8s_csr_meta = client.V1ObjectMeta(name=dns_names[1] + ".cert-request", namespace=namespace, labels={"app": "imageswap"},)
 
-    k8s_csr_spec = client.V1beta1CertificateSigningRequestSpec(
+    k8s_csr_spec = client.V1CertificateSigningRequestSpec(
         groups=["system:authenticated"],
         usages=["digital signature", "key encipherment", "server auth"],
         request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
+        signer_name="beta.eks.amazonaws.com/app-serving"
     )
 
-    k8s_csr = client.V1beta1CertificateSigningRequest(
-        api_version="certificates.k8s.io/v1beta1", kind="CertificateSigningRequest", metadata=k8s_csr_meta, spec=k8s_csr_spec,
+    k8s_csr = client.V1CertificateSigningRequest(
+        api_version="certificates.k8s.io/v1", kind="CertificateSigningRequest", metadata=k8s_csr_meta, spec=k8s_csr_spec,
     )
 
     logging.debug(f"CSR: {k8s_csr}\n")
@@ -235,11 +236,12 @@ def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
         logging.debug(f"Exception:\n{exception}\n")
         sys.exit(1)
 
-    new_k8s_csr_approval_conditions = client.V1beta1CertificateSigningRequestCondition(
+    new_k8s_csr_approval_conditions = client.V1CertificateSigningRequestCondition(
         last_update_time=datetime.datetime.now(datetime.timezone.utc),
         message=f"This certificate was approved by ImageSwap (pod: {imageswap_pod_name})",
         reason="ImageSwap-Approve",
         type="Approved",
+        status="True"
     )
 
     # Update the CSR status
@@ -621,8 +623,8 @@ def init_tls_pair(namespace):
             sys.exit(1)
 
     configuration = client.Configuration()
-    core_api = client.CoreV1Api(client.ApiClient(configuration))
-    certificates_api = client.CertificatesV1beta1Api(client.ApiClient(configuration))
+    core_api = client.CoreV1Api(client.ApiClient())
+    certificates_api = client.CertificatesV1Api(client.ApiClient())
 
     # Read existing secret
     tls_secret, tls_pair, secret_exists, imageswap_tls_byoc = read_tls_pair(namespace, imageswap_tls_pair_secret_name, tls_pair, core_api)
@@ -1112,8 +1114,10 @@ def init_mwc(namespace, imageswap_tls_byoc):
             sys.exit(1)
 
     configuration = client.Configuration()
-    core_api = client.CoreV1Api(client.ApiClient(configuration))
-    admission_api = client.AdmissionregistrationV1beta1Api(client.ApiClient(configuration))
+    configuration.ssl_ca_cert = '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+
+    core_api = client.CoreV1Api(client.ApiClient())
+    admission_api = client.AdmissionregistrationV1Api(client.ApiClient())
 
     mwc = read_mwc(admission_api)
     write_mwc(
