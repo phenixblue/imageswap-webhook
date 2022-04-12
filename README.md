@@ -26,6 +26,14 @@ Kubernetes APIs upgrade
 >**Deprecated APIs in 1.22** https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22 Because the end of support for some beta APIs the code received some important updates. Now you need to specify a signer for your Certificate Signing Request. You can take a look on the official documentation about API changes https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22.
 
 >**EKS 1.22** To use ImageSwap for EKS 1.22 you'll need to setup an Amazon exclusive signer `beta.eks.amazonaws.com/app-serving` https://docs.aws.amazon.com/eks/latest/userguide/cert-signing.html. Look at `client.V1CertificateSigningRequestSpec()` on `app/imageswap-init/imageswap-init.py`.
+```
+k8s_csr_spec = client.V1CertificateSigningRequestSpec(
+        groups=["system:authenticated"],
+        usages=["digital signature", "key encipherment", "server auth"],
+        request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
+        signer_name="beta.eks.amazonaws.com/app-serving"
+    )
+```
 
 ImageSwap v1.4.0 has major changes
 
