@@ -15,11 +15,17 @@ jobs:
     strategy:
       matrix:
         k8s-version:
+          - v1.22
+          - v1.21
           - v1.20
           - v1.19
           - v1.18
           - v1.17
         include:
+          - k8s-version: v1.22
+            kind-node-image: kindest/node:v1.22.7@sha256:c195c17f2a9f6ad5bbddc9eb8bad68fa21709162aabf2b84e4a3896db05c0808
+          - k8s-version: v1.21
+            kind-node-image: kindest/node:v1.21.10@sha256:f35554e42a1081cfc9f7bce5635aea15996e4ec842b689e1508a8746de7d309b
           - k8s-version: v1.20
             kind-node-image: kindest/node:v1.20.2@sha256:8f7ea6e7642c0da54f04a7ee10431549c0257315b3a634f6ef2fecaaedb19bab
           - k8s-version: v1.19
@@ -109,7 +115,7 @@ jobs:
       run: |
         make ns-create-test
 
-    - name: Install Tools 
+    - name: Install Tools
       timeout-minutes: 5
       run: |
         sudo add-apt-repository ppa:rmescandon/yq
