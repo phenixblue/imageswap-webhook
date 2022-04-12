@@ -166,7 +166,7 @@ data:
 apiVersion: v1
 data:
   imageswap-mwc: |
-    apiVersion: admissionregistration.k8s.io/v1beta1
+    apiVersion: admissionregistration.k8s.io/v1
     kind: MutatingWebhookConfiguration
     metadata:
       name: imageswap-webhook
@@ -193,6 +193,8 @@ data:
               - "pods"
         failurePolicy: Fail
         reinvocationPolicy: IfNeeded
+        sideEffects: None
+        admissionReviewVersions: ["v1"]
         namespaceSelector:
           matchLabels:
             k8s.twr.io/imageswap: "enabled"
@@ -233,7 +235,7 @@ spec:
   type: ClusterIP
 
 ---
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: imageswap-pdb
