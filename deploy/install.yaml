@@ -191,10 +191,10 @@ data:
               - "*"
             resources:
               - "pods"
-        failurePolicy: Fail
-        reinvocationPolicy: IfNeeded
         sideEffects: None
         admissionReviewVersions: ["v1"]
+        failurePolicy: Fail
+        reinvocationPolicy: IfNeeded
         namespaceSelector:
           matchLabels:
             k8s.twr.io/imageswap: "enabled"
