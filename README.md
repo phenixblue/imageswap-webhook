@@ -21,6 +21,11 @@ registry.example.com/nginx/nginx:latest
 ```
 
 ## NOTICE
+Kubernetes APIs upgrade
+
+>**Deprecated APIs in 1.22** https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22 Because the end of support for some beta APIs the code received some important updates. Now you need to specify a signer for your Certificate Signing Request. You can take a look on the official documentation about API changes https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22.
+
+>**EKS 1.22** To use ImageSwap for EKS 1.22 you'll need to setup an Amazon exclusive signer `beta.eks.amazonaws.com/app-serving` https://docs.aws.amazon.com/eks/latest/userguide/cert-signing.html. Look at `client.V1CertificateSigningRequestSpec()` on `app/imageswap-init/imageswap-init.py`.
 
 ImageSwap v1.4.0 has major changes
 
@@ -48,16 +53,16 @@ ImageSwap v1.4.0 has major changes
 
 ## Prereqs
 
-Kubernetes 1.9.0 or above with the admissionregistration.k8s.io/v1beta1 (or higher) API enabled. Verify that by the following command:
+Kubernetes 1.22.0 or above with the admissionregistration.k8s.io/v1 (or higher) API enabled. Verify that by the following command:
 
 ```shell
-$ kubectl api-versions | grep admissionregistration.k8s.io/v1beta1
+$ kubectl api-versions | grep admissionregistration.k8s.io/v1
 ```
 
 The result should be:
 
 ```shell
-admissionregistration.k8s.io/v1beta1
+admissionregistration.k8s.io/v1
 ```
 
 In addition, the `MutatingAdmissionWebhook` and `ValidatingAdmissionWebhook` admission controllers should be added and listed in the correct order in the admission-control flag of kube-apiserver.
