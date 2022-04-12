@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 cryptography = "*"
-kubernetes = "~=11.0.0"
+kubernetes = "~=23.3.0"
 
 [requires]
 python_version = "3.8"
