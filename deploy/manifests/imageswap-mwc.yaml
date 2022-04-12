@@ -24,7 +24,7 @@ webhooks:
         resources:
           - "pods"
     sideEffects: None
-    admissionReviewVersions: "v1"
+    admissionReviewVersions: ["v1"]
     failurePolicy: Fail
     reinvocationPolicy: IfNeeded
     namespaceSelector:
