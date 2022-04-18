@@ -19,8 +19,6 @@ jobs:
           - v1.21
           - v1.20
           - v1.19
-          - v1.18
-          - v1.17
         include:
           - k8s-version: v1.22
             kind-node-image: kindest/node:v1.22.7@sha256:c195c17f2a9f6ad5bbddc9eb8bad68fa21709162aabf2b84e4a3896db05c0808
@@ -30,10 +28,6 @@ jobs:
             kind-node-image: kindest/node:v1.20.2@sha256:8f7ea6e7642c0da54f04a7ee10431549c0257315b3a634f6ef2fecaaedb19bab
           - k8s-version: v1.19
             kind-node-image: kindest/node:v1.19.7@sha256:a70639454e97a4b733f9d9b67e12c01f6b0297449d5b9cbbef87473458e26dca
-          - k8s-version: v1.18
-            kind-node-image: kindest/node:v1.18.15@sha256:5c1b980c4d0e0e8e7eb9f36f7df525d079a96169c8a8f20d8bd108c0d0889cc4
-          - k8s-version: v1.17
-            kind-node-image: kindest/node:v1.17.17@sha256:7b6369d27eee99c7a85c48ffd60e11412dc3f373658bc59b7f4d530b7056823e
 
     name: e2e-tests for K8s ${{ matrix.k8s-version }}
 
