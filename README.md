@@ -23,9 +23,11 @@ registry.example.com/nginx/nginx:latest
 ## NOTICE
 Kubernetes APIs upgrade
 
->**Deprecated APIs in 1.22** https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22 Because the end of support for some beta APIs the code received some important updates. Now you need to specify a signer for your Certificate Signing Request. You can take a look on the official documentation about API changes https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22.
+>**Deprecated APIs in v1.22** https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22 Because the end of support for some beta APIs the code received some important updates. Now you need to specify a signer for your Certificate Signing Request. You can take a look on the official documentation about API changes https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22.
 
->**EKS 1.22** To use ImageSwap for EKS 1.22 you'll need to setup an Amazon exclusive signer `beta.eks.amazonaws.com/app-serving` https://docs.aws.amazon.com/eks/latest/userguide/cert-signing.html. Look at `client.V1CertificateSigningRequestSpec()` on `app/imageswap-init/imageswap-init.py`.
+>**K8s prior to v1.19** Will no longer work due to the admissionregistration.k8s.io/v1beta1 api deprecation.
+
+>**EKS 1.22** To use ImageSwap you'll need to setup an Amazon exclusive signer `beta.eks.amazonaws.com/app-serving` https://docs.aws.amazon.com/eks/latest/userguide/cert-signing.html. Look at `client.V1CertificateSigningRequestSpec()` on `app/imageswap-init/imageswap-init.py`.
 ```
 k8s_csr_spec = client.V1CertificateSigningRequestSpec(
         groups=["system:authenticated"],
