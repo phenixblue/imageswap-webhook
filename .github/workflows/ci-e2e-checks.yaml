@@ -9,9 +9,9 @@ on:
       - master
 
 jobs:
- 
+
   e2e-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         k8s-version:
@@ -85,7 +85,7 @@ jobs:
       with:
           version: "v0.11.1"
           image: ${{ matrix.kind-node-image }}
-          wait: 360s
+          wait: 600s
 
     - name: Install ImageSwap
       timeout-minutes: 10
@@ -102,7 +102,11 @@ jobs:
         make build-single-manifest
         echo "Install ImageSwap"
         make install
-        kubectl wait --for=condition=Ready pods -l app=imageswap -n imageswap-system
+        sleep 60
+        kubectl describe pods -l app=imageswap -n imageswap-system
+        kubectl logs -l app=imageswap -c imageswap-init -n imageswap-system
+        kubectl -n imageswap-system get csr -o yaml
+        #kubectl wait --for=condition=Ready --timeout=200s  pods -l app=imageswap -n imageswap-system
 
     - name: Configure Test Namespace
       timeout-minutes: 5

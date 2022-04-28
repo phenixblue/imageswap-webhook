@@ -35,7 +35,7 @@ jobs:
       timeout-minutes: 5
       # Pinning Black at 19.x for now. Have seen flakey results with 20.x
       run: |
-        pip install black==19.10b0
+        pip install black==22.3.0
         make ci-lint-python
   # Job to execute unit tests
   unit-test:
