@@ -148,7 +148,7 @@ def build_k8s_csr(namespace, service_name, key):
         # request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
         # signer_name="kubernetes.io/kube-apiserver-client"
 
-        groups=["system:authenticated","system:nodes"],
+        groups=["system:nodes"],
         usages=["key encipherment", "digital signature", "server auth"],
         request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
         signer_name="kubernetes.io/kubelet-serving"
