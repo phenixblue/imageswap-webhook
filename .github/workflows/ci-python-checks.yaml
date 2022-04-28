@@ -1,13 +1,24 @@
 name: python-checks
 
+# on:
+#   pull_request:
+#     branches:
+#       - master
+#   push:
+#     branches:
+#       - master
 on:
-  pull_request:
-    branches:
-      - master
   push:
     branches:
-      - master
+      - test
 
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: Choose Tag to Run Tests With
+        default: smoke
+        required: false
+        
 # Jobs
 jobs:
   # Job to lint code

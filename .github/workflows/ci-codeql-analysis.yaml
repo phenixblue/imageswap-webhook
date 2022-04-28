@@ -1,15 +1,26 @@
 name: "code-ql"
 
+# on:
+#   push:
+#     branches:
+#       - master
+#   pull_request:
+#     # The branches below must be a subset of the branches above
+#     branches:
+#       - master
+#   schedule:
+#     - cron: '0 23 * * 3'
 on:
   push:
     branches:
-      - master
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches:
-      - master
-  schedule:
-    - cron: '0 23 * * 3'
+      - test
+
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: Choose Tag to Run Tests With
+        default: smoke
+        required: false
 
 jobs:
   analyze:
