@@ -146,7 +146,7 @@ def build_k8s_csr(namespace, service_name, key):
         groups=["system:authenticated"],
         usages=["digital signature", "key encipherment", "server auth"],
         request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
-        signer_name="kubernetes.io/kube-apiserver-client"
+        #signer_name="kubernetes.io/kube-apiserver-client"
     )
 
     k8s_csr = client.V1CertificateSigningRequest(
