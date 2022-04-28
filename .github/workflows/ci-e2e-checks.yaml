@@ -106,7 +106,7 @@ jobs:
         echo "Install ImageSwap"
         make install
         sleep 60
-        kubectl logs -l app=imageswap -n imageswap-system
+        #kubectl logs -l app=imageswap -n imageswap-system
         kubectl describe pods -l app=imageswap
         #kubectl wait --for=condition=Ready --timeout=200s  pods -l app=imageswap -n imageswap-system
 
