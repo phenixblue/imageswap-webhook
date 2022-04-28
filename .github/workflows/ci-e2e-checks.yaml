@@ -1,6 +1,10 @@
 name: e2e-checks
 
 on: 
+  push:
+    branches:
+      - test
+
   workflow_dispatch:
     inputs:
       tags:
