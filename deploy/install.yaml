@@ -248,6 +248,7 @@ spec:
   selector:
     matchLabels:
       app: imageswap
+
 ---
 
 apiVersion: apps/v1
