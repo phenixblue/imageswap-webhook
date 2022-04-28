@@ -18,13 +18,13 @@ jobs:
     strategy:
       matrix:
         k8s-version:
-          - v1.22
+          #- v1.22
           #- v1.21
           #- v1.20
-          #- v1.19
+          - v1.19
         include:
-          - k8s-version: v1.22
-            kind-node-image: kindest/node:v1.22.0@sha256:b8bda84bb3a190e6e028b1760d277454a72267a5454b57db34437c34a588d047
+          #- k8s-version: v1.22
+          #  kind-node-image: kindest/node:v1.22.0@sha256:b8bda84bb3a190e6e028b1760d277454a72267a5454b57db34437c34a588d047
           #- k8s-version: v1.21
           #  kind-node-image: kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6
           #- k8s-version: v1.20
