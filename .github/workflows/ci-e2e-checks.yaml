@@ -105,7 +105,10 @@ jobs:
         make build-single-manifest
         echo "Install ImageSwap"
         make install
-        kubectl wait --for=condition=Ready --timeout=200s  pods -l app=imageswap -n imageswap-system
+        sleep 60
+        kubectl logs -l app=imageswap -n imageswap-system
+        kubectl describe pods -l app=imageswap
+        #kubectl wait --for=condition=Ready --timeout=200s  pods -l app=imageswap -n imageswap-system
 
     - name: Configure Test Namespace
       timeout-minutes: 5
