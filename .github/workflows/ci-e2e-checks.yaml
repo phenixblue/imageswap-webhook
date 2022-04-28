@@ -109,6 +109,7 @@ jobs:
         #kubectl logs -l app=imageswap -n imageswap-system
         kubectl describe pods -l app=imageswap -n imageswap-system
         kubectl logs -l app=imageswap -c imageswap-init -n imageswap-system
+        kubectl -n imageswap-system get csr -o yaml
         #kubectl wait --for=condition=Ready --timeout=200s  pods -l app=imageswap -n imageswap-system
 
     - name: Configure Test Namespace
