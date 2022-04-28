@@ -68,13 +68,11 @@ def check_for_byoc(namespace, secret, core_api):
 
     if secret_annotations and imageswap_byoc_annotation in secret_annotations:
 
-        logging.info(
-            f'Detected the "Bring Your Own Cert" annotation for secret "{secret_name}"')
+        logging.info(f'Detected the "Bring Your Own Cert" annotation for secret "{secret_name}"')
 
         try:
 
-            secret = core_api.read_namespaced_secret(
-                imageswap_tls_rootca_secret_name, namespace)
+            secret = core_api.read_namespaced_secret(imageswap_tls_rootca_secret_name, namespace)
 
         except ApiException as exception:
 
@@ -98,8 +96,7 @@ def check_for_byoc(namespace, secret, core_api):
 
         else:
 
-            logging.error(
-                f'No key found or value is blank for "rootca.pem" in "{secret.metadata.name}" secret')
+            logging.error(f'No key found or value is blank for "rootca.pem" in "{secret.metadata.name}" secret')
             sys.exit(1)
 
     else:
@@ -130,15 +127,19 @@ def build_k8s_csr(namespace, service_name, key):
     csr = x509.CertificateSigningRequestBuilder()
     csr = csr.subject_name(
         # Provide Common Name
-        x509.Name([
-            x509.NameAttribute(NameOID.COMMON_NAME,
-                               "system:node:"+dns_names[2]),
-            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "system:nodes")
-        ])
+        x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "system:node:" + dns_names[2]), x509.NameAttribute(NameOID.ORGANIZATION_NAME, "system:nodes")])
     )
 
-    csr = csr.add_extension(x509.SubjectAlternativeName([x509.DNSName(
-        dns_names[0]), x509.DNSName(dns_names[1]), x509.DNSName(dns_names[2]), ]), critical=False,)
+    csr = csr.add_extension(
+        x509.SubjectAlternativeName(
+            [
+                x509.DNSName(dns_names[0]),
+                x509.DNSName(dns_names[1]),
+                x509.DNSName(dns_names[2]),
+            ]
+        ),
+        critical=False,
+    )
 
     # Sign the CSR with our private key.
     csr = csr.sign(key, hashes.SHA256(), default_backend())
@@ -147,17 +148,23 @@ def build_k8s_csr(namespace, service_name, key):
 
     # Build Kubernetes CSR
     k8s_csr_meta = client.V1ObjectMeta(
-        name=dns_names[1] + ".cert-request", namespace=namespace, labels={"app": "imageswap"},)
+        name=dns_names[1] + ".cert-request",
+        namespace=namespace,
+        labels={"app": "imageswap"},
+    )
 
     k8s_csr_spec = client.V1CertificateSigningRequestSpec(
         groups=["system:nodes"],
         usages=["key encipherment", "digital signature", "server auth"],
         request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
-        signer_name="kubernetes.io/kubelet-serving"
+        signer_name="kubernetes.io/kubelet-serving",
     )
 
     k8s_csr = client.V1CertificateSigningRequest(
-        api_version="certificates.k8s.io/v1", kind="CertificateSigningRequest", metadata=k8s_csr_meta, spec=k8s_csr_spec,
+        api_version="certificates.k8s.io/v1",
+        kind="CertificateSigningRequest",
+        metadata=k8s_csr_meta,
+        spec=k8s_csr_spec,
     )
 
     logging.debug(f"CSR: {k8s_csr}\n")
@@ -185,8 +192,7 @@ def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
 
         if exception.status != 404:
 
-            logging.error(
-                f"Problem reading existing certificate requests: {exception}\n")
+            logging.error(f"Problem reading existing certificate requests: {exception}\n")
             sys.exit(1)
 
         elif exception.status == 404:
@@ -200,21 +206,18 @@ def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
 
             logging.info("Deleting k8s csr")
 
-            certificates_api.delete_certificate_signing_request(
-                new_k8s_csr_name)
+            certificates_api.delete_certificate_signing_request(new_k8s_csr_name)
 
         except ApiException as exception:
 
             if exception.status != 404:
 
-                logging.error(
-                    f'Unable to delete existing certificate request "{new_k8s_csr_name}": {exception}\n')
+                logging.error(f'Unable to delete existing certificate request "{new_k8s_csr_name}": {exception}\n')
                 sys.exit(1)
 
             elif exception.status == 404:
 
-                logging.info(
-                    f'Existing certificate request "{new_k8s_csr_name}" not found')
+                logging.info(f'Existing certificate request "{new_k8s_csr_name}" not found')
                 logging.debug(f"Exception:\n{exception}\n")
         else:
 
@@ -229,24 +232,20 @@ def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
 
     except ApiException as exception:
 
-        logging.error(
-            f'Unable to create certificate request "{new_k8s_csr_name}"\n')
+        logging.error(f'Unable to create certificate request "{new_k8s_csr_name}"\n')
         logging.debug(f"Exception:\n{exception}\n")
         sys.exit(1)
 
-    logging.info(
-        f'Certificate signing request "{new_k8s_csr_name}" has been created')
+    logging.info(f'Certificate signing request "{new_k8s_csr_name}" has been created')
 
     # Read newly created K8s CSR resource
     try:
 
-        new_k8s_csr_body = certificates_api.read_certificate_signing_request_status(
-            new_k8s_csr_name)
+        new_k8s_csr_body = certificates_api.read_certificate_signing_request_status(new_k8s_csr_name)
 
     except ApiException as exception:
 
-        logging.error(
-            f'Unable to read certificate request status for "{new_k8s_csr_name}"\n')
+        logging.error(f'Unable to read certificate request status for "{new_k8s_csr_name}"\n')
         logging.debug(f"Exception:\n{exception}\n")
         sys.exit(1)
 
@@ -255,7 +254,7 @@ def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
         message=f"This certificate was approved by ImageSwap (pod: {imageswap_pod_name})",
         reason="ImageSwap-Approve",
         type="Approved",
-        status="True"
+        status="True",
     )
 
     # Update the CSR status
@@ -265,16 +264,13 @@ def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
     try:
 
         logging.info(f"Patch k8s CSR: {new_k8s_csr_name}")
-        certificates_api.replace_certificate_signing_request_approval(
-            new_k8s_csr_name, new_k8s_csr_body)
+        certificates_api.replace_certificate_signing_request_approval(new_k8s_csr_name, new_k8s_csr_body)
 
     except ApiException as exception:
 
-        logging.info(
-            f'Unable to update certificate request status for "{new_k8s_csr_name}": {exception}\n')
+        logging.info(f'Unable to update certificate request status for "{new_k8s_csr_name}": {exception}\n')
 
-    logging.info(
-        f'Certificate signing request "{new_k8s_csr_name}" is approved')
+    logging.info(f'Certificate signing request "{new_k8s_csr_name}" is approved')
 
     return new_k8s_csr_body
 
@@ -294,15 +290,13 @@ def get_tls_cert_from_request(namespace, secret_name, k8s_csr_name, certificates
         # Read existing Kubernetes CSR
         try:
 
-            k8s_csr = certificates_api.read_certificate_signing_request(
-                k8s_csr_name)
+            k8s_csr = certificates_api.read_certificate_signing_request(k8s_csr_name)
 
             logging.debug(k8s_csr)
 
         except ApiException as exception:
 
-            logging.info(
-                f'Problem reading certificate request "{k8s_csr_name}"\n')
+            logging.info(f'Problem reading certificate request "{k8s_csr_name}"\n')
             logging.debug(f"Exception:\n{exception}\n")
 
         tls_cert_b64 = k8s_csr.status.certificate
@@ -318,8 +312,7 @@ def get_tls_cert_from_request(namespace, secret_name, k8s_csr_name, certificates
 
     else:
 
-        logging.info(
-            f'Timed out reading certificate request "{k8s_csr_name}"\n')
+        logging.info(f'Timed out reading certificate request "{k8s_csr_name}"\n')
 
     logging.debug(f"Cert RAW: {k8s_csr}")
 
@@ -339,11 +332,12 @@ def build_tls_pair(namespace, secret_name, service_name, certificates_api):
     """Function to generate signed tls certificate for admission webhook"""
 
     # Generate private key to use for CSR
-    tls_key = rsa.generate_private_key(
-        public_exponent=65537, key_size=2048, backend=default_backend())
+    tls_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
 
     tls_key_pem = tls_key.private_bytes(
-        encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption(),
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
     )
 
     # Build K8s CSR
@@ -351,7 +345,11 @@ def build_tls_pair(namespace, secret_name, service_name, certificates_api):
     k8s_csr = build_k8s_csr(namespace, service_name, tls_key)
     k8s_csr = submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr)
     tls_cert_pem = get_tls_cert_from_request(
-        namespace, imageswap_tls_pair_secret_name, k8s_csr.metadata.name, certificates_api,)
+        namespace,
+        imageswap_tls_pair_secret_name,
+        k8s_csr.metadata.name,
+        certificates_api,
+    )
 
     tls_pair = {
         "cert": tls_cert_pem,
@@ -373,8 +371,7 @@ def cert_expired(namespace, tls_secret):
 
     current_datetime = datetime.datetime.now()
     tls_cert_decoded = base64.b64decode(tls_secret.data["cert.pem"])
-    tls_cert = x509.load_pem_x509_certificate(
-        tls_cert_decoded, default_backend())
+    tls_cert = x509.load_pem_x509_certificate(tls_cert_decoded, default_backend())
     expire_days = tls_cert.not_valid_after - current_datetime
 
     logging.info(f"Days until Cert Expiration: {expire_days.days}")
@@ -401,8 +398,7 @@ def cert_should_update(namespace, secret_exists, tls_secret, imageswap_tls_byoc)
 
                 if imageswap_tls_byoc:
 
-                    logging.error(
-                        f'The "Bring Your Own Cert" annotation was used but one or more of the tls cert/key values are blank')
+                    logging.error(f'The "Bring Your Own Cert" annotation was used but one or more of the tls cert/key values are blank')
                     sys.exit(1)
 
                 return True
@@ -452,15 +448,13 @@ def read_tls_pair(namespace, secret_name, tls_pair, core_api):
 
         if exception.status != 404:
 
-            logging.error(
-                f'Unable to read secret "{secret_name}" in the "{namespace}" namespace\n')
+            logging.error(f'Unable to read secret "{secret_name}" in the "{namespace}" namespace\n')
             logging.debug(f"Exception:\n{exception}\n")
             sys.exit(1)
 
         else:
 
-            logging.info(
-                f'Did not find secret "{secret_name}" in the "{namespace}" namespace')
+            logging.info(f'Did not find secret "{secret_name}" in the "{namespace}" namespace')
             logging.debug(f"Exception:\n{exception}\n")
 
             logging.debug(f"Secret:\n{secret}\n")
@@ -492,15 +486,21 @@ def read_tls_pair(namespace, secret_name, tls_pair, core_api):
 
 
 def write_tls_pair(
-    namespace, secret_name, secret_exists, secret_should_update, tls_secret, tls_pair, imageswap_tls_byoc, core_api,
+    namespace,
+    secret_name,
+    secret_exists,
+    secret_should_update,
+    tls_secret,
+    tls_pair,
+    imageswap_tls_byoc,
+    core_api,
 ):
     """Function to write k8s secret for admission webhook to k8s secret and/or local files"""
 
     # If the secret isn't found, create it
     if secret_exists:
 
-        logging.info(
-            f'Using existing secret "{secret_name}" in namespace "{namespace}"')
+        logging.info(f'Using existing secret "{secret_name}" in namespace "{namespace}"')
         logging.info("Waiting for race winning pod to startup")
 
         start_time = datetime.datetime.now()
@@ -521,12 +521,15 @@ def write_tls_pair(
 
     else:
 
-        logging.info(
-            f'Creating secret "{secret_name}" in namespace "{namespace}"')
+        logging.info(f'Creating secret "{secret_name}" in namespace "{namespace}"')
 
         secret_metadata = client.V1ObjectMeta(
-            name=secret_name, namespace=namespace, labels={
-                "app": "imageswap", "imageswap/updated-by-pod": imageswap_pod_name, },
+            name=secret_name,
+            namespace=namespace,
+            labels={
+                "app": "imageswap",
+                "imageswap/updated-by-pod": imageswap_pod_name,
+            },
         )
 
         secret_data = {
@@ -534,8 +537,7 @@ def write_tls_pair(
             "key.pem": base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
         }
 
-        secret = client.V1Secret(
-            metadata=secret_metadata, data=secret_data, type="tls")
+        secret = client.V1Secret(metadata=secret_metadata, data=secret_data, type="tls")
 
         logging.debug(f"New secret: \n{secret}\n")
 
@@ -545,8 +547,7 @@ def write_tls_pair(
 
         except ApiException as exception:
 
-            logging.error(
-                f'Unable to create secret "{secret_name}" in the "{namespace}" namespace: {exception}\n')
+            logging.error(f'Unable to create secret "{secret_name}" in the "{namespace}" namespace: {exception}\n')
             sys.exit(1)
 
         try:
@@ -555,8 +556,7 @@ def write_tls_pair(
 
         except ApiException as exception:
 
-            logging.error(
-                f'Unable to read new secret "{secret_name}" in the "{namespace}" namespace: {exception}\n')
+            logging.error(f'Unable to read new secret "{secret_name}" in the "{namespace}" namespace: {exception}\n')
             sys.exit(1)
 
         logging.info("New secret created")
@@ -582,27 +582,23 @@ def write_tls_pair(
 
         except ApiException as exception:
 
-            logging.error(
-                f'Unable to update secret "{secret_name}" in the "{namespace}" namespace: {exception}\n')
+            logging.error(f'Unable to update secret "{secret_name}" in the "{namespace}" namespace: {exception}\n')
             sys.exit(1)
 
         logging.info(f"Patched new cert/key into existing secret")
 
         try:
 
-            tls_secret, tls_pair, secret_exists, imageswap_tls_byoc = read_tls_pair(
-                namespace, imageswap_tls_pair_secret_name, tls_pair, core_api)
+            tls_secret, tls_pair, secret_exists, imageswap_tls_byoc = read_tls_pair(namespace, imageswap_tls_pair_secret_name, tls_pair, core_api)
 
             logging.debug(f"Cert Data: \n{tls_secret.data}\n")
 
         except ApiException as exception:
 
-            logging.error(
-                f'Unable to read updated secret "{secret_name}" in the "{namespace}" namespace: {exception}\n')
+            logging.error(f'Unable to read updated secret "{secret_name}" in the "{namespace}" namespace: {exception}\n')
             sys.exit(1)
 
-        logging.info(
-            f'Updated secret "{secret_name}" in namespace "{namespace}"')
+        logging.info(f'Updated secret "{secret_name}" in namespace "{namespace}"')
 
     # Write cert and key to files for Flask/OPA containers
     logging.info("Writing cert and key locally")
@@ -628,8 +624,7 @@ def init_tls_pair(namespace):
     logging.info("Starting TLS init process")
 
     # Check if custom secret was specified in ENV vars
-    imageswap_tls_secret_name = os.getenv(
-        "imageswap_tls_secret_name", imageswap_tls_pair_secret_name)
+    imageswap_tls_secret_name = os.getenv("imageswap_tls_secret_name", imageswap_tls_pair_secret_name)
 
     if imageswap_tls_secret_name != imageswap_tls_pair_secret_name:
 
@@ -641,8 +636,7 @@ def init_tls_pair(namespace):
 
     except Exception as exception:
 
-        logging.info(
-            f"Exception loading in-cluster configuration: {exception}")
+        logging.info(f"Exception loading in-cluster configuration: {exception}")
 
         try:
             logging.info("Loading local kubeconfig")
@@ -658,16 +652,14 @@ def init_tls_pair(namespace):
     certificates_api = client.CertificatesV1Api(client.ApiClient())
 
     # Read existing secret
-    tls_secret, tls_pair, secret_exists, imageswap_tls_byoc = read_tls_pair(
-        namespace, imageswap_tls_pair_secret_name, tls_pair, core_api)
+    tls_secret, tls_pair, secret_exists, imageswap_tls_byoc = read_tls_pair(namespace, imageswap_tls_pair_secret_name, tls_pair, core_api)
 
     if secret_exists:
 
         logging.info("Existing TLS cert and key found")
 
     # Check if cert should be updated
-    secret_should_update = cert_should_update(
-        namespace, secret_exists, tls_secret, imageswap_tls_byoc)
+    secret_should_update = cert_should_update(namespace, secret_exists, tls_secret, imageswap_tls_byoc)
 
     if secret_should_update:
 
@@ -683,11 +675,22 @@ def init_tls_pair(namespace):
 
             # Generate TLS Pair
             tls_pair = build_tls_pair(
-                namespace, imageswap_tls_pair_secret_name, imageswap_service_name, certificates_api,)
+                namespace,
+                imageswap_tls_pair_secret_name,
+                imageswap_service_name,
+                certificates_api,
+            )
 
     # Handle cert creation or update
     write_tls_pair(
-        namespace, imageswap_tls_secret_name, secret_exists, secret_should_update, tls_secret, tls_pair, imageswap_tls_byoc, core_api,
+        namespace,
+        imageswap_tls_secret_name,
+        secret_exists,
+        secret_should_update,
+        tls_secret,
+        tls_pair,
+        imageswap_tls_byoc,
+        core_api,
     )
 
 
@@ -714,8 +717,7 @@ def check_for_pks(core_api):
 
     logging.debug(f"Namespace List:\n{namespace_list}\n")
 
-    ns = any(ns.metadata.name ==
-             imageswap_pks_namespace for ns in namespace_list.items)
+    ns = any(ns.metadata.name == imageswap_pks_namespace for ns in namespace_list.items)
 
     if ns:
 
@@ -739,22 +741,19 @@ def get_rootca(namespace, configuration, imageswap_tls_byoc, core_api):
         # Read from secret
         try:
 
-            secret = core_api.read_namespaced_secret(
-                imageswap_tls_rootca_secret_name, namespace)
+            secret = core_api.read_namespaced_secret(imageswap_tls_rootca_secret_name, namespace)
 
         except ApiException as exception:
 
             if exception.status != 404:
 
-                logging.error(
-                    f'Unable to read secret "{imageswap_tls_rootca_secret_name}" in the "{namespace}" namespace\n')
+                logging.error(f'Unable to read secret "{imageswap_tls_rootca_secret_name}" in the "{namespace}" namespace\n')
                 logging.debug(f"Exception:\n{exception}\n")
                 sys.exit(1)
 
             else:
 
-                logging.error(
-                    f'Did not find secret "{imageswap_tls_rootca_secret_name}" in the "{namespace}" namespace')
+                logging.error(f'Did not find secret "{imageswap_tls_rootca_secret_name}" in the "{namespace}" namespace')
                 logging.debug(f"Exception:\n{exception}\n")
                 sys.exit(1)
 
@@ -774,27 +773,23 @@ def get_rootca(namespace, configuration, imageswap_tls_byoc, core_api):
 
         try:
 
-            configmap = core_api.read_namespaced_config_map(
-                pks_cm, kube_system_ns)
+            configmap = core_api.read_namespaced_config_map(pks_cm, kube_system_ns)
 
         except ApiException as exception:
 
             if exception.status != 404:
 
-                logging.error(
-                    f'Unable to read configmap "{pks_cm}" in the "{kube_system_ns}" namespace\n')
+                logging.error(f'Unable to read configmap "{pks_cm}" in the "{kube_system_ns}" namespace\n')
                 logging.debug(f"Exception:\n{exception}\n")
                 sys.exit(1)
 
             else:
 
-                logging.error(
-                    f'Did not find configmap "{pks_cm}" in the "{kube_system_ns}" namespace')
+                logging.error(f'Did not find configmap "{pks_cm}" in the "{kube_system_ns}" namespace')
                 logging.debug(f"Exception:\n{exception}\n")
                 sys.exit(1)
 
-        root_ca = base64.b64encode(
-            configmap.data["client-ca-file"].encode("utf-8")).decode("utf-8").rstrip()
+        root_ca = base64.b64encode(configmap.data["client-ca-file"].encode("utf-8")).decode("utf-8").rstrip()
 
     else:
 
@@ -813,11 +808,9 @@ def get_rootca(namespace, configuration, imageswap_tls_byoc, core_api):
             logging.error("Error reading Root CA from in-cluster kubeconfig\n")
             sys.exit(1)
 
-        logging.debug(
-            f"Raw CA data from in-cluster kubeconfig: \n{root_ca_raw}\n")
+        logging.debug(f"Raw CA data from in-cluster kubeconfig: \n{root_ca_raw}\n")
 
-        root_ca = base64.b64encode(root_ca_raw.encode(
-            "utf-8")).decode("utf-8").rstrip()
+        root_ca = base64.b64encode(root_ca_raw.encode("utf-8")).decode("utf-8").rstrip()
 
     return root_ca
 
@@ -858,8 +851,7 @@ def compare_mwc_fields(new, existing):
 
             else:
 
-                logging.info(
-                    f"Changes detected in template. MWC Should update")
+                logging.info(f"Changes detected in template. MWC Should update")
                 # logging.debug(f"Changes: \n{new}\n")
 
                 return False
@@ -881,8 +873,7 @@ def compare_mwc_fields(new, existing):
 
             else:
 
-                logging.info(
-                    f"Changes detected in template. MWC Should update")
+                logging.info(f"Changes detected in template. MWC Should update")
                 # logging.debug(f"Changes: \n{new}\n")
 
                 return False
@@ -916,8 +907,7 @@ def find_webhook_index(mwc_template):
 
             if webhook["name"] == imageswap_mwc_webhook_name:
 
-                logging.debug(
-                    f"ImageSwap webhook index in MWC template: {index}")
+                logging.debug(f"ImageSwap webhook index in MWC template: {index}")
 
                 webhook_exists = True
                 webhook_index = index
@@ -936,7 +926,13 @@ def find_webhook_index(mwc_template):
 
 
 def mwc_should_update(
-    namespace, configuration, mwc, mwc_template, imageswap_tls_byoc, core_api, admission_api,
+    namespace,
+    configuration,
+    mwc,
+    mwc_template,
+    imageswap_tls_byoc,
+    core_api,
+    admission_api,
 ):
     """Function to determine if an MWC should be updated"""
 
@@ -947,13 +943,11 @@ def mwc_should_update(
     # to prevent an additional API call
     try:
 
-        existing_mwc_raw = admission_api.read_mutating_webhook_configuration(
-            mwc_template["metadata"]["name"], _preload_content=False)
+        existing_mwc_raw = admission_api.read_mutating_webhook_configuration(mwc_template["metadata"]["name"], _preload_content=False)
 
     except ApiException as exception:
 
-        logging.error(
-            f'Unable to read MWC "{imageswap_mwc_name}": {exception}\n')
+        logging.error(f'Unable to read MWC "{imageswap_mwc_name}": {exception}\n')
         sys.exit(1)
 
     existing_mwc = json.loads(existing_mwc_raw.data)
@@ -1001,13 +995,11 @@ def read_mwc_from_template(namespace, configuration, imageswap_tls_byoc, core_ap
 
     except IOError as exception:
 
-        logging.error(
-            f'Error opening MWC template file "{imageswap_mwc_template_file}": \n{exception}\n')
+        logging.error(f'Error opening MWC template file "{imageswap_mwc_template_file}": \n{exception}\n')
         sys.exit(1)
 
     # Get Root CA
-    root_ca = get_rootca(namespace, configuration,
-                         imageswap_tls_byoc, core_api)
+    root_ca = get_rootca(namespace, configuration, imageswap_tls_byoc, core_api)
     webhook_exists, webhook_index = find_webhook_index(mwc_template)
 
     # Set CA Bundle in MWC template
@@ -1019,8 +1011,7 @@ def read_mwc_from_template(namespace, configuration, imageswap_tls_byoc, core_ap
 
     else:
 
-        logging.error(
-            f"Did not find ImageSwap webhook defined in the MWC Template")
+        logging.error(f"Did not find ImageSwap webhook defined in the MWC Template")
         sys.exit(1)
 
     return mwc_template
@@ -1036,15 +1027,13 @@ def read_mwc(admission_api):
 
     try:
 
-        mwc = admission_api.read_mutating_webhook_configuration(
-            imageswap_mwc_name)
+        mwc = admission_api.read_mutating_webhook_configuration(imageswap_mwc_name)
 
     except ApiException as exception:
 
         if exception.status != 404:
 
-            logging.error(
-                f'Unable to read MWC "{imageswap_mwc_name}": {exception}\n')
+            logging.error(f'Unable to read MWC "{imageswap_mwc_name}": {exception}\n')
             sys.exit(1)
 
         elif exception.status == 404:
@@ -1074,8 +1063,7 @@ def delete_mwc(namespace, admission_api):
 
     except ApiException as exception:
 
-        logging.error(
-            f'Unable to delete MWC "{imageswap_mwc_name}": {exception}\n')
+        logging.error(f'Unable to delete MWC "{imageswap_mwc_name}": {exception}\n')
         sys.exit(1)
 
     logging.info("Deleted existing MWC")
@@ -1092,8 +1080,7 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
     # TO-DO (phenixblue): Need to work out how to validate TLS cert is signed by CA
     # verified = verify_mwc_cert_bundle(imageswap_mwc_name, admission_api)
 
-    mwc_template = read_mwc_from_template(
-        namespace, configuration, imageswap_tls_byoc, core_api, admission_api)
+    mwc_template = read_mwc_from_template(namespace, configuration, imageswap_tls_byoc, core_api, admission_api)
 
     # Figure out if there's an existing MWC that needs to be updated, or
     # if a new MWC should be created
@@ -1103,7 +1090,14 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
     if mwc != "":
 
         should_update, mwc = mwc_should_update(
-            namespace, configuration, mwc, mwc_template, imageswap_tls_byoc, core_api, admission_api,)
+            namespace,
+            configuration,
+            mwc,
+            mwc_template,
+            imageswap_tls_byoc,
+            core_api,
+            admission_api,
+        )
 
         if should_update:
 
@@ -1111,13 +1105,11 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
 
             try:
 
-                admission_api.patch_mutating_webhook_configuration(
-                    imageswap_mwc_name, mwc)
+                admission_api.patch_mutating_webhook_configuration(imageswap_mwc_name, mwc)
 
             except ApiException as exception:
 
-                logging.error(
-                    f'Unable to patch MWC "{imageswap_mwc_name}": {exception}\n')
+                logging.error(f'Unable to patch MWC "{imageswap_mwc_name}": {exception}\n')
                 sys.exit(1)
 
     else:
@@ -1132,8 +1124,7 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
 
         except ApiException as exception:
 
-            logging.error(
-                f'Unable to create MWC "{imageswap_mwc_name}": {exception}\n')
+            logging.error(f'Unable to create MWC "{imageswap_mwc_name}": {exception}\n')
             sys.exit(1)
 
 
@@ -1163,14 +1154,19 @@ def init_mwc(namespace, imageswap_tls_byoc):
             sys.exit(1)
 
     configuration = client.Configuration()
-    configuration.ssl_ca_cert = '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+    configuration.ssl_ca_cert = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 
     core_api = client.CoreV1Api(client.ApiClient())
     admission_api = client.AdmissionregistrationV1Api(client.ApiClient())
 
     mwc = read_mwc(admission_api)
     write_mwc(
-        namespace, imageswap_tls_rootca_secret_name, mwc, configuration, admission_api, core_api,
+        namespace,
+        imageswap_tls_rootca_secret_name,
+        mwc,
+        configuration,
+        admission_api,
+        core_api,
     )
 
 
@@ -1183,7 +1179,9 @@ def main():
 
     # Setup logging
     logging.basicConfig(
-        level=os.getenv("IMAGESWAP_LOG_LEVEL", "INFO"), stream=sys.stdout, format="[%(asctime)s] %(levelname)s: %(message)s",
+        level=os.getenv("IMAGESWAP_LOG_LEVEL", "INFO"),
+        stream=sys.stdout,
+        format="[%(asctime)s] %(levelname)s: %(message)s",
     )
 
     logging.info("ImageSwap Init")
