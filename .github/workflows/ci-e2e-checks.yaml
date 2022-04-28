@@ -108,6 +108,7 @@ jobs:
         sleep 60
         #kubectl logs -l app=imageswap -n imageswap-system
         kubectl describe pods -l app=imageswap -n imageswap-system
+        kubectl logs -l app=imageswap -c imageswap-init -n imageswap-system
         #kubectl wait --for=condition=Ready --timeout=200s  pods -l app=imageswap -n imageswap-system
 
     - name: Configure Test Namespace
