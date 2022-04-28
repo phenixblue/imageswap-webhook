@@ -1,23 +1,12 @@
 name: repo-checks
 
-# on:
-#   pull_request:
-#     branches:
-#       - master
-#   push:
-#     branches:
-#       - master
 on:
+  pull_request:
+    branches:
+      - master
   push:
     branches:
-      - test
-
-  workflow_dispatch:
-    inputs:
-      tags:
-        description: Choose Tag to Run Tests With
-        default: smoke
-        required: false
+      - master
 
 # Jobs
 jobs:

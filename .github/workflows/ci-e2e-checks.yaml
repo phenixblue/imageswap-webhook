@@ -1,18 +1,15 @@
 name: e2e-checks
 
-on: 
+on:
+  pull_request:
+    branches:
+      - master
   push:
     branches:
-      - test
+      - master
 
-  workflow_dispatch:
-    inputs:
-      tags:
-        description: Choose Tag to Run Tests With
-        default: smoke
-        required: false
 jobs:
- 
+
   e2e-tests:
     runs-on: ubuntu-18.04
     strategy:
@@ -106,7 +103,6 @@ jobs:
         echo "Install ImageSwap"
         make install
         sleep 60
-        #kubectl logs -l app=imageswap -n imageswap-system
         kubectl describe pods -l app=imageswap -n imageswap-system
         kubectl logs -l app=imageswap -c imageswap-init -n imageswap-system
         kubectl -n imageswap-system get csr -o yaml
