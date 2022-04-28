@@ -143,7 +143,12 @@ def build_k8s_csr(namespace, service_name, key):
     k8s_csr_meta = client.V1ObjectMeta(name=dns_names[1] + ".cert-request", namespace=namespace, labels={"app": "imageswap"},)
 
     k8s_csr_spec = client.V1CertificateSigningRequestSpec(
-        groups=["system:authenticated"],
+        #groups=["system:authenticated"],
+        #usages=["digital signature", "key encipherment", "client auth"],
+        #request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
+        #signer_name="kubernetes.io/kube-apiserver-client"
+
+        groups=["system:masters"],
         usages=["digital signature", "key encipherment", "client auth"],
         request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
         signer_name="kubernetes.io/kube-apiserver-client"
