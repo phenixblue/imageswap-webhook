@@ -53,7 +53,7 @@ imageswap_mwc_webhook_name = "imageswap.webhook.k8s.twr.io"
 imageswap_tls_byoc = False
 imageswap_pks_namespace = "pks-system"
 
-# $
+################################################################################
 ################################################################################
 ################################################################################
 
@@ -1154,10 +1154,13 @@ def init_mwc(namespace, imageswap_tls_byoc):
             sys.exit(1)
 
     configuration = client.Configuration()
-    configuration.ssl_ca_cert = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    # configuration.ssl_ca_cert = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 
-    core_api = client.CoreV1Api(client.ApiClient())
-    admission_api = client.AdmissionregistrationV1Api(client.ApiClient())
+    # core_api = client.CoreV1Api(client.ApiClient())
+    # admission_api = client.AdmissionregistrationV1Api(client.ApiClient())
+    configuration = client.Configuration().get_default_copy()
+    core_api = client.CoreV1Api(client.ApiClient(configuration))
+    admission_api = client.AdmissionregistrationV1Api(client.ApiClient(configuration))
 
     mwc = read_mwc(admission_api)
     write_mwc(
