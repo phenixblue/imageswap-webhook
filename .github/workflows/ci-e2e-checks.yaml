@@ -11,7 +11,7 @@ on:
 jobs:
 
   e2e-tests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         k8s-version:
