@@ -43,7 +43,8 @@ help_message() {
   echo "    Test Namespace: (\"test1\")"
 
 }
-
+yq --version
+yq --help
 # **********************************************
 # Check the argument being passed to script
 # **********************************************
