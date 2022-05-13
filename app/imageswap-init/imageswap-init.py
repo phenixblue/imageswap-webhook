@@ -154,7 +154,7 @@ def build_k8s_csr(namespace, service_name, key):
     )
 
     k8s_csr_spec = client.V1CertificateSigningRequestSpec(
-        groups=["system:nodes"],
+        groups=["system:authenticated"],
         usages=["key encipherment", "digital signature", "server auth"],
         request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
         signer_name="kubernetes.io/kubelet-serving",
