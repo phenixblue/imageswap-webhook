@@ -43,8 +43,7 @@ help_message() {
   echo "    Test Namespace: (\"test1\")"
 
 }
-yq --version
-yq --help
+
 # **********************************************
 # Check the argument being passed to script
 # **********************************************
@@ -83,22 +82,23 @@ run_resource_tests() {
   # grab local resource from ${TESTS_MANIFEST}
   local resource
   
-  resource=$(yq r "${TESTS_MANIFEST}" "resources.[${resource_index}].kind")
+  resource=$(yq "resources.[${resource_index}].kind" "${TESTS_MANIFEST}")
 
   # grab local test type from ${TESTS_MANIFEST}
   local test_type
   
-  test_type=$(yq r "${TESTS_MANIFEST}" "resources.[${resource_index}].desired")
+  test_type=$(yq "resources.[${resource_index}].desired" "${TESTS_MANIFEST}")
+
 
   # grab local list of test manifests to use
   local manifest_list
   
-  manifest_list=$(yq r -P "${TESTS_MANIFEST}" "resources.[${resource_index}].manifests" | sed 's/^-[ ]*//')
+  manifest_list=$(yq -P "resources.[${resource_index}].manifests" "${TESTS_MANIFEST}" | sed 's/^-[ ]*//')
 
   # grab local user_script specified for pre/post/between running
   local user_script
   
-  user_script=$(yq r -P "${TESTS_MANIFEST}" "resources.[${resource_index}].script")
+  user_script=$(yq -P "resources.[${resource_index}].script" "${TESTS_MANIFEST}")
 
   # full path to the user specified script associate with this stanza in the manifest
   local user_script_path="testing/${resource}/scripts/${user_script}"
@@ -214,7 +214,7 @@ scope_and_run_tests() {
 
   # size the array of resources
   local resource_array_length
-  resource_array_length=$(yq r -l "${TESTS_MANIFEST}" 'resources')
+  resource_array_length=$(yq 'resources' "${TESTS_MANIFEST}")
 
 
   # loop through all resources in the supplied manifest
@@ -223,10 +223,9 @@ scope_and_run_tests() {
 
     # check if we're doing all resources or if the resource kind at $i matches the requested kind
     # double brackets are technically correct; the BEST kind of correct!
-    if [[ "${TEST_RESOURCE_KIND}" == "all" ]] || [[ "${TEST_RESOURCE_KIND}" == "$(yq r "${TESTS_MANIFEST}" "resources.[${i}].kind")" ]]; then
-
+    if [[ "${TEST_RESOURCE_KIND}" == "all" ]] || [[ "${TEST_RESOURCE_KIND}" == "$(yq "resources.[${resource_index}].kind" "${TESTS_MANIFEST}")" ]]; then
       # check if we're doing all desired results or if the resoured desired result at $i matches the requested desired result
-      if [[ "${TEST_RESOURCE_DESIRED}" == "all" ]] || [[ "${TEST_RESOURCE_DESIRED}" == "$(yq r "${TESTS_MANIFEST}" "resources.[${i}].desired")" ]]; then
+      if [[ "${TEST_RESOURCE_DESIRED}" == "all" ]] || [[ "${TEST_RESOURCE_DESIRED}" == "$(yq "resources.[${resource_index}].desired" "${TESTS_MANIFEST}")" ]]; then
 
         run_resource_tests "${action}" "${i}"
       fi
