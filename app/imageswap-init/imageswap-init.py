@@ -61,7 +61,7 @@ imageswap_pks_namespace = "pks-system"
 def check_for_byoc(namespace, secret, core_api):
     """Function to check for the "Bring Your Own Cert" annotation"""
 
-    logging.info("We made it to check_for_byoc")
+    logging.debug("We made it to check_for_byoc")
 
     secret_name = secret.metadata.name
     secret_annotations = secret.metadata.annotations
@@ -112,7 +112,7 @@ def check_for_byoc(namespace, secret, core_api):
 def build_k8s_csr(namespace, service_name, key):
     """Function to generate Kubernetes CSR"""
 
-    logging.info("Got to building client-side CSR")
+    logging.debug("Got to building client-side CSR")
 
     # Store all dns names used for CN/SAN's
     dns_names = list()

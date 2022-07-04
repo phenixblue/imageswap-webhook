@@ -17,6 +17,9 @@
 # This is based on existing work from the MagTape project: 
 # https://github.com/tmobile/magtape
 
+set -o nounset
+set -o pipefail
+
 ################################################################################
 #### Variables, Arrays, and Hashes #############################################
 ################################################################################
@@ -214,7 +217,7 @@ scope_and_run_tests() {
 
   # size the array of resources
   local resource_array_length
-  resource_array_length=$(yq eval ".resources" "${TESTS_MANIFEST}")
+  resource_array_length=$(yq eval '.resources | length' "${TESTS_MANIFEST}")
 
 
   # loop through all resources in the supplied manifest
