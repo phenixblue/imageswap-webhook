@@ -53,16 +53,15 @@ imageswap_mwc_webhook_name = "imageswap.webhook.k8s.twr.io"
 imageswap_tls_byoc = False
 imageswap_pks_namespace = "pks-system"
 
-###############################################################################$
+################################################################################
 ################################################################################
 ################################################################################
 
 
 def check_for_byoc(namespace, secret, core_api):
-
     """Function to check for the "Bring Your Own Cert" annotation"""
 
-    logging.info("We made it to check_for_byoc")
+    logging.debug("We made it to check_for_byoc")
 
     secret_name = secret.metadata.name
     secret_annotations = secret.metadata.annotations
@@ -111,10 +110,9 @@ def check_for_byoc(namespace, secret, core_api):
 
 
 def build_k8s_csr(namespace, service_name, key):
-
     """Function to generate Kubernetes CSR"""
 
-    logging.info("Got to building client-side CSR")
+    logging.debug("Got to building client-side CSR")
 
     # Store all dns names used for CN/SAN's
     dns_names = list()
@@ -129,10 +127,19 @@ def build_k8s_csr(namespace, service_name, key):
     csr = x509.CertificateSigningRequestBuilder()
     csr = csr.subject_name(
         # Provide Common Name
-        x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, dns_names[2])])
+        x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "system:node:" + dns_names[2]), x509.NameAttribute(NameOID.ORGANIZATION_NAME, "system:nodes")])
     )
 
-    csr = csr.add_extension(x509.SubjectAlternativeName([x509.DNSName(dns_names[0]), x509.DNSName(dns_names[1]), x509.DNSName(dns_names[2]),]), critical=False,)
+    csr = csr.add_extension(
+        x509.SubjectAlternativeName(
+            [
+                x509.DNSName(dns_names[0]),
+                x509.DNSName(dns_names[1]),
+                x509.DNSName(dns_names[2]),
+            ]
+        ),
+        critical=False,
+    )
 
     # Sign the CSR with our private key.
     csr = csr.sign(key, hashes.SHA256(), default_backend())
@@ -140,16 +147,24 @@ def build_k8s_csr(namespace, service_name, key):
     csr_pem = csr.public_bytes(serialization.Encoding.PEM)
 
     # Build Kubernetes CSR
-    k8s_csr_meta = client.V1ObjectMeta(name=dns_names[1] + ".cert-request", namespace=namespace, labels={"app": "imageswap"},)
-
-    k8s_csr_spec = client.V1beta1CertificateSigningRequestSpec(
-        groups=["system:authenticated"],
-        usages=["digital signature", "key encipherment", "server auth"],
-        request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
+    k8s_csr_meta = client.V1ObjectMeta(
+        name=dns_names[1] + ".cert-request",
+        namespace=namespace,
+        labels={"app": "imageswap"},
     )
 
-    k8s_csr = client.V1beta1CertificateSigningRequest(
-        api_version="certificates.k8s.io/v1beta1", kind="CertificateSigningRequest", metadata=k8s_csr_meta, spec=k8s_csr_spec,
+    k8s_csr_spec = client.V1CertificateSigningRequestSpec(
+        groups=["system:authenticated"],
+        usages=["key encipherment", "digital signature", "server auth"],
+        request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
+        signer_name="kubernetes.io/kubelet-serving",
+    )
+
+    k8s_csr = client.V1CertificateSigningRequest(
+        api_version="certificates.k8s.io/v1",
+        kind="CertificateSigningRequest",
+        metadata=k8s_csr_meta,
+        spec=k8s_csr_spec,
     )
 
     logging.debug(f"CSR: {k8s_csr}\n")
@@ -163,7 +178,6 @@ def build_k8s_csr(namespace, service_name, key):
 
 
 def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
-
     """Function to submit or approve a Kubernetes CSR"""
 
     new_k8s_csr_name = k8s_csr.metadata.name
@@ -235,11 +249,12 @@ def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
         logging.debug(f"Exception:\n{exception}\n")
         sys.exit(1)
 
-    new_k8s_csr_approval_conditions = client.V1beta1CertificateSigningRequestCondition(
+    new_k8s_csr_approval_conditions = client.V1CertificateSigningRequestCondition(
         last_update_time=datetime.datetime.now(datetime.timezone.utc),
         message=f"This certificate was approved by ImageSwap (pod: {imageswap_pod_name})",
         reason="ImageSwap-Approve",
         type="Approved",
+        status="True",
     )
 
     # Update the CSR status
@@ -266,7 +281,6 @@ def submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr):
 
 
 def get_tls_cert_from_request(namespace, secret_name, k8s_csr_name, certificates_api):
-
     """Function to retrieve tls certificate from approved Kubernetes CSR"""
 
     start_time = datetime.datetime.now()
@@ -315,21 +329,27 @@ def get_tls_cert_from_request(namespace, secret_name, k8s_csr_name, certificates
 
 
 def build_tls_pair(namespace, secret_name, service_name, certificates_api):
-
     """Function to generate signed tls certificate for admission webhook"""
 
     # Generate private key to use for CSR
     tls_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
 
     tls_key_pem = tls_key.private_bytes(
-        encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption(),
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
     )
 
     # Build K8s CSR
     logging.info("Building K8s CSR")
     k8s_csr = build_k8s_csr(namespace, service_name, tls_key)
     k8s_csr = submit_and_approve_k8s_csr(namespace, certificates_api, k8s_csr)
-    tls_cert_pem = get_tls_cert_from_request(namespace, imageswap_tls_pair_secret_name, k8s_csr.metadata.name, certificates_api,)
+    tls_cert_pem = get_tls_cert_from_request(
+        namespace,
+        imageswap_tls_pair_secret_name,
+        k8s_csr.metadata.name,
+        certificates_api,
+    )
 
     tls_pair = {
         "cert": tls_cert_pem,
@@ -347,7 +367,6 @@ def build_tls_pair(namespace, secret_name, service_name, certificates_api):
 
 
 def cert_expired(namespace, tls_secret):
-
     """Function to check tls certificate return number of days until expiration"""
 
     current_datetime = datetime.datetime.now()
@@ -366,7 +385,6 @@ def cert_expired(namespace, tls_secret):
 
 
 def cert_should_update(namespace, secret_exists, tls_secret, imageswap_tls_byoc):
-
     """Function to check if tls certificate should be updated"""
 
     tls_cert_key = "cert.pem"
@@ -416,7 +434,6 @@ def cert_should_update(namespace, secret_exists, tls_secret, imageswap_tls_byoc)
 
 
 def read_tls_pair(namespace, secret_name, tls_pair, core_api):
-
     """Function to read cert/key from k8s secret"""
 
     secret = client.V1Secret()
@@ -469,9 +486,15 @@ def read_tls_pair(namespace, secret_name, tls_pair, core_api):
 
 
 def write_tls_pair(
-    namespace, secret_name, secret_exists, secret_should_update, tls_secret, tls_pair, imageswap_tls_byoc, core_api,
+    namespace,
+    secret_name,
+    secret_exists,
+    secret_should_update,
+    tls_secret,
+    tls_pair,
+    imageswap_tls_byoc,
+    core_api,
 ):
-
     """Function to write k8s secret for admission webhook to k8s secret and/or local files"""
 
     # If the secret isn't found, create it
@@ -501,7 +524,12 @@ def write_tls_pair(
         logging.info(f'Creating secret "{secret_name}" in namespace "{namespace}"')
 
         secret_metadata = client.V1ObjectMeta(
-            name=secret_name, namespace=namespace, labels={"app": "imageswap", "imageswap/updated-by-pod": imageswap_pod_name,},
+            name=secret_name,
+            namespace=namespace,
+            labels={
+                "app": "imageswap",
+                "imageswap/updated-by-pod": imageswap_pod_name,
+            },
         )
 
         secret_data = {
@@ -589,7 +617,6 @@ def write_tls_pair(
 
 
 def init_tls_pair(namespace):
-
     """Function to load or create tls for admission webhook"""
 
     tls_pair = ""
@@ -621,8 +648,8 @@ def init_tls_pair(namespace):
             sys.exit(1)
 
     configuration = client.Configuration()
-    core_api = client.CoreV1Api(client.ApiClient(configuration))
-    certificates_api = client.CertificatesV1beta1Api(client.ApiClient(configuration))
+    core_api = client.CoreV1Api(client.ApiClient())
+    certificates_api = client.CertificatesV1Api(client.ApiClient())
 
     # Read existing secret
     tls_secret, tls_pair, secret_exists, imageswap_tls_byoc = read_tls_pair(namespace, imageswap_tls_pair_secret_name, tls_pair, core_api)
@@ -647,11 +674,23 @@ def init_tls_pair(namespace):
             logging.info(f"Generating new cert/key pair for TLS")
 
             # Generate TLS Pair
-            tls_pair = build_tls_pair(namespace, imageswap_tls_pair_secret_name, imageswap_service_name, certificates_api,)
+            tls_pair = build_tls_pair(
+                namespace,
+                imageswap_tls_pair_secret_name,
+                imageswap_service_name,
+                certificates_api,
+            )
 
     # Handle cert creation or update
     write_tls_pair(
-        namespace, imageswap_tls_secret_name, secret_exists, secret_should_update, tls_secret, tls_pair, imageswap_tls_byoc, core_api,
+        namespace,
+        imageswap_tls_secret_name,
+        secret_exists,
+        secret_should_update,
+        tls_secret,
+        tls_pair,
+        imageswap_tls_byoc,
+        core_api,
     )
 
 
@@ -661,7 +700,6 @@ def init_tls_pair(namespace):
 
 
 def check_for_pks(core_api):
-
     """Function to if cluster is of PKS origin"""
 
     # This is a simple test to check for the "pks-system" namespace. May need
@@ -696,7 +734,6 @@ def check_for_pks(core_api):
 
 
 def get_rootca(namespace, configuration, imageswap_tls_byoc, core_api):
-
     """Function to get root ca used for securing admission webhook"""
 
     if imageswap_tls_byoc:
@@ -784,7 +821,6 @@ def get_rootca(namespace, configuration, imageswap_tls_byoc, core_api):
 
 
 def verify_mwc_cert_bundle(namespace, mwc):
-
     """Function to verify the CA Cert bundle in the MWC"""
 
 
@@ -794,7 +830,6 @@ def verify_mwc_cert_bundle(namespace, mwc):
 
 
 def compare_mwc_fields(new, existing):
-
     """Function to compare MWC fields"""
 
     # logging.debug(f"Input is of type \"{type(new)}\"")
@@ -864,7 +899,6 @@ def compare_mwc_fields(new, existing):
 
 
 def find_webhook_index(mwc_template):
-
     """Function to check if the ImageSwap webhook exists in the MWC template and return its index"""
 
     for index, webhook in enumerate(mwc_template["webhooks"]):
@@ -892,9 +926,14 @@ def find_webhook_index(mwc_template):
 
 
 def mwc_should_update(
-    namespace, configuration, mwc, mwc_template, imageswap_tls_byoc, core_api, admission_api,
+    namespace,
+    configuration,
+    mwc,
+    mwc_template,
+    imageswap_tls_byoc,
+    core_api,
+    admission_api,
 ):
-
     """Function to determine if an MWC should be updated"""
 
     # Need to read MWC again without converting field names to "pythonic" names.
@@ -943,7 +982,6 @@ def mwc_should_update(
 
 
 def read_mwc_from_template(namespace, configuration, imageswap_tls_byoc, core_api, admission_api):
-
     """Function to read k8s mutating webhook configuration"""
 
     # Read MWC template from local file (mounded from configmap)
@@ -985,7 +1023,6 @@ def read_mwc_from_template(namespace, configuration, imageswap_tls_byoc, core_ap
 
 
 def read_mwc(admission_api):
-
     """Function to read k8s MWC"""
 
     try:
@@ -1018,7 +1055,6 @@ def read_mwc(admission_api):
 
 
 def delete_mwc(namespace, admission_api):
-
     """Function to delete k8s mutating webhook configuration"""
 
     try:
@@ -1039,7 +1075,6 @@ def delete_mwc(namespace, admission_api):
 
 
 def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core_api):
-
     """Function to create or update the k8s mutating webhook configuration"""
 
     # TO-DO (phenixblue): Need to work out how to validate TLS cert is signed by CA
@@ -1054,7 +1089,15 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
     # each replica stomping on the MWC
     if mwc != "":
 
-        should_update, mwc = mwc_should_update(namespace, configuration, mwc, mwc_template, imageswap_tls_byoc, core_api, admission_api,)
+        should_update, mwc = mwc_should_update(
+            namespace,
+            configuration,
+            mwc,
+            mwc_template,
+            imageswap_tls_byoc,
+            core_api,
+            admission_api,
+        )
 
         if should_update:
 
@@ -1091,7 +1134,6 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
 
 
 def init_mwc(namespace, imageswap_tls_byoc):
-
     """Function to handle the k8s mutating webhook configuration"""
 
     try:
@@ -1111,13 +1153,18 @@ def init_mwc(namespace, imageswap_tls_byoc):
             logging.error(f"Exception loading local kubeconfig: {exception}")
             sys.exit(1)
 
-    configuration = client.Configuration()
+    configuration = client.Configuration().get_default_copy()
     core_api = client.CoreV1Api(client.ApiClient(configuration))
-    admission_api = client.AdmissionregistrationV1beta1Api(client.ApiClient(configuration))
+    admission_api = client.AdmissionregistrationV1Api(client.ApiClient(configuration))
 
     mwc = read_mwc(admission_api)
     write_mwc(
-        namespace, imageswap_tls_rootca_secret_name, mwc, configuration, admission_api, core_api,
+        namespace,
+        imageswap_tls_rootca_secret_name,
+        mwc,
+        configuration,
+        admission_api,
+        core_api,
     )
 
 
@@ -1130,7 +1177,9 @@ def main():
 
     # Setup logging
     logging.basicConfig(
-        level=os.getenv("IMAGESWAP_LOG_LEVEL", "INFO"), stream=sys.stdout, format="[%(asctime)s] %(levelname)s: %(message)s",
+        level=os.getenv("IMAGESWAP_LOG_LEVEL", "INFO"),
+        stream=sys.stdout,
+        format="[%(asctime)s] %(levelname)s: %(message)s",
     )
 
     logging.info("ImageSwap Init")

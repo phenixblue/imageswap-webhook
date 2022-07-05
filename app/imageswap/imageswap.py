@@ -144,10 +144,10 @@ def mutate():
             "allowed": True,
             "uid": request_info["request"]["uid"],
             "patch": base64.b64encode(str(patch).encode()).decode(),
-            "patchtype": "JSONPatch",
+            "patchType": "JSONPatch",
         }
         admissionReview = {
-            "apiVersion": "admission.k8s.io/v1beta1",
+            "apiVersion": "admission.k8s.io/v1",
             "kind": "AdmissionReview",
             "response": admission_response,
         }
@@ -161,7 +161,7 @@ def mutate():
         }
 
         admissionReview = {
-            "apiVersion": "admission.k8s.io/v1beta1",
+            "apiVersion": "admission.k8s.io/v1",
             "kind": "AdmissionReview",
             "response": admission_response,
         }
@@ -413,7 +413,14 @@ def main():
     app.logger.info("ImageSwap v1.4.2 Startup")
 
     app.run(
-        host="0.0.0.0", port=5000, debug=False, threaded=True, ssl_context=("./tls/cert.pem", "./tls/key.pem",),
+        host="0.0.0.0",
+        port=5000,
+        debug=False,
+        threaded=True,
+        ssl_context=(
+            "./tls/cert.pem",
+            "./tls/key.pem",
+        ),
     )
 
 

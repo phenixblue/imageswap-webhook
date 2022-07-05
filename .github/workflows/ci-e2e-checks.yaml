@@ -9,25 +9,25 @@ on:
       - master
 
 jobs:
- 
+
   e2e-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         k8s-version:
+          - v1.22
+          - v1.21
           - v1.20
           - v1.19
-          - v1.18
-          - v1.17
         include:
+          - k8s-version: v1.22
+            kind-node-image: kindest/node:v1.22.7@sha256:1dfd72d193bf7da64765fd2f2898f78663b9ba366c2aa74be1fd7498a1873166
+          - k8s-version: v1.21
+            kind-node-image: kindest/node:v1.21.10@sha256:84709f09756ba4f863769bdcabe5edafc2ada72d3c8c44d6515fc581b66b029c
           - k8s-version: v1.20
-            kind-node-image: kindest/node:v1.20.2@sha256:8f7ea6e7642c0da54f04a7ee10431549c0257315b3a634f6ef2fecaaedb19bab
+            kind-node-image: kindest/node:v1.20.15@sha256:393bb9096c6c4d723bb17bceb0896407d7db581532d11ea2839c80b28e5d8deb
           - k8s-version: v1.19
-            kind-node-image: kindest/node:v1.19.7@sha256:a70639454e97a4b733f9d9b67e12c01f6b0297449d5b9cbbef87473458e26dca
-          - k8s-version: v1.18
-            kind-node-image: kindest/node:v1.18.15@sha256:5c1b980c4d0e0e8e7eb9f36f7df525d079a96169c8a8f20d8bd108c0d0889cc4
-          - k8s-version: v1.17
-            kind-node-image: kindest/node:v1.17.17@sha256:7b6369d27eee99c7a85c48ffd60e11412dc3f373658bc59b7f4d530b7056823e
+            kind-node-image: kindest/node:v1.19.16@sha256:81f552397c1e6c1f293f967ecb1344d8857613fb978f963c30e907c32f598467
 
     name: e2e-tests for K8s ${{ matrix.k8s-version }}
 
@@ -83,7 +83,7 @@ jobs:
       timeout-minutes: 10
       uses: engineerd/setup-kind@v0.5.0
       with:
-          version: "v0.11.1"
+          version: "v0.12.0"
           image: ${{ matrix.kind-node-image }}
           wait: 360s
 
@@ -109,12 +109,13 @@ jobs:
       run: |
         make ns-create-test
 
-    - name: Install Tools 
+    - name: Install Tools
       timeout-minutes: 5
       run: |
         sudo add-apt-repository ppa:rmescandon/yq
         sudo apt update
         sudo apt install yq -y
+        yq --version
 
     - name: Execute Functional Tests
       timeout-minutes: 5
