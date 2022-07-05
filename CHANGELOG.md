@@ -134,6 +134,7 @@ This release also adds additional validation to catch errors associated with spe
 - Move to admissionregistration.k8s.io/v1 for VWC (#68 / #65)
 - Add sign verb for cluster scoped RBAC (#68 / #65)
 - Move to support v4.x of yq utility syntax for Makefile/CI (#68 / #65)
+- Temporarily remove the `linux/ppc64le` platform from image builds. Ongoing issue that needs triage
 
 ### Acknowledgements
 
