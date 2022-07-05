@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# NOTE: The version for both `imageswap-init` and `imageswap` should be identical for now.
+# Some effort will need to be put in to be able to distringuish changes to one vs. the other
+# in CI/Release steps.
 IMAGESWAP_VERSION := v1.5.0
-IMAGESWAP_INIT_VERSION := v0.0.3
+IMAGESWAP_INIT_VERSION := v1.5.0
 
 REPO_ROOT := $(CURDIR)
 APP_NAME ?= "imageswap.py"
