@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-IMAGESWAP_VERSION := v1.4.2
-IMAGESWAP_INIT_VERSION := v0.0.2
+IMAGESWAP_VERSION := v1.5.0
+IMAGESWAP_INIT_VERSION := v0.0.3
 
 REPO_ROOT := $(CURDIR)
 APP_NAME ?= "imageswap.py"
