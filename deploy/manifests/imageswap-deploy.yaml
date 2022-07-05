@@ -22,7 +22,7 @@ spec:
         runAsGroup: 1898
       initContainers:
         - name: imageswap-init
-          image: thewebroot/imageswap-init:v0.0.3
+          image: thewebroot/imageswap-init:v1.5.0
           command: [/app/imageswap-init.py]
           imagePullPolicy: Always
           securityContext:
