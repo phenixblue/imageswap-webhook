@@ -61,6 +61,7 @@ There is a pre-built template for bug ticketing that can be used for reporting i
 - Any PR that changes user-facing functionality should be accompanied by the appropriate documentation (comments, README's, etc.).
 - Any PR that makes enhancements to ImageSwap's core code should be accompanied with proper unit and functional tests.
 - All code comments and documentation are expected to have proper English grammar and punctuation. If you are not a fluent English speaker (or you are just a bad writer ;-)) please let us know and we will try to find some help but there are no guarantees.
+- All commits should be signed. You may refer to [Github's documentation on setting up commit signing](https://docs.github.com/en/authentication/managing-commit-signature-verification/displaying-verification-statuses-for-all-of-your-commits) for help.
 - Once you submit a PR, please do not rebase it. It's much easier to review if subsequent commits are new commits and/or merges.
 - We expect that once a PR is opened, it will be actively worked on until it is merged or closed. We reserve the right to close PRs that are not making progress. This is generally defined as no changes for 7 days. Obviously PRs that are closed due to lack of activity can be reopened later. Closing stale PRs helps us to keep on top of all the work currently in flight.
 
