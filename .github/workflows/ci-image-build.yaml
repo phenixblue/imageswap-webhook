@@ -7,7 +7,11 @@ on:
 
 # Variables to be used throughout the workflow manifest
 env:
-  TARGET_PLATFORMS: linux/amd64,linux/arm64,linux/ppc64le
+  # TO-DO (@phenixblue): Need to investigate more into why the `linux/ppc64le` 
+  # platform has issues with installing Python dependencies during image build.
+  #
+  # Removing for now to not block
+  TARGET_PLATFORMS: linux/amd64,linux/arm64
 jobs:
 
   # Build and push imageswap-init container image
