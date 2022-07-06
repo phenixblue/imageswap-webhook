@@ -338,7 +338,7 @@ def swap_image(container_spec):
                         new_image = swap_maps[image_registry_key] + re.sub(r":.*/", "/", image)
                 # If the image registry pattern is found in the original image
                 elif image_registry_key in image:
-                    new_image = re.sub(image_registry_key, swap_maps[image_registry_key], image)
+                    new_image = re.sub(re.escape(image_registry_key), swap_maps[image_registry_key], image)
                 # For everything else
                 else:
                     new_image = swap_maps[image_registry_key] + "/" + image
@@ -362,7 +362,7 @@ def swap_image(container_spec):
                 elif swap_maps[imageswap_maps_default_key][-1] == "-":
                     new_image = swap_maps[imageswap_maps_default_key] + image_registry_noport + "/" + image
                 elif image_registry_key in image:
-                    new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
+                    new_image = re.sub(re.escape(image_registry), swap_maps[imageswap_maps_default_key], image)
                 else:
                     new_image = swap_maps[imageswap_maps_default_key] + "/" + image
 
