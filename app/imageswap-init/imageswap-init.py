@@ -39,7 +39,7 @@ import yaml
 # Set Global variables
 imageswap_namespace_name = os.environ["IMAGESWAP_NAMESPACE_NAME"]
 imageswap_pod_name = os.environ["IMAGESWAP_POD_NAME"]
-imageswap_disable_auto_mwc = os.environ["IMAGESWAP_DISABLE_AUTO_MWC"]
+imageswap_disable_auto_mwc = os.getenv("IMAGESWAP_DISABLE_AUTO_MWC", "FALSE")
 imageswap_tls_pair_secret_name = "imageswap-tls"
 imageswap_tls_rootca_secret_name = "imageswap-tls-ca"
 imageswap_byoc_annotation = "imageswap-byoc"
