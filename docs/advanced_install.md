@@ -25,6 +25,7 @@ You can find some generic examples of using kustomize overlays to manage per env
 | DIRECTORY                       | DESCRIPTION                                       |
 |---                              |---                                                |
 | `deploy/manifests`              | The base YAML manifests                           |
+| `deploy/overlays/ghcr.io`       | Base + Image references swapped to ghcr.io registry |
 | `deploy/overlays/development`   | Development environment specific substitutions    |
 | `deploy/overlays/production`    | Production environment specific substitutions     |
 

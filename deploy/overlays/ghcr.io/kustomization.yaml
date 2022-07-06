@@ -1,0 +1,8 @@
+resources:
+  - ../../manifests
+
+images:
+  - name: thewebroot/imageswap-init
+    newName: ghcr.io/thewebroot/imageswap-init
+  - name: thewebroot/imageswap
+    newName: ghcr.io/thewebroot/imageswap
