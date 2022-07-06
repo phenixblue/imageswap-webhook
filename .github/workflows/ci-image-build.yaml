@@ -22,7 +22,7 @@ jobs:
     steps:
 
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Collect Release Tag is used to to collect information needed later in the action and expose it so it can be referenced
       - name: Collect Release Tag
@@ -33,23 +33,31 @@ jobs:
 
       # Setup QEMU to support multi-arch builds
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
           
-      # Part of docker/build-push-action@v2; setting up the build system
+      # Setting up the build system
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       
-      # Part of docker/build-push-action@v2; login to dockerhub
+      # Login to dockerhub
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+      # Login to ghcr.io
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_PUSH_TOKEN }}
+
+      # Push images to DockerHub & ghcr.io
       - name: Build and push imageswap-init image to DockerHub
         if: github.repository == 'phenixblue/imageswap-webhook'
         timeout-minutes: 30
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./app/imageswap-init/
           # file should be specified relative to the repo root rather than relative to the context
@@ -59,7 +67,11 @@ jobs:
           # push is no longer defaulted to true under v2; to push you must specify push is true
           push: true
           # Uses the releasetag output exposed by the Collect Release Tag step to set the tag under v2
-          tags: thewebroot/imageswap-init:${{ steps.prep.outputs.releasetag }},thewebroot/imageswap-init:latest
+          tags: |
+            thewebroot/imageswap-init:${{ steps.prep.outputs.releasetag }}
+            thewebroot/imageswap-init:latest
+            ghcr.io/thewebroot/imageswap-init:${{ steps.prep.outputs.releasetag }}
+            ghcr.io/thewebroot/imageswap-init:latest
 
   # Build and push imageswap container image
   build-imageswap-image:
@@ -69,7 +81,7 @@ jobs:
     steps:
 
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Collect Release Tag is used to to collect information needed later in the action and expose it so it can be referenced
       - name: Collect Release Tag
@@ -80,23 +92,31 @@ jobs:
 
       # Setup QEMU to support multi-arch builds
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
 
-      # Part of docker/build-push-action@v2; setting up the build system
+      # Setting up the build system
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
-      # Part of docker/build-push-action@v2; login to dockerhub
+      # Login to dockerhub
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+      # Login to ghcr.io
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_PUSH_TOKEN }}
+
+      # Push images to DockerHub & ghcr.io
       - name: Build and push imageswap image to DockerHub
         if: github.repository == 'phenixblue/imageswap-webhook'
         timeout-minutes: 30
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./app/imageswap/
           # file should be specified relative to the repo root rather than relative to the context
@@ -106,4 +126,8 @@ jobs:
           # push is no longer defaulted to true under v2; to push you must specify push is true
           push: true
           # Uses the releasetag output exposed by the Collect Release Tag step to set the tag under v2
-          tags: thewebroot/imageswap:${{ steps.prep.outputs.releasetag }},thewebroot/imageswap:latest
+          tags: |
+            thewebroot/imageswap:${{ steps.prep.outputs.releasetag }}
+            thewebroot/imageswap:latest
+            ghcr.io/thewebroot/imageswap:${{ steps.prep.outputs.releasetag }}
+            ghcr.io/thewebroot/imageswap:latest
