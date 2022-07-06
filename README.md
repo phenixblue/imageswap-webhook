@@ -48,6 +48,7 @@ ImageSwap v1.4.0 has major changes
 
 ## Overview
 
+- [Compatibility](#compatibility)
 - [Prereqs](#prereqs)
 - [Quickstart](#quickstart)
 - [Health Check](#health-check)
@@ -60,6 +61,21 @@ ImageSwap v1.4.0 has major changes
 - [Troubleshooting](#troubleshooting)
 - [Contributing](./CONTRIBUTING.md)
 - [Adopters](./ADOPTERS.md)
+
+
+## Compatibility
+
+|                   | K8s v1.9 -> v1.18 | K8s v1.19 | K8s v1.20 | K8s v1.21 | K8s v1.22 | K8s 1.23 | K8s 1.24 |
+|-------------------|-------------------|-----------|-----------|-----------|-----------|----------|----------|
+| `imageswap-1.4.2` | ✓                 | ✓         | +-        | -         | -         | -        | -        |
+| `imageswap-1.5.0` | -                 | ✓         | ✓         | ✓         | ✓         | +-       | ???      |
+
+Key:
+
+* `✓` Tested to work as part of CI for this version of Kubernetes
+* `+-` Should probably work. Tested at some point. There may be some slight mismatch between Python K8s client and server versions
+* `-` Unlikely to work. Combination not tested
+* `?` Status unknown. Not currently tested
 
 ## Prereqs
 
