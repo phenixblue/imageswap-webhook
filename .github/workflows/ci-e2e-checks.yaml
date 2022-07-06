@@ -15,19 +15,19 @@ jobs:
     strategy:
       matrix:
         k8s-version:
+          - v1.23
           - v1.22
           - v1.21
           - v1.20
-          - v1.19
         include:
+          - k8s-version: v1.23
+            kind-node-image: kindest/node:v1.23.4@sha256:0e34f0d0fd448aa2f2819cfd74e99fe5793a6e4938b328f657c8e3f81ee0dfb9
           - k8s-version: v1.22
             kind-node-image: kindest/node:v1.22.7@sha256:1dfd72d193bf7da64765fd2f2898f78663b9ba366c2aa74be1fd7498a1873166
           - k8s-version: v1.21
             kind-node-image: kindest/node:v1.21.10@sha256:84709f09756ba4f863769bdcabe5edafc2ada72d3c8c44d6515fc581b66b029c
           - k8s-version: v1.20
             kind-node-image: kindest/node:v1.20.15@sha256:393bb9096c6c4d723bb17bceb0896407d7db581532d11ea2839c80b28e5d8deb
-          - k8s-version: v1.19
-            kind-node-image: kindest/node:v1.19.16@sha256:81f552397c1e6c1f293f967ecb1344d8857613fb978f963c30e907c32f598467
 
     name: e2e-tests for K8s ${{ matrix.k8s-version }}
 
