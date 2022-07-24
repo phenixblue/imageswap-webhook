@@ -31,6 +31,9 @@ import re
 app = Flask(__name__)
 
 # Set Global variables
+imageswap_tls_path = "/tls"
+imageswap_tls_key_name = os.getenv("IMAGESWAP_TLS_KEY_NAME", "tls.cert")
+imageswap_tls_cert_name = os.getenv("IMAGESWAP_TLS_CERT_NAME", "tls.key")
 imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-system")
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
 imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
@@ -418,8 +421,8 @@ def main():
         debug=False,
         threaded=True,
         ssl_context=(
-            "./tls/cert.pem",
-            "./tls/key.pem",
+            f"{imageswap_tls_path}/{imageswap_tls_cert_name}",
+            f"{imageswap_tls_path}/{imageswap_tls_key_name}",
         ),
     )
 

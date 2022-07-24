@@ -31,7 +31,6 @@ import datetime
 import json
 import logging
 import os
-import random
 import sys
 import time
 import yaml
@@ -45,8 +44,8 @@ imageswap_byoc_annotation = "imageswap-byoc"
 imageswap_service_name = "imageswap"
 imageswap_tls_path = "/tls"
 imageswap_mwc_template_path = "/mwc"
-imageswap_tls_key = ""
-imageswap_tls_cert = ""
+imageswap_tls_key_name = os.getenv("IMAGESWAP_TLS_KEY_NAME", "tls.cert")
+imageswap_tls_cert_name = os.getenv("IMAGESWAP_TLS_CERT_NAME", "tls.key")
 imageswap_mwc_name = "imageswap-webhook"
 imageswap_mwc_template_file = f"{imageswap_mwc_template_path}/imageswap-mwc.yaml"
 imageswap_mwc_webhook_name = "imageswap.webhook.k8s.twr.io"
@@ -369,7 +368,7 @@ def cert_expired(namespace, tls_secret):
     """Function to check tls certificate return number of days until expiration"""
 
     current_datetime = datetime.datetime.now()
-    tls_cert_decoded = base64.b64decode(tls_secret.data["cert.pem"])
+    tls_cert_decoded = base64.b64decode(tls_secret.data[{imageswap_tls_cert_name}])
     tls_cert = x509.load_pem_x509_certificate(tls_cert_decoded, default_backend())
     expire_days = tls_cert.not_valid_after - current_datetime
 
@@ -386,14 +385,11 @@ def cert_expired(namespace, tls_secret):
 def cert_should_update(namespace, secret_exists, tls_secret, imageswap_tls_byoc):
     """Function to check if tls certificate should be updated"""
 
-    tls_cert_key = "cert.pem"
-    tls_key_key = "key.pem"
-
     if tls_secret.data != None:
 
-        if tls_cert_key in tls_secret.data and tls_key_key in tls_secret.data:
+        if imageswap_tls_cert_name in tls_secret.data and imageswap_tls_key_name in tls_secret.data:
 
-            if tls_secret.data[tls_cert_key] == "" or tls_secret.data[tls_key_key] == "":
+            if tls_secret.data[imageswap_tls_cert_name] == "" or tls_secret.data[imageswap_tls_key_name] == "":
 
                 if imageswap_tls_byoc:
 
@@ -460,8 +456,8 @@ def read_tls_pair(namespace, secret_name, tls_pair, core_api):
 
             return secret, tls_pair, secret_exists, False
 
-    tls_cert_pem = base64.b64decode(secret.data["cert.pem"])
-    tls_key_pem = base64.b64decode(secret.data["key.pem"])
+    tls_cert_pem = base64.b64decode(secret.data[{imageswap_tls_cert_name}])
+    tls_key_pem = base64.b64decode(secret.data[{imageswap_tls_key_name}])
 
     if tls_cert_pem != "" or tls_key_pem != "":
 
@@ -532,8 +528,8 @@ def write_tls_pair(
         )
 
         secret_data = {
-            "cert.pem": base64.b64encode(tls_pair["cert"]).decode("utf-8").rstrip(),
-            "key.pem": base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
+            {imageswap_tls_cert_name}: base64.b64encode(tls_pair["cert"]).decode("utf-8").rstrip(),
+            {imageswap_tls_key_name}: base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
         }
 
         secret = client.V1Secret(metadata=secret_metadata, data=secret_data, type="tls")
@@ -571,8 +567,8 @@ def write_tls_pair(
         }
 
         secret.data = {
-            "cert.pem": base64.b64encode(tls_pair["cert"]).decode("utf-8").rstrip(),
-            "key.pem": base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
+            {imageswap_tls_cert_name}: base64.b64encode(tls_pair["cert"]).decode("utf-8").rstrip(),
+            {imageswap_tls_key_name}: base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
         }
 
         try:
@@ -603,10 +599,10 @@ def write_tls_pair(
     logging.info("Writing cert and key locally")
     logging.debug(f"TLS Pair: {tls_pair}")
 
-    with open(f"{imageswap_tls_path}/cert.pem", "wb") as cert_file:
+    with open(f"{imageswap_tls_path}/{imageswap_tls_cert_name}", "wb") as cert_file:
         cert_file.write(tls_pair["cert"])
 
-    with open(f"{imageswap_tls_path}/key.pem", "wb") as key_file:
+    with open(f"{imageswap_tls_path}/{imageswap_tls_key_name}", "wb") as key_file:
         key_file.write(tls_pair["key"])
 
 
@@ -1120,10 +1116,6 @@ def main():
     )
 
     logging.info("ImageSwap Init")
-    # Wait random time to help alleviate race conditions with multiple
-    # replicas on startup
-    # wait_time = random.randint(1,10)
-    # time.sleep(wait_time)
     init_tls_pair(imageswap_namespace_name)
     init_mwc(imageswap_namespace_name, imageswap_tls_byoc)
     logging.info("Done")
