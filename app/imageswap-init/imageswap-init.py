@@ -42,8 +42,8 @@ imageswap_tls_pair_secret_name = "imageswap-tls"
 imageswap_tls_rootca_secret_name = "imageswap-tls-ca"
 imageswap_byoc_annotation = "imageswap-byoc"
 imageswap_service_name = "imageswap"
-imageswap_tls_path = "/tls"
 imageswap_mwc_template_path = "/mwc"
+imageswap_tls_path = "/tls"
 imageswap_tls_key_name = os.getenv("IMAGESWAP_TLS_KEY_NAME", "tls.cert")
 imageswap_tls_cert_name = os.getenv("IMAGESWAP_TLS_CERT_NAME", "tls.key")
 imageswap_mwc_name = "imageswap-webhook"
@@ -368,7 +368,7 @@ def cert_expired(namespace, tls_secret):
     """Function to check tls certificate return number of days until expiration"""
 
     current_datetime = datetime.datetime.now()
-    tls_cert_decoded = base64.b64decode(tls_secret.data[{imageswap_tls_cert_name}])
+    tls_cert_decoded = base64.b64decode(tls_secret.data[imageswap_tls_cert_name])
     tls_cert = x509.load_pem_x509_certificate(tls_cert_decoded, default_backend())
     expire_days = tls_cert.not_valid_after - current_datetime
 
@@ -456,8 +456,8 @@ def read_tls_pair(namespace, secret_name, tls_pair, core_api):
 
             return secret, tls_pair, secret_exists, False
 
-    tls_cert_pem = base64.b64decode(secret.data[{imageswap_tls_cert_name}])
-    tls_key_pem = base64.b64decode(secret.data[{imageswap_tls_key_name}])
+    tls_cert_pem = base64.b64decode(secret.data[imageswap_tls_cert_name])
+    tls_key_pem = base64.b64decode(secret.data[imageswap_tls_key_name])
 
     if tls_cert_pem != "" or tls_key_pem != "":
 
@@ -528,8 +528,8 @@ def write_tls_pair(
         )
 
         secret_data = {
-            {imageswap_tls_cert_name}: base64.b64encode(tls_pair["cert"]).decode("utf-8").rstrip(),
-            {imageswap_tls_key_name}: base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
+            imageswap_tls_cert_name: base64.b64encode(tls_pair["cert"]).decode("utf-8").rstrip(),
+            imageswap_tls_key_name: base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
         }
 
         secret = client.V1Secret(metadata=secret_metadata, data=secret_data, type="tls")
@@ -567,8 +567,8 @@ def write_tls_pair(
         }
 
         secret.data = {
-            {imageswap_tls_cert_name}: base64.b64encode(tls_pair["cert"]).decode("utf-8").rstrip(),
-            {imageswap_tls_key_name}: base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
+            imageswap_tls_cert_name: base64.b64encode(tls_pair["cert"]).decode("utf-8").rstrip(),
+            imageswap_tls_key_name: base64.b64encode(tls_pair["key"]).decode("utf-8").rstrip(),
         }
 
         try:
