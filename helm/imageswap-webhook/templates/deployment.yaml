@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "imageswap-webhook.fullname" . }}-mwh
+  labels:
+    {{- include "imageswap-webhook.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "imageswap-webhook.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "imageswap-webhook.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "imageswap-webhook.fullname" . }}
+      securityContext:
+        runAsUser: 1898
+        runAsGroup: 1898
+      initContainers:
+        - name: imageswap-init
+          image: {{ .Values.init.imageName }}:{{ default .Chart.AppVersion .Values.init.imageTag }}
+          imagePullPolicy: {{ .Values.init.imagePullPolicy }}
+          command: [/app/imageswap-init.py]
+          securityContext:
+            allowPrivilegeEscalation: false
+          env:
+          - name: IMAGESWAP_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: IMAGESWAP_NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: {{ include "imageswap-webhook.fullname" . }}-env
+          volumeMounts:
+            - name: imageswap-tls
+              mountPath: /tls
+            - name: imageswap-mwc
+              mountPath: /mwc
+      containers:
+      - name: imageswap
+        image: {{ .Values.app.imageName }}:{{ default .Chart.AppVersion .Values.app.imageTag }}
+        imagePullPolicy: {{ .Values.app.imagePullPolicy }}
+        command: ["gunicorn", "imageswap:app", "--config=config.py"]
+        ports:
+        - name: http
+          containerPort: 5000
+          protocol: TCP
+        securityContext:
+            allowPrivilegeEscalation: false
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        env:
+          - name: IMAGESWAP_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: IMAGESWAP_NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+            - configMapRef:
+                name: {{ include "imageswap-webhook.fullname" . }}-env
+        volumeMounts:
+          - name: imageswap-tls
+            mountPath: /tls
+          - name: imageswap-maps
+            mountPath: /app/maps
+      volumes:
+        - name: imageswap-mwc
+          configMap:
+              name: {{ include "imageswap-webhook.fullname" . }}-mwc-template
+              items:
+              - key: imageswap-mwc
+                path: imageswap-mwc.yaml
+        - name: imageswap-maps
+          configMap:
+              name: {{ include "imageswap-webhook.fullname" . }}-maps
+              items:
+              - key: maps
+                path: imageswap-maps.conf
+        - name: imageswap-tls
+          emptyDir: {}

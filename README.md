@@ -83,12 +83,20 @@ ImageSwap requires cluster-admin permissions to deploy to Kubernetes since it re
 
 ### Quickstart
 
-You can use the following command to install ImageSwap from this repo with sane defaults
+You can either install ImageSwap with sane defaults by applying configuration through `kubectl apply` command or use `helm chart` from this repo.
 
 **NOTE:** The quickstart installation is not meant for production use. Please read through the [Cautions](#cautions) sections, and as always, use your best judgement when configuring ImageSwap for production scenarios.
 
+#### Install via `kubectl` 
+
 ```shell
 $ kubectl apply -f https://raw.githubusercontent.com/phenixblue/imageswap-webhook/v1.5.0/deploy/install.yaml
+```
+
+#### Install via Helm
+
+```shell
+helm install imageswap --create-namespace -n imageswap-system helm/imageswap-webhook
 ```
 
 #### This will do the following

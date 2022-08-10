@@ -1,0 +1,1 @@
+NOTE: It may take a few minutes for the application(webhook) to be available.

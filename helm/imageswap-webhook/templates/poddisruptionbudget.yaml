@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "imageswap-webhook.fullname" . }}
+  labels:
+    {{- include "imageswap-webhook.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruption.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "imageswap-webhook.labels" . | nindent 6 }}

@@ -1,0 +1,38 @@
+# Default values for imageswap-webhook.
+
+
+# The Swap Mappings
+maps: |
+  default:
+  docker.io:registry.example.com
+  docker.io/library:registry.example.com
+
+# Image for imageswap
+app:
+  imageName: thewebroot/imageswap
+  imagePullPolicy: IfNotPresent
+
+# Image for the imageswap init container
+init:
+  imageName: thewebroot/imageswap-init
+  imagePullPolicy: IfNotPresent
+
+# Resources for the imageswap pod
+resources:
+  limits:
+    cpu: "500m"
+    memory: 512Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+# Autoscale settings for imageswap
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 80
+
+# Pod disruption budget
+podDisruption:
+  minAvailable: 1

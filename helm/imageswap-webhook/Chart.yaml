@@ -1,0 +1,6 @@
+apiVersion: v2
+name: imageswap-webhook
+description: A Helm Chart for ImageSwap Mutating Admission Controller for Kubernetes
+type: application
+version: 0.1.0
+appVersion: v1.5.0
