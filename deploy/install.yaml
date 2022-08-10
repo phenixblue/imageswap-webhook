@@ -278,7 +278,7 @@ spec:
         - name: imageswap-init
           image: thewebroot/imageswap-init:v1.5.0
           command: [/app/imageswap-init.py]
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
           env:
@@ -304,7 +304,7 @@ spec:
         ports:
         - containerPort: 5000
         command: ["gunicorn", "imageswap:app", "--config=config.py"]
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         securityContext:
             allowPrivilegeEscalation: false
         resources:
