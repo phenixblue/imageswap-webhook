@@ -179,6 +179,7 @@ set-release-version:
 
 	sed -i='' "s/\(image: thewebroot\/imageswap-init:\).*/\1${IMAGESWAP_INIT_VERSION}/" deploy/manifests/imageswap-deploy.yaml
 	sed -i='' "s/\(image: thewebroot\/imageswap:\).*/\1${IMAGESWAP_VERSION}/" deploy/manifests/imageswap-deploy.yaml
+	sed -i='' "s/\(appVersion: \).*/\1${IMAGESWAP_VERSION}/" helm/imageswap-webhook/Chart.yaml
 	sed -i='' "s/\(version\)=\"latest\"\(.*\)/\1=\"${IMAGESWAP_VERSION}\"\2/" app/imageswap/imageswap.py
 	sed -i='' "s/\(ImageSwap\).*\(Startup\)/\1 ${IMAGESWAP_VERSION} \2/" app/imageswap/imageswap.py
 
