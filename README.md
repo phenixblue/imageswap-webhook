@@ -27,7 +27,7 @@ Kubernetes APIs upgrade
 
 >**K8s prior to v1.19** ImageSwap v1.5.0+ drops support for k8s versions below v1.19 and will no longer work due to the `admissionregistration.k8s.io/v1beta1` api deprecation. For deployment on K8s version v1.19 and before, please use ImageSwap v1.4.x.
 
->**EKS 1.22** To use ImageSwap you'll need to setup an Amazon exclusive signer [`beta.eks.amazonaws.com/app-serving`](https://docs.aws.amazon.com/eks/latest/userguide/cert-signing.html). Look at `client.V1CertificateSigningRequestSpec()` on `app/imageswap-init/imageswap-init.py`.
+>**EKS 1.22** To use ImageSwap you'll need to setup an Amazon exclusive signer [`beta.eks.amazonaws.com/app-serving`](https://docs.aws.amazon.com/eks/latest/userguide/cert-signing.html). This value can be changed with the environmental variable `IMAGESWAP_CSR_SIGNER_NAME`. Look at `client.V1CertificateSigningRequestSpec()` on `app/imageswap-init/imageswap-init.py`.
 ```
 k8s_csr_spec = client.V1CertificateSigningRequestSpec(
         groups=["system:authenticated"],
