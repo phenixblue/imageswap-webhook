@@ -6,13 +6,14 @@ We've tried to build a decent amount of flexibility into ImageSwap. While the si
 
 NOTE: The following environment variable are defined in the `imageswap-env-cm.yaml` manifest and can be used to customize ImageSwap's behavior.
 
-| Variable                 | Description                                 | Values                        |
-|---                       |---                                          |---                            |
-| `IMAGESWAP_LOG_LEVEL`    | The log level to use                        | `INFO` or `DEBUG`             |
+| Variable                    | Description                                 | Values                        |
+|---                          |---                                          |---                            |
+| `IMAGESWAP_LOG_LEVEL`       | The log level to use                        | `INFO` or `DEBUG`             |
 | `IMAGE_PREFIX` (**DEPRECATED**)          | The prefix to use in the image swap         | Any value supported for the [Kubernetes Container spec image field](https://kubernetes.io/docs/concepts/containers/images/#image-names)      |
-| `IMAGESWAP_MODE`         | The operating mode for the swap logic       | `MAPS` (default in v1.4.0+) or `LEGACY`              |
-| `IMAGESWAP_MAPS_FILE`    | The location of the MAPS file               | `/app/maps/imageswap-maps.conf` (default)            |
-| `IMAGESWAP_DISABLE_LABEL`| The label to identify granular disablement of image swapping per resource | `k8s.twr.io/imageswap` |
+| `IMAGESWAP_MODE`            | The operating mode for the swap logic       | `MAPS` (default in v1.4.0+) or `LEGACY`              |
+| `IMAGESWAP_MAPS_FILE`       | The location of the MAPS file               | `/app/maps/imageswap-maps.conf` (default)            |
+| `IMAGESWAP_DISABLE_LABEL`   | The label to identify granular disablement of image swapping per resource | `k8s.twr.io/imageswap` |
+| `IMAGESWAP_CSR_SIGNER_NAME` | The name of the Kubernetes signer to create the API certificate | `kubernetes.io/kubelet-serving`  |
 
 ## Installation
 
@@ -64,7 +65,7 @@ $ kubectl create secret generic imageswap-tls-ca --from-file=rootca.pem=./path/t
 
 The MWC (Mutating Webhook Configuration) needs to be configured with a cert bundle that includes the CA that signed the certificate and key used to secure the ImageSwap API. For now ImageSwap assumes this CA certificate exists in the `imageswap-tls-ca` secret deployed within the `imageswap-system` namespace. This secret must exist prior to installing ImageSwap.
 
-No validation is done currently to ensure the specified CA actually signed the cert and key used to secure ImageSwap's API. 
+No validation is done currently to ensure the specified CA actually signed the cert and key used to secure ImageSwap's API.
 
 ## MWC Template
 
