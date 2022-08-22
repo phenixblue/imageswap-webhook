@@ -51,6 +51,7 @@ imageswap_mwc_name = "imageswap-webhook"
 imageswap_mwc_template_file = f"{imageswap_mwc_template_path}/imageswap-mwc.yaml"
 imageswap_mwc_webhook_name = "imageswap.webhook.k8s.twr.io"
 imageswap_tls_byoc = False
+imageswap_csr_signer_name = os.getenv("IMAGESWAP_CSR_SIGNER_NAME", "kubernetes.io/kubelet-serving")
 
 ################################################################################
 ################################################################################
@@ -156,7 +157,7 @@ def build_k8s_csr(namespace, service_name, key):
         groups=["system:authenticated"],
         usages=["key encipherment", "digital signature", "server auth"],
         request=base64.b64encode(csr_pem).decode("utf-8").rstrip(),
-        signer_name="kubernetes.io/kubelet-serving",
+        signer_name=imageswap_csr_signer_name,
     )
 
     k8s_csr = client.V1CertificateSigningRequest(
