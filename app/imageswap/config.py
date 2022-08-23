@@ -12,9 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
+# Set Global variables
+imageswap_tls_path = "/tls"
+imageswap_tls_key_name = os.getenv("IMAGESWAP_TLS_KEY_NAME", "tls.cert")
+imageswap_tls_cert_name = os.getenv("IMAGESWAP_TLS_CERT_NAME", "tls.key")
+
 # Gunicorn config
 bind = ":5000"
 workers = 2
 threads = 2
-certfile = "/tls/cert.pem"
-keyfile = "/tls/key.pem"
+certfile = f"{imageswap_tls_path}/{imageswap_tls_cert_name}"
+keyfile = f"{imageswap_tls_path}/{imageswap_tls_key_name}"

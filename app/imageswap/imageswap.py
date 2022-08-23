@@ -31,6 +31,9 @@ import re
 app = Flask(__name__)
 
 # Set Global variables
+imageswap_tls_path = "/tls"
+imageswap_tls_key_name = os.getenv("IMAGESWAP_TLS_KEY_NAME", "tls.cert")
+imageswap_tls_cert_name = os.getenv("IMAGESWAP_TLS_CERT_NAME", "tls.key")
 imageswap_namespace_name = os.getenv("IMAGESWAP_NAMESPACE_NAME", "imageswap-system")
 imageswap_pod_name = os.getenv("IMAGESWAP_POD_NAME")
 imageswap_disable_label = os.getenv("IMAGESWAP_DISABLE_LABEL", "k8s.twr.io/imageswap")
@@ -338,7 +341,7 @@ def swap_image(container_spec):
                         new_image = swap_maps[image_registry_key] + re.sub(r":.*/", "/", image)
                 # If the image registry pattern is found in the original image
                 elif image_registry_key in image:
-                    new_image = re.sub(image_registry_key, swap_maps[image_registry_key], image)
+                    new_image = re.sub(re.escape(image_registry_key), swap_maps[image_registry_key], image)
                 # For everything else
                 else:
                     new_image = swap_maps[image_registry_key] + "/" + image
@@ -362,7 +365,7 @@ def swap_image(container_spec):
                 elif swap_maps[imageswap_maps_default_key][-1] == "-":
                     new_image = swap_maps[imageswap_maps_default_key] + image_registry_noport + "/" + image
                 elif image_registry_key in image:
-                    new_image = re.sub(image_registry, swap_maps[imageswap_maps_default_key], image)
+                    new_image = re.sub(re.escape(image_registry), swap_maps[imageswap_maps_default_key], image)
                 else:
                     new_image = swap_maps[imageswap_maps_default_key] + "/" + image
 
@@ -410,7 +413,7 @@ def swap_image(container_spec):
 
 def main():
 
-    app.logger.info("ImageSwap v1.5.0 Startup")
+    app.logger.info("ImageSwap v1.5.1-test1 Startup")
 
     app.run(
         host="0.0.0.0",
@@ -418,8 +421,8 @@ def main():
         debug=False,
         threaded=True,
         ssl_context=(
-            "./tls/cert.pem",
-            "./tls/key.pem",
+            f"{imageswap_tls_path}/{imageswap_tls_cert_name}",
+            f"{imageswap_tls_path}/{imageswap_tls_key_name}",
         ),
     )
 
