@@ -597,7 +597,7 @@ def write_tls_pair(
 
     # Write cert and key to files for Flask/OPA containers
     logging.info("Writing cert and key locally")
-    logging.debug(f"TLS Pair: {tls_pair}")
+    #logging.debug(f"TLS Pair: {tls_pair}")
 
     with open(f"{imageswap_tls_path}/{imageswap_tls_cert_name}", "wb") as cert_file:
         cert_file.write(tls_pair["cert"])

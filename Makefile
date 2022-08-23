@@ -15,8 +15,8 @@
 # NOTE: The version for both `imageswap-init` and `imageswap` should be identical for now.
 # Some effort will need to be put in to be able to distringuish changes to one vs. the other
 # in CI/Release steps.
-IMAGESWAP_VERSION := v1.5.0
-IMAGESWAP_INIT_VERSION := v1.5.0
+IMAGESWAP_VERSION := v1.5.1-test1
+IMAGESWAP_INIT_VERSION := v1.5.1-test1
 
 REPO_ROOT := $(CURDIR)
 APP_NAME ?= "imageswap.py"
@@ -194,7 +194,7 @@ release: echo
 .PHONY: build-imageswap-init-latest
 build-imageswap-init-latest:
 
-	$(DOCKER) build -t thewebroot/imageswap-init:latest app/imageswap-init/
+	$(DOCKER) build -t thewebroot/imageswap-init:latest app/imageswap-init/ --load
 
 # Push ImageSwap-Init container image to DockerHub
 .PHONY: push-imageswap-init-latest
@@ -206,7 +206,7 @@ push-imageswap-init-latest:
 .PHONY: build-imageswap-latest
 build-imageswap-latest:
 
-	$(DOCKER) build -t thewebroot/imageswap:latest app/imageswap/
+	$(DOCKER) build -t thewebroot/imageswap:latest app/imageswap/ --load
 
 # Push ImageSwap container image to DockerHub
 .PHONY: push-imageswap-latest
@@ -222,7 +222,7 @@ build-latest: build-imageswap-init-latest push-imageswap-init-latest build-image
 .PHONY: build-imageswap-init-versioned
 build-imageswap-init-versioned:
 
-	$(DOCKER) build -t thewebroot/imageswap-init:${IMAGESWAP_INIT_VERSION} app/imageswap-init/
+	$(DOCKER) build -t thewebroot/imageswap-init:${IMAGESWAP_INIT_VERSION} app/imageswap-init/ --load
 
 # Push ImageSwap-Init container image to DockerHub
 .PHONY: push-imageswap-init-versioned
@@ -234,7 +234,7 @@ push-imageswap-init-versioned:
 .PHONY: build-imageswap-versioned
 build-imageswap-versioned:
 
-	$(DOCKER) build -t thewebroot/imageswap:${IMAGESWAP_VERSION} app/imageswap/
+	$(DOCKER) build -t thewebroot/imageswap:${IMAGESWAP_VERSION} app/imageswap/ --load
 
 # Push ImageSwap container image to DockerHub
 .PHONY: push-imageswap-versioned
