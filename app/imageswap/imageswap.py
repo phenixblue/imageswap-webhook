@@ -410,7 +410,7 @@ def swap_image(container_spec):
 
 def main():
 
-    app.logger.info("ImageSwap v1.5.0 Startup")
+    app.logger.info("ImageSwap v1.5.1 Startup")
 
     app.run(
         host="0.0.0.0",

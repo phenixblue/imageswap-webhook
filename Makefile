@@ -15,8 +15,8 @@
 # NOTE: The version for both `imageswap-init` and `imageswap` should be identical for now.
 # Some effort will need to be put in to be able to distringuish changes to one vs. the other
 # in CI/Release steps.
-IMAGESWAP_VERSION := v1.5.0
-IMAGESWAP_INIT_VERSION := v1.5.0
+IMAGESWAP_VERSION := v1.5.1
+IMAGESWAP_INIT_VERSION := v1.5.1
 
 REPO_ROOT := $(CURDIR)
 APP_NAME ?= "imageswap.py"

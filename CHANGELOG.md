@@ -140,3 +140,19 @@ This release also adds additional validation to catch errors associated with spe
 
 - Thanks to @sblair-metrostar for bringing the port number issue to our attention
 - Thanks to @mariomcosta, @awoimbee, and @ilrudie for helping get k8s v1.22+ supported
+
+## 1.5.1
+
+This is primarily a maintenance release with a couple of small enhancements.
+
+### Enhancements
+
+- Cleanup some legacy logic for detecting the K8s API Server CA Cert. This also enables support in K3S environments (#70)
+- Adds the `IMAGESWAP_DISABLE_AUTO_MWC` environment variable to allow for disabling the automatic generation of the Mutating Webhook Configuration (MWC) in the imageswap-init container (#71)
+- Adds the `IMAGESWAP_CSR_SIGNER_NAME` environmental variable to allow for customizing the signer used in the K8s CertificateSigningRequest resource. Defaults to `kubernetes.io/kubelet-serving` to maintain backwards compatibility (#76)
+
+### Acknowledgements
+
+- Thanks to @jchanam for their work on #76
+- Thanks to @howardburgess for suggesting #67
+- Thanks to @rainsun for bringing #56 to our attention and supplying logs to help triage the issue
