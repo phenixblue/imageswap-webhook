@@ -14,6 +14,7 @@ NOTE: The following environment variable are defined in the `imageswap-env-cm.ya
 | `IMAGESWAP_MAPS_FILE`       | The location of the MAPS file               | `/app/maps/imageswap-maps.conf` (default)            |
 | `IMAGESWAP_DISABLE_LABEL`   | The label to identify granular disablement of image swapping per resource | `k8s.twr.io/imageswap` |
 | `IMAGESWAP_CSR_SIGNER_NAME` | The name of the Kubernetes signer to create the API certificate | `kubernetes.io/kubelet-serving`  |
+| `IMAGESWAP_DISABLE_AUTO_MWC`  | Disable the automatic generation of the Mutating Webhook Configuration (MWC) in the imageswap-init container. Useful for integrating with workflows/tools that would generate the MWC for you | `TRUE` or `FALSE` (default)   |
 
 ## Installation
 

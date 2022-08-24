@@ -39,6 +39,7 @@ import yaml
 # Set Global variables
 imageswap_namespace_name = os.environ["IMAGESWAP_NAMESPACE_NAME"]
 imageswap_pod_name = os.environ["IMAGESWAP_POD_NAME"]
+imageswap_disable_auto_mwc = os.getenv("IMAGESWAP_DISABLE_AUTO_MWC", "FALSE")
 imageswap_tls_pair_secret_name = "imageswap-tls"
 imageswap_tls_rootca_secret_name = "imageswap-tls-ca"
 imageswap_byoc_annotation = "imageswap-byoc"
@@ -1074,36 +1075,42 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
 def init_mwc(namespace, imageswap_tls_byoc):
     """Function to handle the k8s mutating webhook configuration"""
 
-    try:
+    if imageswap_disable_auto_mwc.lower == "true":
 
-        config.load_incluster_config()
+        logging.info(f"ImageSwap is running with auto-mwc disabled. You will need to deploy the MWC on your own\n")
 
-    except Exception as exception:
-
-        logging.info(f"Exception loading incluster configuration: {exception}")
+    else:
 
         try:
-            logging.info("Loading local kubeconfig")
-            config.load_kube_config()
+
+            config.load_incluster_config()
 
         except Exception as exception:
 
-            logging.error(f"Exception loading local kubeconfig: {exception}")
-            sys.exit(1)
+            logging.info(f"Exception loading incluster configuration: {exception}")
 
-    configuration = client.Configuration().get_default_copy()
-    core_api = client.CoreV1Api(client.ApiClient(configuration))
-    admission_api = client.AdmissionregistrationV1Api(client.ApiClient(configuration))
+            try:
+                logging.info("Loading local kubeconfig")
+                config.load_kube_config()
 
-    mwc = read_mwc(admission_api)
-    write_mwc(
-        namespace,
-        imageswap_tls_rootca_secret_name,
-        mwc,
-        configuration,
-        admission_api,
-        core_api,
-    )
+            except Exception as exception:
+
+                logging.error(f"Exception loading local kubeconfig: {exception}")
+                sys.exit(1)
+
+        configuration = client.Configuration().get_default_copy()
+        core_api = client.CoreV1Api(client.ApiClient(configuration))
+        admission_api = client.AdmissionregistrationV1Api(client.ApiClient(configuration))
+
+        mwc = read_mwc(admission_api)
+        write_mwc(
+            namespace,
+            imageswap_tls_rootca_secret_name,
+            mwc,
+            configuration,
+            admission_api,
+            core_api,
+        )
 
 
 ################################################################################
