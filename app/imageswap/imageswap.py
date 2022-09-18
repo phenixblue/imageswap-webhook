@@ -62,7 +62,7 @@ def mutate():
     """Function to run main logic to handle imageswap mutation"""
 
     request_info = request.json
-    api_version = request_info["apiVersion"] 
+    api_version = request_info["apiVersion"]
     modified_spec = copy.deepcopy(request_info)
     uid = modified_spec["request"]["uid"]
     workload_metadata = modified_spec["request"]["object"]["metadata"]
