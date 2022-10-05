@@ -27,6 +27,7 @@ import jsonpatch
 import logging
 import os
 import re
+import fnmatch
 
 app = Flask(__name__)
 
@@ -38,6 +39,8 @@ imageswap_mode = os.getenv("IMAGESWAP_MODE", "MAPS")
 imageswap_maps_file = os.getenv("IMAGESWAP_MAPS_FILE", "/app/maps/imageswap-maps.conf")
 imageswap_maps_default_key = "default"
 imageswap_maps_wildcard_key = "noswap_wildcards"
+imageswap_exact_keyword = "[EXACT]"
+imageswap_replace_keyword = "[REPLACE]"
 
 # Setup Prometheus Metrics for Flask app
 metrics = PrometheusMetrics(app, defaults_prefix="imageswap")
@@ -203,6 +206,7 @@ def build_swap_map(map_file):
 
     maps = {}
     exact_maps = {}
+    replace_maps = {}
 
     # Read maps from file
     with open(map_file, "r") as f:
@@ -239,15 +243,18 @@ def build_swap_map(map_file):
                     app.logger.warning(f"Invalid map is specified. Incorrect syntax for map definition. Skipping map for line: {line}")
                 continue
             # Store processed line key/value pair in map
-            if key.startswith("[EXACT]"):
-                key = key[7:].lstrip()
+            if key.startswith(imageswap_exact_keyword):
+                key = key[len(imageswap_exact_keyword) :].lstrip()
                 exact_maps[key] = val
+            elif key.startswith(imageswap_replace_keyword):
+                key = key[len(imageswap_replace_keyword) :].lstrip()
+                replace_maps[key] = val
             else:
                 maps[key] = val
 
     f.close()
 
-    return (exact_maps, maps)
+    return (replace_maps, exact_maps, maps)
 
 
 ################################################################################
@@ -283,15 +290,24 @@ def swap_image(container_spec):
 
         app.logger.info('ImageSwap Webhook running in "MAPS" mode')
 
-        (exact_maps, swap_maps) = build_swap_map(imageswap_maps_file)
+        (replace_maps, exact_maps, swap_maps) = build_swap_map(imageswap_maps_file)
 
         app.logger.debug(f"Swap Maps:\n{swap_maps}")
         app.logger.debug(f"Exact Maps:\n{exact_maps}")
+        app.logger.debug(f"Replace Maps:\n{replace_maps}")
 
         if image in exact_maps:
             app.logger.debug("found exact mapping")
             new_image = exact_maps[image]
         else:
+            # Check to see if a replacement pattern matches
+            for pattern in replace_maps.keys():
+                if fnmatch.fnmatch(image, pattern):
+                    new_image = os.path.join(replace_maps[pattern], image.split("/")[-1])
+                    break
+
+        # Fallback to standard checks if the image has not been changed
+        if new_image == image:
             # Check if Registry portion includes a ":<port_number>"
             if ":" in image_registry:
                 image_registry_noport = image_registry.partition(":")[0]

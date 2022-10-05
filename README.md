@@ -154,6 +154,8 @@ harbor.geo.pks.twr.io::harbor2.com ###### This is a comment with many symbols
 noswap_wildcards::twr.io, walrus.io
 # exact image mapping (full docker image name)
 [EXACT]ghcr.io/fantasy/coolstuff:v1.0::my-local-registry.com/patched-coolstuff:latest
+# replace image mapping (unix shell-style wildcards)
+[REPLACE]ghcr.io/public*::my-local-registry.com
 ```
 
 NOTE: Lines in the `map file` that are commented out with a leading `#` are ignored. Trailing comments following a map definition are also ignored.
@@ -174,7 +176,7 @@ By adding additional mappings to the `map file`, you can have much finer granula
 
 Map definitions can become explicit mappings for individual images by using the `[EXACT]` prefix.
 
-Example:
+Usage:
 
 ```
 [EXACT]<source-image>::<target-image>
@@ -183,6 +185,22 @@ Example:
 `Exact` maps will be matched exactly against the `<source-image>` name and replaced with the `<target-image>` name. No inferences for registry (ie. `docker.io/`), or tag (ie. `:latest`) will be inferred for `Exact` maps.
 
 Exact image matches are handled before all other mapping rules.
+
+#### Replace Image Mapping
+
+Image paths can be completely rewritten by using the `[REPLACE]` prefix. 
+
+Usage:
+
+```
+[REPLACE]<pattern>::<replacement>
+```
+
+When a `<source-image>` matches against a `Replace` rule, the image will be transformed to `<replacement><image>` where `<image>` includes the tag if it was specified as a part of `<source-image>`.
+
+Replacement rules are handled after exact match rules, but before the rest.
+
+Module used: [fnmatch](https://docs.python.org/3/library/fnmatch.html) — Unix filename pattern matching
  
 #### Example MAPS Configs
 
