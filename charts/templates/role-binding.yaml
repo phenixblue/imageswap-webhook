@@ -1,0 +1,56 @@
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "imageswap.fullname" . }}-write-crb
+  labels:
+    app: {{ template "imageswap.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+roleRef:
+  kind: ClusterRole
+  name: {{ template "imageswap.fullname" . }}-write
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "imageswap.fullname" . }}-sa
+    namespace: "{{ .Release.Namespace }}"
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "imageswap.fullname" . }}-read-crb
+  labels:
+    app: {{ template "imageswap.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+roleRef:
+  kind: ClusterRole
+  name: {{ template "imageswap.fullname" . }}-read
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "imageswap.fullname" . }}-sa
+    namespace: "{{ .Release.Namespace }}"
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "imageswap.fullname" . }}-ops-rb
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: {{ template "imageswap.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+roleRef:
+  kind: Role
+  name: {{ template "imageswap.fullname" . }}-ops
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "imageswap.fullname" . }}-sa

@@ -1,0 +1,19 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "imageswap.fullname" . }}-pdb
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: {{ template "imageswap.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: {{ template "imageswap.fullname" . }}
+      chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+      heritage: "{{ .Release.Service }}"
+      release: "{{ .Release.Name }}"
+

@@ -1,0 +1,34 @@
+---
+nameOverride: ""
+fullnameOverride: ""
+
+namespace: {{.Release.Namespace}}
+
+hpa:
+  enabled: false
+
+pod:
+  imageswap:
+    image: thewebroot/imageswap:v1.5.1
+  init:
+    image: thewebroot/imageswap-init:v1.5.1
+
+maps: | ## These are examples
+  default::myregistry.local/ext-docker-hub-remote
+  docker.io::myregistry.local/ext-docker-hub-remote
+  registry.hub.docker.com::myregistry.local/ext-docker-hub-remote
+  us-docker.pkg.dev::myregistry.local/ext-google-docker-remote
+  k8s.gcr.io::myregistry.local/ext-gcr-docker-remote
+  gcr.io::myregistry.local/ext-google-gcr-remote
+  quay.io::myregistry.local/ext-quayio-docker-remote
+  registry-1.docker.io::myregistry.local/ext-docker-remote
+  ghcr.io::myregistry.local/ext-homebrew-docker-remote
+
+deployment:
+  replicas: 2
+
+extraEnv: []
+
+tolerations: []
+
+affinity: {}

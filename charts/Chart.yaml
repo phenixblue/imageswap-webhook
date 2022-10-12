@@ -1,0 +1,6 @@
+apiVersion: v2
+appVersion: v1.5.1
+description: The ImageSwap webhook automatically swaps image definitions within Kubernetes Pods with a different registry.
+name: imageswap
+type: application
+version: 1.5.1

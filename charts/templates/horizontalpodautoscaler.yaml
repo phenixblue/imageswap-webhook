@@ -1,0 +1,22 @@
+{{ if .Values.hpa.enabled}}
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "imageswap.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "imageswap.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+
+spec:
+  maxReplicas: 6
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "imageswap.fullname" . }}
+  targetCPUUtilizationPercentage: 80
+{{- end -}}
