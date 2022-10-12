@@ -3,10 +3,10 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ template "imageswap.fullname" . }}
+  name: imageswap
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "imageswap.fullname" . }}
+    app: imageswap
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"
@@ -17,6 +17,6 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ template "imageswap.fullname" . }}
+    name: imageswap
   targetCPUUtilizationPercentage: 80
 {{- end -}}

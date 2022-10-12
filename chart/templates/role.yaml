@@ -2,10 +2,10 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ template "imageswap.fullname" . }}-write
+  name: imageswap-write
   namespace: "{{ .Release.Namespace }}"
   labels:
-    app: {{ template "imageswap.fullname" . }}
+    app: imageswap
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"
@@ -35,9 +35,9 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ template "imageswap.fullname" . }}-read
+  name: imageswap-read
   labels:
-    app: {{ template "imageswap.fullname" . }}
+    app: imageswap
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"
@@ -56,10 +56,10 @@ rules:
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ template "imageswap.fullname" . }}-ops
+  name: imageswap-ops
   namespace: "{{ .Release.Namespace }}"
   labels:
-    app: {{ template "imageswap.fullname" . }}
+    app: imageswap
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"

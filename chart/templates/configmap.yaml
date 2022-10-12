@@ -1,39 +1,23 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "imageswap.fullname" . }}-env
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: {{ template "imageswap.fullname" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-data:
-  FLASK_ENV: "production"
-  PYTHONUNBUFFERED: "TRUE"
-  IMAGESWAP_MODE: "MAPS"
-  IMAGESWAP_LOG_LEVEL: "INFO"
-
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "imageswap.fullname" . }}-mwc-template
+  name: imageswap-mwc-template
   namespace: {{ .Release.Namespace }}
 data:
   imageswap-mwc: |
     apiVersion: admissionregistration.k8s.io/v1
     kind: MutatingWebhookConfiguration
     metadata:
-      name: {{ template "imageswap.fullname" . }}-webhook
+      name: imageswap-webhook
       labels:
         app: imageswap
         resource: mutatingwebhookconfiguration
     webhooks:
-      - name: {{ template "imageswap.fullname" . }}.webhook.k8s.twr.io
+      - name: imageswap.webhook.k8s.twr.io
         clientConfig:
           service:
-            name: {{ template "imageswap.fullname" . }}
+            name: imageswap
             namespace: {{ .Release.Namespace }}
             path: "/"
             port: 8181
@@ -59,10 +43,12 @@ data:
 ---
 ## This ConfigMap contains the meat and potatoes - the image-rewrite logic.
 apiVersion: v1
+data:
+  maps: |
+    {{- .Files.Get "maps.yaml" | nindent 4}}
+
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: {{ template "imageswap.fullname" . }}-maps
+  name: imageswap-maps
   namespace: {{ .Release.Namespace }}
-data:
-  maps: {{ .Values.maps}}

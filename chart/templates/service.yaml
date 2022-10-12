@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{template "imageswap.fullname" .}}
+  name: imageswap
   namespace: "{{ .Release.Namespace }}"
   labels:
-    app: {{template "imageswap.fullname" .}}
+    app: imageswap
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"
@@ -15,7 +15,7 @@ spec:
       port: 8181
       targetPort: 5000
   selector:
-    app: {{template "imageswap.fullname" .}}
+    app: imageswap
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"

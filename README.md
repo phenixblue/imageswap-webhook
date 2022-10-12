@@ -53,6 +53,7 @@ ImageSwap v1.4.0 has major changes
 - [Health Check](#health-check)
 - [Image](#image)
 - [Configuration](#configuration)
+- [Helm Install](#helm-install)
 - [Advance Install](./docs/advanced_install.md)
 - [Metrics](#metrics)
 - [Testing](#testing)
@@ -285,9 +286,18 @@ The value of the label should be `disabled`.
 
 See the [Break Glass: Per Workload](#per-workload) section for more details.
 
+## Helm Install
+
+A [Helm 3](https://helm.sh/) chart is available under `./chart`, which will install imageswap using the defaults contained in the [Quickstart](#quickstart) [`install.yaml`](https://github.com/madmatt112/imageswap-webhook/blob/feat/add-helm-chart/deploy/install.yaml).
+
+By default, Helm will install to your (kubectl's) current Kubernetes [namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/). Use the `--namespace` flag of `helm install` to specify a different namespace, adding the `--create-namespace` if needed.
+
+### Example Installation
+
+`helm install imageswap ./chart/ --namespace imageswap-system --create-namespace --wait`
 ## Metrics
 
-Prometheus formatted metrics for API rquests are exposed on the `/metrics` endpoint.
+Prometheus formatted metrics for API requests are exposed on the `/metrics` endpoint.
 
 ## Testing
 

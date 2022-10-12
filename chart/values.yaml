@@ -1,0 +1,24 @@
+---
+hpa:
+  enabled: false
+
+deployment:
+  replicas: 2
+  imageswap:
+    image: thewebroot/imageswap:v1.5.1
+  init:
+    image: thewebroot/imageswap-init:v1.5.1
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: 512Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+extraEnv: []
+
+tolerations: []
+
+affinity: {}

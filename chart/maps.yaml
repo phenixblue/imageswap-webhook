@@ -1,0 +1,9 @@
+default::myregistry.local/ext-docker-hub-remote
+docker.io::myregistry.local/ext-docker-hub-remote
+registry.hub.docker.com::myregistry.local/ext-docker-hub-remote
+us-docker.pkg.dev::myregistry.local/ext-google-docker-remote
+k8s.gcr.io::myregistry.local/ext-gcr-docker-remote
+gcr.io::myregistry.local/ext-google-gcr-remote
+quay.io::myregistry.local/ext-quayio-docker-remote
+registry-1.docker.io::myregistry.local/ext-docker-remote
+ghcr.io::myregistry.local/ext-homebrew-docker-remote
