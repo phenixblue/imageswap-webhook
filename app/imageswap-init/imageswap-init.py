@@ -1075,7 +1075,7 @@ def write_mwc(namespace, ca_secret_name, mwc, configuration, admission_api, core
 def init_mwc(namespace, imageswap_tls_byoc):
     """Function to handle the k8s mutating webhook configuration"""
 
-    if imageswap_disable_auto_mwc.lower == "true":
+    if imageswap_disable_auto_mwc.lower() == "true":
 
         logging.info(f"ImageSwap is running with auto-mwc disabled. You will need to deploy the MWC on your own\n")
 
