@@ -208,7 +208,7 @@ metadata:
 apiVersion: v1
 data:
   maps: |
-    default:registry.example.com
+    default::registry.example.com
 kind: ConfigMap
 metadata:
   creationTimestamp: null
