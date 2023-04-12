@@ -156,3 +156,25 @@ This is primarily a maintenance release with a couple of small enhancements.
 - Thanks to @jchanam for their work on #76
 - Thanks to @howardburgess for suggesting #67
 - Thanks to @rainsun for bringing #56 to our attention and supplying logs to help triage the issue
+
+## 1.5.2
+
+This is primarily a maintenance release, but does introduce new MAPS syntax.
+
+The `replace` feature gives the ability to match a pattern explicitly and replace all of it with a provided pattern. [More info here](https://github.com/phenixblue/imageswap-webhook#replace-image-mapping).
+
+### Enhancements
+
+- Bump oauthlib from 3.2.0 to 3.2.1 in /app/imageswap-init (#79)
+- Add `replace` feature to maps syntax (#85)
+- Bump certifi from 2022.9.14 to 2022.12.7 in /app/imageswap-init (#91)
+- Move to `actions/setup-python@v4` in CI (#91)
+- Fix detection of `IMAGESWAP_DISABLE_AUTO_MWC` (#88)
+- Bump cryptography from 38.0.4 to 39.0.1 in /app/imageswap-init (#92)
+- Bump werkzeug from 2.2.2 to 2.2.3 in /app/imageswap (#93)
+
+### Acknowledgements
+
+- Thanks to @dependabot for keeping our Dependencies up to date!
+- Thanks to @M4C4R for #85
+- Thanks to @howardburgess for #88
