@@ -167,6 +167,22 @@ class ReplaceMapping(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
+    def test_map_replace_unchanged(self):
+
+        """Method to test replace when the result has not changed from the original"""
+
+        imageswap.imageswap_maps_file = "./testing/map_files/map_file_replace.conf"
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "auto"
+
+        expected_image = "auto"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
 
 if __name__ == "__main__":
     unittest.main()
