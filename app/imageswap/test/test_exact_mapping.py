@@ -152,6 +152,22 @@ class ExactMapping(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(container_spec["image"], expected_image)
 
+    def test_map_exact_unchanged(self):
+
+        """Method to test exact mapping for entries which should not be changed, like [EXACT]auto::auto"""
+
+        imageswap.imageswap_maps_file = "./testing/map_files/map_file_exact.conf"
+
+        container_spec = {}
+        container_spec["name"] = "test-container"
+        container_spec["image"] = "auto"
+
+        expected_image = "auto"
+        result = imageswap.swap_image(container_spec)
+
+        self.assertTrue(result)
+        self.assertEqual(container_spec["image"], expected_image)
+
 
 if __name__ == "__main__":
     unittest.main()

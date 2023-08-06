@@ -296,18 +296,21 @@ def swap_image(container_spec):
         app.logger.debug(f"Exact Maps:\n{exact_maps}")
         app.logger.debug(f"Replace Maps:\n{replace_maps}")
 
+        found = False
         if image in exact_maps:
             app.logger.debug("found exact mapping")
             new_image = exact_maps[image]
+            found = True
         else:
             # Check to see if a replacement pattern matches
             for pattern in replace_maps.keys():
                 if fnmatch.fnmatch(image, pattern):
                     new_image = os.path.join(replace_maps[pattern], image.split("/")[-1])
+                    found = True
                     break
 
-        # Fallback to standard checks if the image has not been changed
-        if new_image == image:
+        # Fallback to standard checks if the image has not been found
+        if not found:
             # Check if Registry portion includes a ":<port_number>"
             if ":" in image_registry:
                 image_registry_noport = image_registry.partition(":")[0]
