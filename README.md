@@ -88,7 +88,7 @@ You can use the following command to install ImageSwap from this repo with sane 
 **NOTE:** The quickstart installation is not meant for production use. Please read through the [Cautions](#cautions) sections, and as always, use your best judgement when configuring ImageSwap for production scenarios.
 
 ```shell
-$ kubectl apply -f https://raw.githubusercontent.com/phenixblue/imageswap-webhook/v1.5.2/deploy/install.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/phenixblue/imageswap-webhook/v1.5.3/deploy/install.yaml
 ```
 
 #### This will do the following
