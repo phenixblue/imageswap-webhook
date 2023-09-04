@@ -1,5 +1,7 @@
 # Notice
 
+Current ImageSwap Webhook code is tested against K8s v1.24, v1.25, v1.26, and v1.27. While ImageSwap may work with other versions of K8s, functionality isn't guarunteed.
+
 ## Kubernetes APIs upgrades
 
 >**Deprecated APIs in v1.22** Because the end of support for some beta APIs the code received some important updates. Now you need to specify a signer for your Certificate Signing Request. You can take a look on the official documentation about API changes [Reference API deprecation](https://kubernetes.io/docs/reference/using-api/deprecation-guide/#v1-22).
