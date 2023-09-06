@@ -27,7 +27,7 @@ TEST_NAMESPACE ?= "test1"
 DOCKER := docker
 
 # Pin utilities at specific versions for CI stability
-KUBECTL_VERSION ?= v1.19.1
+KUBECTL_VERSION ?= v1.24.17
 
 ###############################################################################
 # CI Bootstrap Related Targets ################################################
