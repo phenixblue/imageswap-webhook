@@ -15,19 +15,19 @@ jobs:
     strategy:
       matrix:
         k8s-version:
-          - v1.23
-          - v1.22
-          - v1.21
-          - v1.20
+          - v1.27
+          - v1.26
+          - v1.25
+          - v1.24
         include:
-          - k8s-version: v1.23
-            kind-node-image: kindest/node:v1.23.4@sha256:0e34f0d0fd448aa2f2819cfd74e99fe5793a6e4938b328f657c8e3f81ee0dfb9
-          - k8s-version: v1.22
-            kind-node-image: kindest/node:v1.22.7@sha256:1dfd72d193bf7da64765fd2f2898f78663b9ba366c2aa74be1fd7498a1873166
-          - k8s-version: v1.21
-            kind-node-image: kindest/node:v1.21.10@sha256:84709f09756ba4f863769bdcabe5edafc2ada72d3c8c44d6515fc581b66b029c
-          - k8s-version: v1.20
-            kind-node-image: kindest/node:v1.20.15@sha256:393bb9096c6c4d723bb17bceb0896407d7db581532d11ea2839c80b28e5d8deb
+          - k8s-version: v1.27
+            kind-node-image: kindest/node:v1.27.3@sha256:3966ac761ae0136263ffdb6cfd4db23ef8a83cba8a463690e98317add2c9ba72
+          - k8s-version: v1.26
+            kind-node-image: kindest/node:v1.26.6@sha256:6e2d8b28a5b601defe327b98bd1c2d1930b49e5d8c512e1895099e4504007adb
+          - k8s-version: v1.25
+            kind-node-image: kindest/node:v1.25.11@sha256:227fa11ce74ea76a0474eeefb84cb75d8dad1b08638371ecf0e86259b35be0c8
+          - k8s-version: v1.24
+            kind-node-image: kindest/node:v1.24.15@sha256:7db4f8bea3e14b82d12e044e25e34bd53754b7f2b0e9d56df21774e6f66a70ab
 
     name: e2e-tests for K8s ${{ matrix.k8s-version }}
 
@@ -83,7 +83,7 @@ jobs:
       timeout-minutes: 10
       uses: engineerd/setup-kind@v0.5.0
       with:
-          version: "v0.12.0"
+          version: "v0.20.0"
           image: ${{ matrix.kind-node-image }}
           wait: 360s
 
