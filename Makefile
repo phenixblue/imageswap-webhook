@@ -15,8 +15,8 @@
 # NOTE: The version for both `imageswap-init` and `imageswap` should be identical for now.
 # Some effort will need to be put in to be able to distringuish changes to one vs. the other
 # in CI/Release steps.
-IMAGESWAP_VERSION := v1.5.2
-IMAGESWAP_INIT_VERSION := v1.5.2
+IMAGESWAP_VERSION := v1.5.3
+IMAGESWAP_INIT_VERSION := v1.5.3
 
 REPO_ROOT := $(CURDIR)
 APP_NAME ?= "imageswap.py"
@@ -27,7 +27,7 @@ TEST_NAMESPACE ?= "test1"
 DOCKER := docker
 
 # Pin utilities at specific versions for CI stability
-KUBECTL_VERSION ?= v1.19.1
+KUBECTL_VERSION ?= v1.24.17
 
 ###############################################################################
 # CI Bootstrap Related Targets ################################################
